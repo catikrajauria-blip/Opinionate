@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'catikrajauria@gmail.com' && request.auth.token.email_verified == true
+      );
+    }
+    function isValidId(id) {
+       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() {
+      return request.resource.data;
+    }
+    function existing() {
+      return resource.data;
+    }
+
+    // Blogs
+    match /blogs/{blogId} {
+      allow read: if true; // Publicly readable
+      allow create: if isAdmin() && isValidBlog(incoming());
+      allow update: if (isAdmin() && isValidBlog(incoming())) || (isSignedIn() && isOnlyStatUpdate());
+      allow delete: if isAdmin();
+
+      function isValidBlog(data) {
+        return data.title is string && data.title.size() <= 200 &&
+               data.slug is string && data.slug.size() <= 200 &&
+               data.summary is string && data.summary.size() <= 1000 &&
+               data.content is string && data.content.size() <= 50000;
+      }
+
+      function isOnlyStatUpdate() {
+        return incoming().diff(existing()).affectedKeys().hasAny(['likesCount', 'viewsCount', 'ratingAverage', 'ratingCount']);
+      }
+    }
+
+    // Comments
+    match /blogs/{blogId}/comments/{commentId} {
+      allow read: if true;
+      allow create: if isValidComment(incoming());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+
+      function isValidComment(data) {
+        return data.name is string && data.name.size() <= 50 &&
+               data.content is string && data.content.size() <= 2000 &&
+               data.blogId == blogId;
+      }
+    }
+
+    // Subscribers
+    match /subscribers/{email} {
+      allow read: if isAdmin();
+      allow create: if incoming().email == email && incoming().status == 'active';
+      allow delete: if isAdmin();
+    }
+
+    // Messages
+    match /messages/{messageId} {
+      allow read: if isAdmin();
+      allow create: if isValidMessage(incoming());
+
+      function isValidMessage(data) {
+        return data.name is string && data.email is string && data.message is string && data.message.size() <= 5000;
+      }
+    }
+
+    // Ratings/Likes/Views (Public can create once)
+    match /ratings/{ratingId} {
+      allow read: if true;
+      allow create: if incoming().score >= 1 && incoming().score <= 5;
+    }
+    match /likes/{likeId} {
+      allow read: if true;
+      allow create: if true;
+    }
+    match /views/{viewId} {
+      allow read: if true;
+      allow create: if true;
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "Blog": {
+      "title": "Blog",
+      "description": "Daily blog post entries",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "summary": { "type": "string" },
+        "content": { "type": "string" },
+        "author": { "type": "string" },
+        "image": { "type": "string" },
+        "slug": { "type": "string" },
+        "likesCount": { "type": "number" },
+        "viewsCount": { "type": "number" },
+        "ratingAverage": { "type": "number" },
+        "ratingCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "date", "summary", "content", "slug", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "User comments on blog posts",
+      "type": "object",
+      "properties": {
+        "blogId": { "type": "string" },
+        "parentId": { "type": "string" },
+        "name": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "isModerated": { "type": "boolean" }
+      },
+      "required": ["blogId", "name", "content", "createdAt"]
+    },
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "Newsletter subscribers",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "subscribedAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "unsubscribed"] }
+      },
+      "required": ["email", "subscribedAt", "status"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Messages from contact form",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "Rating": {
+      "title": "Rating",
+      "description": "Ratings tracker to prevent duplicate ratings",
+      "type": "object",
+      "properties": {
+        "blogId": { "type": "string" },
+        "userId": { "type": "string" },
+        "score": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["blogId", "userId", "score"]
+    },
+    "Like": {
+      "title": "Like",
+      "description": "Likes tracker",
+      "type": "object",
+      "properties": {
+        "blogId": { "type": "string" },
+        "userId": { "type": "string" }
+      },
+      "required": ["blogId", "userId"]
+    },
+    "View": {
+      "title": "View",
+      "description": "Daily view tracker",
+      "type": "object",
+      "properties": {
+        "blogId": { "type": "string" },
+        "userId": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["blogId", "userId", "date"]
+    }
+  },
+  "firestore": {
+    "/blogs/{blogId}": {
+      "schema": "Blog",
+      "description": "Store for blog posts"
+    },
+    "/blogs/{blogId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments for a blog post"
+    },
+    "/subscribers/{email}": {
+      "schema": "Subscriber",
+      "description": "Newsletter subscribers indexed by email"
+    },
+    "/messages/{messageId}": {
+      "schema": "ContactMessage",
+      "description": "Contact form submissions"
+    },
+    "/ratings/{ratingId}": {
+      "schema": "Rating",
+      "description": "User ratings"
+    },
+    "/likes/{likeId}": {
+      "schema": "Like",
+      "description": "User likes"
+    },
+    "/views/{viewId}": {
+      "schema": "View",
+      "description": "Unique daily views"
+    }
+  }
+}
