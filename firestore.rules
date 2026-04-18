@@ -12,11 +12,11 @@ service cloud.firestore {
     }
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.email == 'catikrajauria@gmail.com' && request.auth.token.email_verified == true
+        request.auth.token.email == 'catikrajauria@gmail.com'
       );
     }
     function isValidId(id) {
-       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+       return id is string && id.size() <= 256;
     }
     function incoming() {
       return request.resource.data;
@@ -33,10 +33,10 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       function isValidBlog(data) {
-        return data.title is string && data.title.size() <= 200 &&
-               data.slug is string && data.slug.size() <= 200 &&
-               data.summary is string && data.summary.size() <= 1000 &&
-               data.content is string && data.content.size() <= 50000;
+        return data.title is string && data.title.size() <= 500 &&
+               data.slug is string && data.slug.size() <= 500 &&
+               data.summary is string && data.summary.size() <= 5000 &&
+               data.content is string && data.content.size() <= 100000;
       }
 
       function isOnlyStatUpdate() {
