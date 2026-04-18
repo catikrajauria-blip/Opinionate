@@ -88,5 +88,20 @@ service cloud.firestore {
       allow read: if true;
       allow create: if true;
     }
+
+    // Curated News
+    match /news/{newsId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidNews(incoming());
+      allow update: if isAdmin() && isValidNews(incoming());
+      allow delete: if isAdmin();
+
+      function isValidNews(data) {
+        return data.title is string && data.title.size() <= 300 &&
+               data.url is string && 
+               data.summary is string && data.summary.size() <= 3000 &&
+               data.category is string;
+      }
+    }
   }
 }

@@ -72,11 +72,10 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-50 rounded-3xl p-12 border-2 border-dashed border-gray-200"
+          className="bg-surface rounded-3xl p-12 border border-border"
         >
-          <h2 className="text-3xl font-display font-bold text-gray-400 mb-4">Today's blog coming soon</h2>
-          <p className="text-gray-500 mb-8">Check back later or browse our archive for previous opinions.</p>
-          <NewsletterBox />
+          <h2 className="text-3xl font-serif font-bold text-text-secondary mb-4 italic text-opacity-30">Today's opinion coming soon</h2>
+          <p className="text-text-secondary mb-8 font-serif">Check back later or browse our archive for previous deep dives.</p>
         </motion.div>
       </div>
     );

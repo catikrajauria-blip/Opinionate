@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import NewsletterBox from '../components/NewsletterBox';
-import { Mail, Globe, TrendingUp, Landmark, Zap, Newspaper, Calendar, ExternalLink, Loader2 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
+import { blogService } from '../lib/blogService';
+import { Globe, TrendingUp, Landmark, Zap, Newspaper, Calendar, ExternalLink, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface NewsItem {
+  id: string;
   title: string;
   source: string;
   url: string;
@@ -20,24 +20,8 @@ const CATEGORIES = [
   { id: 'tech', name: 'Industry & Tech', icon: <Zap size={14} /> }
 ];
 
-const CACHE_KEY = 'opinion_news_cache';
-const CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
-
 export default function Newsletter() {
-  const [news, setNews] = useState<Record<string, NewsItem[]>>(() => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_EXPIRY) {
-          return data;
-        }
-      }
-    } catch (e) {
-      console.error('Cache read error:', e);
-    }
-    return {};
-  });
+  const [news, setNews] = useState<Record<string, NewsItem[]>>({});
   const [activeCategory, setActiveCategory] = useState('finance');
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,129 +36,31 @@ export default function Newsletter() {
     setError(null);
     setLoadingCategory(categoryId);
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
-      
-      if (!apiKey || apiKey === "") {
-        throw new Error("API_KEY_MISSING");
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
-      const categoryName = CATEGORIES.find(c => c.id === categoryId)?.name;
-
-      const prompt = `
-        Fetch the top 5 most important current news highlights for the category: "${categoryName}".
-        Target premium sources like BBC, TimesNow, Mint, Financial Express, Financial Times, and Economic Times.
-        For each news item, provide:
-        1. A concise headline.
-        2. The primary source name.
-        3. A brief 2-sentence analytical summary.
-        4. The actual direct URL to the full news report.
-        
-        Return the result as a strict JSON array of objects with keys: title, source, summary, url, category.
-        The category field should always be "${categoryId}".
-        Do not include markdown code blocks.
-      `;
-
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          tools: [{ googleSearch: {} }]
-        }
-      });
-
-      const text = response.text;
-      const parsedNews = JSON.parse(text);
-      
-      setNews(prev => {
-        const updated = { ...prev, [categoryId]: parsedNews };
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
-          data: updated,
-          timestamp: Date.now()
-        }));
-        return updated;
-      });
+      const parsedNews = await blogService.getNewsByCategory(categoryId, 20) as NewsItem[];
+      setNews(prev => ({ ...prev, [categoryId]: parsedNews }));
     } catch (err: any) {
       console.error(`Error fetching ${categoryId} news:`, err);
-      let errorMsg = "An unexpected error occurred.";
-      
-      const isQuota = err.message && err.message.toLowerCase().includes("quota");
-
-      if (err.message === "API_KEY_MISSING") {
-        errorMsg = "Gemini API Key is missing. Please add GEMINI_API_KEY to your Vercel Environment Variables.";
-      } else if (err.status === 403 || (err.message && err.message.includes("API key not valid"))) {
-        errorMsg = "The provided API Key is invalid. Please double-check your key in Google AI Studio.";
-      } else if (isQuota) {
-        errorMsg = "API quota exceeded. The Free Tier of Gemini has a limit on requests per minute.";
-      } else {
-        errorMsg = err.message || "Temporary connection issue. This can happen if the AI model is busy or searching the web takes too long.";
-      }
-      
-      setError(errorMsg);
+      setError("Failed to load curated news. Please check your connection.");
     } finally {
       setLoadingCategory(null);
     }
   };
 
-  const benefits = [
-    {
-      icon: <TrendingUp size={24} className="text-text-primary" />,
-      title: "Finance & Markets",
-      description: "Analysis of market volatility and financial industry disruptions."
-    },
-    {
-      icon: <Globe size={24} className="text-text-primary" />,
-      title: "Geopolitics",
-      description: "Deep-dives into international relations and global diplomacy."
-    },
-    {
-      icon: <Landmark size={24} className="text-text-primary" />,
-      title: "Indian Politics",
-      description: "Critical inquiry into domestic policy and political maneuvers."
-    }
-  ];
-
   return (
     <div className="max-w-4xl mx-auto py-12">
       <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-accent rounded-3xl p-10 md:p-20 text-center relative overflow-hidden text-white mb-20 shadow-2xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-20"
       >
-        <div className="relative z-10">
-          <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mx-auto mb-8 border border-white/20">
-            <Mail size={32} className="text-white" />
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight">The Morning Brief</h1>
-          <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto font-serif leading-relaxed italic">
-            "One high-quality opinion delivered to your inbox every morning. Finance, Industry, and Global Politics deciphered."
-          </p>
-
-          <div className="max-w-md mx-auto">
-            <NewsletterBox variant="dark" />
-          </div>
+        <div className="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-full border border-border mb-6">
+           <Newspaper size={12} /> Curated Daily Briefings
         </div>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight text-text-primary">The Pulse</h1>
+        <p className="text-text-secondary text-lg max-w-2xl mx-auto font-serif leading-relaxed italic">
+          "Expertly curated news from global premium sources, selected for the sophisticated reader."
+        </p>
       </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-        {benefits.map((benefit, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="p-8 bg-surface rounded-xl border border-border"
-          >
-            <div className="mb-6">
-              {benefit.icon}
-            </div>
-            <h3 className="text-lg font-serif font-bold mb-3">{benefit.title}</h3>
-            <p className="text-text-secondary text-sm leading-relaxed font-serif">{benefit.description}</p>
-          </motion.div>
-        ))}
-      </div>
 
       <div className="mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -182,7 +68,7 @@ export default function Newsletter() {
             <div className="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-full border border-border mb-4">
                <Calendar size={12} /> {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </div>
-            <h2 className="text-3xl font-serif font-bold mb-2">Today's Pulse</h2>
+            <h2 className="text-3xl font-serif font-bold mb-2">Today's Selected Reading</h2>
             <p className="text-text-secondary font-serif italic max-w-sm">Deep headlines from premium sources analyzed for you.</p>
           </div>
           
@@ -194,8 +80,8 @@ export default function Newsletter() {
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all border",
                   activeCategory === cat.id 
-                    ? "bg-black text-white border-black" 
-                    : "bg-white text-text-secondary border-border hover:border-black"
+                    ? "bg-text-primary text-bg-page border-text-primary" 
+                    : "bg-surface text-text-secondary border-border hover:border-text-primary"
                 )}
               >
                 {cat.icon}
@@ -208,20 +94,17 @@ export default function Newsletter() {
         {loadingCategory === activeCategory ? (
           <div className="py-24 flex flex-col items-center justify-center text-text-secondary bg-surface rounded-xl border border-border">
              <Loader2 size={32} className="animate-spin mb-4" />
-             <p className="font-serif italic text-sm">Aggregating insights from global sources...</p>
+             <p className="font-serif italic text-sm">Loading curated insights...</p>
           </div>
         ) : error ? (
-          <div className="py-20 flex flex-col items-center justify-center text-center px-10 bg-red-50 rounded-xl border border-red-100">
-             <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6">
-                <Mail size={24} />
-             </div>
-             <h3 className="text-lg font-serif font-bold text-red-900 mb-2">Notice</h3>
-             <p className="text-red-700 font-serif max-w-md mx-auto text-sm leading-relaxed mb-8">
+          <div className="py-20 flex flex-col items-center justify-center text-center px-10 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-100 dark:border-red-900/30">
+             <h3 className="text-lg font-serif font-bold text-red-900 dark:text-red-400 mb-2">Notice</h3>
+             <p className="text-red-700 dark:text-red-300 font-serif max-w-md mx-auto text-sm mb-6">
                 {error}
              </p>
              <button 
                onClick={() => fetchCategoryNews(activeCategory)}
-               className="btn-minimal px-8 py-2 text-red-700 border-red-200 hover:bg-red-100"
+               className="btn-minimal px-8 py-2 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900"
              >
                 Try refreshing
              </button>
@@ -230,19 +113,19 @@ export default function Newsletter() {
           <div className="space-y-6">
             {(news[activeCategory] || []).map((item, idx) => (
               <motion.div 
-                key={idx}
+                key={item.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="group p-8 bg-white border border-border rounded-xl hover:border-black transition-all"
+                className="group p-8 bg-surface border border-border rounded-xl hover:border-text-primary transition-all"
               >
-                <div className="flex items-start gap-8">
-                  <div className="w-14 h-14 bg-surface rounded-xl flex items-center justify-center text-text-primary flex-shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                <div className="flex flex-col md:flex-row md:items-start gap-8">
+                  <div className="w-14 h-14 bg-bg-page rounded-xl flex items-center justify-center text-text-primary flex-shrink-0 group-hover:bg-text-primary group-hover:text-bg-page transition-colors">
                     <Newspaper size={24} />
                   </div>
                   <div className="flex-grow">
                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary px-2 py-0.5 border border-border rounded">{item.source}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary px-2 py-0.5 border border-border rounded">{item.source || 'Premium Source'}</span>
                      </div>
                      <h3 className="text-xl font-serif font-bold mb-3 leading-snug">{item.title}</h3>
                      <p className="text-text-secondary text-[14px] leading-relaxed font-serif mb-6 group-hover:text-text-primary transition-colors">
@@ -252,23 +135,28 @@ export default function Newsletter() {
                        href={item.url} 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-text-primary border-b border-black pb-0.5 hover:gap-4 transition-all"
+                       className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-text-primary border-b border-text-primary pb-0.5 hover:gap-4 transition-all"
                      >
-                       Explore primary source <ExternalLink size={10} />
+                       Read full report <ExternalLink size={10} />
                      </a>
                   </div>
                 </div>
               </motion.div>
             ))}
+            {(!news[activeCategory] || news[activeCategory].length === 0) && !loadingCategory && (
+              <div className="py-20 text-center border border-dashed border-border rounded-xl">
+                <p className="text-text-secondary font-serif italic text-sm">No curated news items available in this category yet.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      <div className="p-12 bg-white border border-border rounded-xl text-center">
+      <div className="p-12 bg-surface border border-border rounded-xl text-center">
          <Zap size={32} className="mx-auto mb-6 text-text-primary" />
-         <h2 className="text-2xl font-serif font-bold mb-4">Industry & Tech Focus</h2>
+         <h2 className="text-2xl font-serif font-bold mb-4">Tactical Intelligence</h2>
          <p className="text-text-secondary max-w-xl mx-auto font-serif">
-           Subscribers also receive tactical updates on emerging technologies and industry-specific shifts that don't always make the front page.
+           Deciphering emerging technologies and industry-specific shifts that truly matter.
          </p>
       </div>
     </div>

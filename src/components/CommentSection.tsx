@@ -79,20 +79,20 @@ export default function CommentSection({ blogId }: CommentSectionProps) {
         <h2 className="text-2xl font-display font-bold">Comments ({comments.length})</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="mb-12 bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm border-shadow-orange-100/20">
-        <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="mb-12 bg-surface rounded-3xl p-6 md:p-8 border border-border shadow-sm">
+        <h3 className="text-lg font-bold mb-6 flex items-center gap-2 text-text-primary">
            {replyTo ? `Replying to ${comments.find(c => c.id === replyTo)?.name}` : 'Share your thoughts'}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Your Name</label>
+            <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Your Name</label>
             <input 
               type="text" 
               required
               placeholder="John Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-500 transition-all text-sm outline-none"
+              className="w-full px-4 py-3 bg-bg-page border border-border rounded-xl focus:ring-2 focus:ring-text-primary transition-all text-sm outline-none text-text-primary placeholder:text-text-secondary/50"
             />
           </div>
           {replyTo && (
@@ -108,19 +108,19 @@ export default function CommentSection({ blogId }: CommentSectionProps) {
           )}
         </div>
         <div className="space-y-1.5 mb-6">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Your Comment</label>
+          <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Your Comment</label>
           <textarea 
             required
             rows={4}
             placeholder="Write something thoughtful..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-500 transition-all text-sm outline-none resize-none"
+            className="w-full px-4 py-3 bg-bg-page border border-border rounded-xl focus:ring-2 focus:ring-text-primary transition-all text-sm outline-none resize-none text-text-primary placeholder:text-text-secondary/50"
           />
         </div>
         <button 
           disabled={isSubmitting}
-          className="w-full md:w-auto px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-all disabled:opacity-50"
+          className="w-full md:w-auto px-8 py-3.5 bg-text-primary text-bg-page rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50"
         >
           {isSubmitting ? 'Posting...' : 'Post Comment'}
           <Send size={16} />
@@ -159,30 +159,30 @@ function CommentItem({ comment, onReply, replies }: { comment: Comment, onReply:
       className="group"
     >
       <div className="flex gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0 border border-gray-200">
+        <div className="w-12 h-12 rounded-2xl bg-surface flex items-center justify-center text-text-secondary flex-shrink-0 border border-border">
           <User size={24} />
         </div>
         <div className="flex-grow">
           <div className="flex items-center gap-3 mb-1">
-            <span className="font-bold text-gray-900">{comment.name}</span>
-            <span className="text-xs text-gray-400">
+            <span className="font-bold text-text-primary">{comment.name}</span>
+            <span className="text-xs text-text-secondary">
                {comment.createdAt ? formatDistanceToNow(comment.createdAt.toMillis ? comment.createdAt.toMillis() : comment.createdAt.seconds * 1000) : 'Just now'} ago
             </span>
           </div>
-          <p className="text-gray-600 leading-relaxed mb-3 text-sm">
+          <p className="text-text-secondary leading-relaxed mb-3 text-sm">
             {comment.content}
           </p>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => onReply(comment.id)}
-              className="text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors bg-orange-50 px-3 py-1.5 rounded-lg"
+              className="text-xs font-bold text-text-primary hover:opacity-80 transition-colors bg-surface px-3 py-1.5 rounded-lg border border-border"
             >
               Reply
             </button>
             {replies.length > 0 && (
                <button 
                  onClick={() => setShowReplies(!showReplies)}
-                 className="text-xs font-bold text-gray-500 flex items-center gap-1 hover:text-gray-700"
+                 className="text-xs font-bold text-text-secondary flex items-center gap-1 hover:text-text-primary"
                >
                  {showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                  {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}

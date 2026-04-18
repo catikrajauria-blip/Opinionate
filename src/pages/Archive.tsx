@@ -63,11 +63,11 @@ export default function Archive() {
               <select 
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="bg-transparent text-sm font-bold uppercase tracking-widest outline-none cursor-pointer border-b border-gray-200 focus:border-black transition-colors"
+                className="bg-transparent text-sm font-bold uppercase tracking-widest outline-none cursor-pointer border-b border-border focus:border-text-primary transition-colors text-text-primary"
               >
                 <option value="all">All Months</option>
                 {months.map(m => (
-                  <option key={m} value={m}>{new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</option>
+                  <option key={m} value={m} className="bg-bg-page">{new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</option>
                 ))}
               </select>
             </div>
@@ -114,16 +114,16 @@ export default function Archive() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="group bg-white rounded-3xl border border-gray-100 p-6 flex flex-col md:flex-row gap-8 hover:shadow-xl transition-all"
+                className="group bg-surface rounded-xl border border-border p-6 flex flex-col md:flex-row gap-8 hover:border-text-primary transition-all shadow-sm"
               >
-                <div className="w-full md:w-64 h-40 rounded-2xl overflow-hidden flex-shrink-0">
+                <div className="w-full md:w-64 h-40 rounded-lg overflow-hidden flex-shrink-0 border border-border">
                   <img src={blog.image || `https://picsum.photos/seed/${blog.slug}/800/500`} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
                 </div>
                 <div className="flex flex-col justify-center gap-3">
-                   <span className="text-[10px] font-bold uppercase tracking-widest text-orange-600">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                   <h3 className="text-2xl font-display font-bold group-hover:text-orange-600 transition-colors">{blog.title}</h3>
-                   <p className="text-gray-500 text-sm line-clamp-2 max-w-2xl">{blog.summary}</p>
-                   <Link to={`/blog/${blog.slug}`} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-900 group/link">
+                   <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                   <h3 className="text-2xl font-serif font-bold group-hover:text-text-secondary transition-colors leading-tight">{blog.title}</h3>
+                   <p className="text-text-secondary font-serif text-sm line-clamp-2 max-w-2xl">{blog.summary}</p>
+                   <Link to={`/blog/${blog.slug}`} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-text-primary group/link border-b border-text-primary pb-0.5 self-start">
                       Read Opinion <ChevronRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
                    </Link>
                 </div>
@@ -132,10 +132,10 @@ export default function Archive() {
           ))}
         </div>
       ) : (
-        <div className="py-20 text-center bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-           <Search size={48} className="mx-auto text-gray-300 mb-4" />
-           <h3 className="text-xl font-bold text-gray-400">No opinions found</h3>
-           <p className="text-gray-500">Try adjusting your search or filters.</p>
+        <div className="py-20 text-center bg-surface rounded-xl border border-border">
+           <Search size={48} className="mx-auto text-text-secondary/30 mb-4" />
+           <h3 className="text-xl font-bold text-text-secondary font-serif italic">No opinions found</h3>
+           <p className="text-text-secondary text-sm font-serif">Try adjusting your search or filters.</p>
         </div>
       )}
     </div>

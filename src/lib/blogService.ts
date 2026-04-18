@@ -25,6 +25,7 @@ const MESSAGES_COL = 'messages';
 const RATINGS_COL = 'ratings';
 const LIKES_COL = 'likes';
 const VIEWS_COL = 'views';
+const NEWS_COL = 'news';
 
 export const blogService = {
   // Blog operations
@@ -177,5 +178,29 @@ export const blogService = {
       ...message,
       createdAt: serverTimestamp()
     });
+  },
+
+  // News operations
+  async getNewsByCategory(category: string, limitCount = 10) {
+    const q = query(
+      collection(db, NEWS_COL), 
+      where('category', '==', category),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  },
+
+  async addNews(newsItem: any) {
+    return await addDoc(collection(db, NEWS_COL), {
+      ...newsItem,
+      createdAt: serverTimestamp()
+    });
+  },
+
+  async deleteNews(newsId: string) {
+    const { deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, NEWS_COL, newsId));
   }
 };

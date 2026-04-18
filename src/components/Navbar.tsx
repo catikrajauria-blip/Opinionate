@@ -34,7 +34,7 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-border bg-white py-4'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-border bg-bg-page py-4'
       )}
     >
       <div className="max-w-7xl mx-auto px-10">
@@ -83,13 +83,13 @@ export default function Navbar() {
           <div className="md:hidden flex items-center gap-4">
             <button 
               onClick={toggleDarkMode}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-surface rounded-full transition-colors"
             >
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-surface rounded-full transition-colors"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -104,7 +104,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-b border-gray-100 overflow-hidden"
+            className="md:hidden bg-bg-page border-b border-border overflow-hidden"
           >
             <div className="px-4 pt-2 pb-6 space-y-1">
               {navLinks.map((link) => (
@@ -116,19 +116,19 @@ export default function Navbar() {
                     cn(
                       'block px-3 py-4 text-base font-medium rounded-lg transition-colors',
                       isActive
-                        ? 'bg-orange-50 text-orange-600'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-orange-500'
+                        ? 'bg-surface text-text-primary'
+                        : 'text-text-secondary hover:bg-surface hover:text-text-primary'
                     )
                   }
                 >
                   {link.name}
                 </NavLink>
               ))}
-              <div className="pt-4 border-t border-gray-100">
+              <div className="pt-4 border-t border-border">
                 <Link
                   to="/admin"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-4 text-base font-medium text-gray-600 hover:bg-gray-50 rounded-lg"
+                  className="flex items-center gap-3 px-3 py-4 text-base font-medium text-text-secondary hover:bg-surface rounded-lg"
                 >
                   <User size={20} />
                   Admin Panel

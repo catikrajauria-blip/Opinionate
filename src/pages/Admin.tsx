@@ -11,19 +11,27 @@ export default function Admin() {
   const [user, setUser] = useState<User | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [subscribers, setSubscribers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'posts' | 'subs'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'subs' | 'news'>('posts');
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Form State
+  // Post Form State
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('Kartik Rajauria');
   const [imageUrl, setImageUrl] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // News Form State
+  const [newsTitle, setNewsTitle] = useState('');
+  const [newsUrl, setNewsUrl] = useState('');
+  const [newsSummary, setNewsSummary] = useState('');
+  const [newsCategory, setNewsCategory] = useState('finance');
+  const [newsSource, setNewsSource] = useState('');
+  const [recentNews, setRecentNews] = useState<any[]>([]);
 
   const isAdmin = user?.email === 'catikrajauria@gmail.com';
 
@@ -38,8 +46,9 @@ export default function Admin() {
   useEffect(() => {
     if (user && isAdmin) {
       loadSubscribers();
+      loadRecentNews();
     }
-  }, [user, isAdmin]);
+  }, [user, isAdmin, activeTab, newsCategory]);
 
   const loadSubscribers = async () => {
     try {
@@ -47,6 +56,16 @@ export default function Admin() {
       setSubscribers(subs);
     } catch (err) {
       console.error('Error loading subs:', err);
+    }
+  };
+
+  const loadRecentNews = async () => {
+    try {
+      // Just load finance by default for the list
+      const n = await blogService.getNewsByCategory(newsCategory, 5);
+      setRecentNews(n);
+    } catch (err) {
+      console.error('Error loading news:', err);
     }
   };
 
@@ -131,6 +150,44 @@ export default function Admin() {
     }
   };
 
+  const handleCreateNews = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAdmin) return;
+    
+    setSubmitting(true);
+    try {
+      await blogService.addNews({
+        title: newsTitle,
+        url: newsUrl,
+        summary: newsSummary,
+        category: newsCategory,
+        source: newsSource
+      });
+      setSuccess(true);
+      setNewsTitle('');
+      setNewsUrl('');
+      setNewsSummary('');
+      setNewsSource('');
+      loadRecentNews();
+    } catch (error) {
+      console.error('Error creating news:', error);
+      alert('Failed to add news');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  const handleDeleteNews = async (id: string) => {
+    if (!window.confirm('Delete this news item?')) return;
+    try {
+      await blogService.deleteNews(id);
+      loadRecentNews();
+    } catch (err) {
+      console.error('Error deleting news:', err);
+    }
+  };
+
   if (loading) {
     return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div></div>;
   }
@@ -197,6 +254,12 @@ export default function Admin() {
               className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'subs' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
               Subscribers ({subscribers.length})
+            </button>
+            <button 
+              onClick={() => setActiveTab('news')}
+              className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+            >
+              Newsletter News
             </button>
           </nav>
         </div>
@@ -298,6 +361,100 @@ export default function Admin() {
                  {submitting ? 'Publishing...' : 'Publish Daily Opinion'}
                </button>
             </form>
+          ) : activeTab === 'news' ? (
+            <div className="space-y-12">
+              <form onSubmit={handleCreateNews} className="bg-white dark:bg-zinc-900 p-10 rounded-xl border border-border space-y-8">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-serif font-bold text-text-primary">
+                        Add Curated News
+                    </h2>
+                    {success && activeTab === 'news' && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-green-600 font-bold text-xs flex items-center gap-2">
+                           <CheckCircle2 size={14} /> Item Added.
+                        </motion.div>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Headline</label>
+                      <input 
+                        type="text" required value={newsTitle} onChange={(e) => setNewsTitle(e.target.value)}
+                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        placeholder="Major shift in Market dynamics..."
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">News Category</label>
+                      <select 
+                        value={newsCategory} onChange={(e) => setNewsCategory(e.target.value)}
+                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                      >
+                        <option value="finance">Finance & Markets</option>
+                        <option value="politics">Indian Politics</option>
+                        <option value="geopolitics">Geopolitics</option>
+                        <option value="tech">Industry & Tech</option>
+                      </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1 flex items-center gap-2"><LinkIcon size={12} /> News URL</label>
+                      <input 
+                        type="url" required value={newsUrl} onChange={(e) => setNewsUrl(e.target.value)}
+                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        placeholder="https://..."
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">News Source</label>
+                      <input 
+                        type="text" required value={newsSource} onChange={(e) => setNewsSource(e.target.value)}
+                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        placeholder="Financial Times / Mint..."
+                      />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Analytical Summary</label>
+                    <textarea 
+                      required value={newsSummary} onChange={(e) => setNewsSummary(e.target.value)} rows={4}
+                      className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium resize-none text-text-primary"
+                      placeholder="Brief summary for subscribers..."
+                    />
+                </div>
+
+                <button 
+                  disabled={submitting}
+                  className="btn-minimal-primary w-full py-5 text-lg"
+                >
+                  {submitting ? 'Adding...' : 'Add News Item'}
+                </button>
+              </form>
+
+              <div className="bg-surface p-10 rounded-xl border border-border">
+                <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Recently Added ({newsCategory})</h2>
+                <div className="space-y-4">
+                  {recentNews.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between p-4 border border-border rounded-lg group bg-white dark:bg-zinc-800">
+                      <div>
+                        <p className="font-bold text-sm text-text-primary">{item.title}</p>
+                        <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">{item.source}</p>
+                      </div>
+                      <button 
+                        onClick={() => handleDeleteNews(item.id)}
+                        className="text-red-400 hover:text-red-600 transition-colors p-2"
+                      >
+                        <FileText size={16} />
+                      </button>
+                    </div>
+                  ))}
+                  {recentNews.length === 0 && <p className="text-text-secondary italic font-serif py-4">No news items in this category.</p>}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="bg-white p-10 rounded-xl border border-border">
                <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Subscriber Directory</h2>

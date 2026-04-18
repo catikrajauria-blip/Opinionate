@@ -71,11 +71,11 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
                 "transition-all",
                 (hoverRating || rating || blog.ratingAverage) >= star
                   ? "text-yellow-400 fill-yellow-400"
-                  : "text-gray-300"
+                  : "text-text-secondary/30"
               )}
             />
             {!hasRated && hoverRating === star && (
-               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] font-bold rounded pointer-events-none whitespace-nowrap">
+               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-text-primary text-bg-page text-[10px] font-bold rounded pointer-events-none whitespace-nowrap">
                   {getTip(star)}
                </div>
             )}
@@ -86,11 +86,11 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
       <div className="flex items-center gap-2 text-xs font-bold">
          <span className={cn(
            "px-2 py-0.5 rounded",
-           hasRated ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+           hasRated ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"
          )}>
             {blog.ratingAverage.toFixed(1)} / 5
          </span>
-         <span className="text-gray-400">({blog.ratingCount} Ratings)</span>
+         <span className="text-text-secondary">({blog.ratingCount} Ratings)</span>
       </div>
 
       <AnimatePresence>

@@ -11,12 +11,6 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden lg:flex flex-col gap-10 bg-surface p-10 border-l border-border min-h-screen">
-      <div className="bg-text-primary text-white p-6 rounded-xl shadow-xl">
-        <h3 className="text-sm font-bold mb-2">Get Daily Insight</h3>
-        <p className="text-[11px] text-gray-400 mb-6">No spam. Only high-quality daily news opinions.</p>
-        <NewsletterBox variant="dark" />
-      </div>
-
       <div className="sidebar-section">
         <h4 className="text-[12px] uppercase tracking-widest text-text-secondary font-bold mb-6 flex justify-between items-center">
           Trending Today
