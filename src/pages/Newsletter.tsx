@@ -3,31 +3,52 @@ import { motion } from 'motion/react';
 import NewsletterBox from '../components/NewsletterBox';
 import { Mail, Globe, TrendingUp, Landmark, Zap, Newspaper, Calendar, ExternalLink, Loader2 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
+import { cn } from '../lib/utils';
 
 interface NewsItem {
   title: string;
   source: string;
   url: string;
   category: string;
+  summary: string;
 }
 
+const CATEGORIES = [
+  { id: 'finance', name: 'Finance & Markets', icon: <TrendingUp size={14} /> },
+  { id: 'politics', name: 'Indian Politics', icon: <Landmark size={14} /> },
+  { id: 'geopolitics', name: 'Geopolitics', icon: <Globe size={14} /> },
+  { id: 'tech', name: 'Industry & Tech', icon: <Zap size={14} /> }
+];
+
 export default function Newsletter() {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loadingNews, setLoadingNews] = useState(true);
+  const [news, setNews] = useState<Record<string, NewsItem[]>>({});
+  const [activeCategory, setActiveCategory] = useState('finance');
+  const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDailyNews();
-  }, []);
+    if (!news[activeCategory]) {
+      fetchCategoryNews(activeCategory);
+    }
+  }, [activeCategory]);
 
-  const fetchDailyNews = async () => {
+  const fetchCategoryNews = async (categoryId: string) => {
+    setLoadingCategory(categoryId);
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+      const categoryName = CATEGORIES.find(c => c.id === categoryId)?.name;
 
       const prompt = `
-        Fetch and summarize the top 5 most important news highlights for today (April 18, 2026).
-        Focus on: Finance, Markets, Indian Politics, and Geopolitics.
-        Provide the response as a valid JSON array of objects with keys: title, source, url, category.
-        Do not include markdown code blocks. Just the raw JSON array.
+        Fetch the top 5 most important current news highlights for the category: "${categoryName}".
+        Target premium sources like BBC, TimesNow, Mint, Financial Express, Financial Times, and Economic Times.
+        For each news item, provide:
+        1. A concise headline.
+        2. The primary source name.
+        3. A brief 2-sentence analytical summary.
+        4. The actual direct URL to the full news report.
+        
+        Return the result as a strict JSON array of objects with keys: title, source, summary, url, category.
+        The category field should always be "${categoryId}".
+        Do not include markdown code blocks.
       `;
 
       const response = await ai.models.generateContent({
@@ -41,11 +62,11 @@ export default function Newsletter() {
 
       const text = response.text;
       const parsedNews = JSON.parse(text);
-      setNews(parsedNews);
+      setNews(prev => ({ ...prev, [categoryId]: parsedNews }));
     } catch (err) {
-      console.error("News fetch error:", err);
+      console.error(`Error fetching ${categoryId} news:`, err);
     } finally {
-      setLoadingNews(false);
+      setLoadingCategory(null);
     }
   };
 
@@ -109,48 +130,70 @@ export default function Newsletter() {
       </div>
 
       <div className="mb-20">
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
+            <div className="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-full border border-border mb-4">
+               <Calendar size={12} /> {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </div>
             <h2 className="text-3xl font-serif font-bold mb-2">Today's Pulse</h2>
-            <p className="text-text-secondary font-serif italic">Real-time headlines analyzed for the Morning Brief.</p>
+            <p className="text-text-secondary font-serif italic max-w-sm">Deep headlines from premium sources analyzed for you.</p>
           </div>
-          <div className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-full border border-border">
-             <Calendar size={12} /> {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all border",
+                  activeCategory === cat.id 
+                    ? "bg-black text-white border-black" 
+                    : "bg-white text-text-secondary border-border hover:border-black"
+                )}
+              >
+                {cat.icon}
+                {cat.name}
+              </button>
+            ))}
           </div>
         </div>
 
-        {loadingNews ? (
-          <div className="py-20 flex flex-col items-center justify-center text-text-secondary">
+        {loadingCategory === activeCategory ? (
+          <div className="py-24 flex flex-col items-center justify-center text-text-secondary bg-surface rounded-xl border border-border">
              <Loader2 size={32} className="animate-spin mb-4" />
-             <p className="font-serif italic">Scanning global updates...</p>
+             <p className="font-serif italic text-sm">Aggregating insights from global sources...</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {news.map((item, idx) => (
+          <div className="space-y-6">
+            {(news[activeCategory] || []).map((item, idx) => (
               <motion.div 
                 key={idx}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="group p-6 bg-white border border-border rounded-xl hover:border-black transition-all flex items-start gap-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="group p-8 bg-white border border-border rounded-xl hover:border-black transition-all"
               >
-                <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center text-text-primary flex-shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                  <Newspaper size={20} />
-                </div>
-                <div className="flex-grow">
-                   <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-surface px-2 py-0.5 rounded border border-border">{item.category}</span>
-                      <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{item.source}</span>
-                   </div>
-                   <h3 className="text-lg font-serif font-bold group-hover:underline underline-offset-4 decoration-border mb-3 leading-snug">{item.title}</h3>
-                   <a 
-                     href={item.url} 
-                     target="_blank" 
-                     rel="noopener noreferrer"
-                     className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary transition-colors"
-                   >
-                     Read full report <ExternalLink size={10} />
-                   </a>
+                <div className="flex items-start gap-8">
+                  <div className="w-14 h-14 bg-surface rounded-xl flex items-center justify-center text-text-primary flex-shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                    <Newspaper size={24} />
+                  </div>
+                  <div className="flex-grow">
+                     <div className="flex items-center justify-between mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary px-2 py-0.5 border border-border rounded">{item.source}</span>
+                     </div>
+                     <h3 className="text-xl font-serif font-bold mb-3 leading-snug">{item.title}</h3>
+                     <p className="text-text-secondary text-[14px] leading-relaxed font-serif mb-6 group-hover:text-text-primary transition-colors">
+                        {item.summary}
+                     </p>
+                     <a 
+                       href={item.url} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-text-primary border-b border-black pb-0.5 hover:gap-4 transition-all"
+                     >
+                       Explore primary source <ExternalLink size={10} />
+                     </a>
+                  </div>
                 </div>
               </motion.div>
             ))}
