@@ -112,8 +112,11 @@ export const blogService = {
       if (!blogSnap.exists()) throw new Error('Blog not found');
       
       const blogData = blogSnap.data() as Blog;
-      const newRatingCount = blogData.ratingCount + 1;
-      const newAverage = ((blogData.ratingAverage * blogData.ratingCount) + score) / newRatingCount;
+      const currentCount = blogData.ratingCount || 0;
+      const currentAverage = blogData.ratingAverage || 0;
+      
+      const newRatingCount = currentCount + 1;
+      const newAverage = ((currentAverage * currentCount) + score) / newRatingCount;
       
       transaction.set(ratingRef, { blogId, userId, score, createdAt: serverTimestamp() });
       transaction.update(blogRef, {
@@ -206,31 +209,53 @@ export const blogService = {
   },
 
   async getGlobalRecentComments(limitCount = 5) {
-    const q = query(
-      collectionGroup(db, COMMENTS_COL),
-      orderBy('createdAt', 'desc'),
-      limit(limitCount)
-    );
-    const snapshot = await getDocs(q);
-    
-    // We need to fetch the parent blog slug to make links work
-    const results = await Promise.all(snapshot.docs.map(async (commentDoc) => {
-      const data = commentDoc.data();
-      const blogId = data.blogId;
+    try {
+      const q = query(
+        collectionGroup(db, COMMENTS_COL),
+        orderBy('createdAt', 'desc'),
+        limit(limitCount)
+      );
+      const snapshot = await getDocs(q);
       
-      // Fetch minimum blog info for the link
-      const blogRef = doc(db, BLOGS_COL, blogId);
-      const blogSnap = await getDoc(blogRef);
-      const blogData = blogSnap.data();
+      const results = await Promise.all(snapshot.docs.map(async (commentDoc) => {
+        const data = commentDoc.data();
+        const blogId = data.blogId;
+        const blogRef = doc(db, BLOGS_COL, blogId);
+        const blogSnap = await getDoc(blogRef);
+        const blogData = blogSnap.data();
+        
+        return {
+          id: commentDoc.id,
+          ...data,
+          blogSlug: blogData?.slug || '',
+          blogTitle: blogData?.title || 'Unknown Blog'
+        } as any;
+      }));
+      return results;
+    } catch (err: any) {
+      console.warn('CollectionGroup query failed (possibly missing index). Falling back to multi-blog fetch.', err);
       
-      return {
-        id: commentDoc.id,
-        ...data,
-        blogSlug: blogData?.slug || '',
-        blogTitle: blogData?.title || 'Unknown Blog'
-      } as any;
-    }));
-
-    return results;
+      // Fallback: Fetch latest blogs and their comments
+      // This is less efficient but works without manual indexing
+      const blogsSnapshot = await getDocs(query(collection(db, BLOGS_COL), orderBy('date', 'desc'), limit(10)));
+      const allComments: any[] = [];
+      
+      await Promise.all(blogsSnapshot.docs.map(async (blogDoc) => {
+        const commentsSnap = await getDocs(query(collection(db, BLOGS_COL, blogDoc.id, COMMENTS_COL), orderBy('createdAt', 'desc'), limit(3)));
+        commentsSnap.forEach(cDoc => {
+          allComments.push({
+            id: cDoc.id,
+            ...cDoc.data(),
+            blogSlug: blogDoc.data().slug,
+            blogTitle: blogDoc.data().title
+          });
+        });
+      }));
+      
+      // Sort and take top few
+      return allComments
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+        .slice(0, limitCount);
+    }
   }
 };
