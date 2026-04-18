@@ -152,13 +152,6 @@ export default function Newsletter() {
         )}
       </div>
 
-      <div className="p-12 bg-surface border border-border rounded-xl text-center">
-         <Zap size={32} className="mx-auto mb-6 text-text-primary" />
-         <h2 className="text-2xl font-serif font-bold mb-4">Tactical Intelligence</h2>
-         <p className="text-text-secondary max-w-xl mx-auto font-serif">
-           Deciphering emerging technologies and industry-specific shifts that truly matter.
-         </p>
-      </div>
     </div>
   );
 }

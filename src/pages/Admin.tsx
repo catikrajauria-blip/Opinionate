@@ -143,9 +143,9 @@ export default function Admin() {
       setSummary('');
       setContent('');
       setImageUrl('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating blog:', error);
-      alert('Failed to create blog');
+      alert(`Failed to create blog: ${error.message || 'Unknown error'}`);
     } finally {
       setSubmitting(false);
       setTimeout(() => setSuccess(false), 3000);
@@ -171,9 +171,9 @@ export default function Admin() {
       setNewsSummary('');
       setNewsSource('');
       loadRecentNews();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating news:', error);
-      alert('Failed to add news');
+      alert(`Failed to add news: ${error.message || 'Unknown error'}`);
     } finally {
       setSubmitting(false);
       setTimeout(() => setSuccess(false), 3000);
