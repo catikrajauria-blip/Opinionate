@@ -87,9 +87,16 @@ export default function Admin() {
       setTitle(data.title || title);
       setSummary(data.summary || summary);
       setContent(data.content || content);
-    } catch (err) {
-      console.error('AI Generation Error:', err);
-      alert('Failed to generate AI content');
+    } catch (err: any) {
+      console.error('AI Generation Error Detail:', err);
+      const msg = err.message || "Unknown error";
+      if (msg.includes("API key not valid")) {
+        alert("CRITICAL: Your API Key is invalid. Please check your Vercel settings.");
+      } else if (msg.includes("quota")) {
+        alert("Quota exceeded for the Gemini API.");
+      } else {
+        alert(`Failed to generate AI content: ${msg}`);
+      }
     } finally {
       setAiLoading(false);
     }

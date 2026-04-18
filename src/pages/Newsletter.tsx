@@ -73,11 +73,19 @@ export default function Newsletter() {
       setNews(prev => ({ ...prev, [categoryId]: parsedNews }));
     } catch (err: any) {
       console.error(`Error fetching ${categoryId} news:`, err);
+      let errorMsg = "An unexpected error occurred.";
+      
       if (err.message === "API_KEY_MISSING") {
-        setError("Gemini API Key is missing. Please add GEMINI_API_KEY to your deployment environment variables and redeploy.");
+        errorMsg = "Gemini API Key is missing. Please add GEMINI_API_KEY to your Vercel Environment Variables.";
+      } else if (err.status === 403 || (err.message && err.message.includes("API key not valid"))) {
+        errorMsg = "The provided API Key is invalid. Please double-check your key in Google AI Studio.";
+      } else if (err.message && err.message.includes("quota")) {
+        errorMsg = "API quota exceeded. Please wait a moment or check your billing status.";
       } else {
-        setError("Temporary connection issue while fetching news. Please try again later.");
+        errorMsg = err.message || "Temporary connection issue. This can happen if the AI model is busy or searching the web takes too long.";
       }
+      
+      setError(errorMsg);
     } finally {
       setLoadingCategory(null);
     }
