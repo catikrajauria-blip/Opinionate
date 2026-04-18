@@ -46,15 +46,6 @@ export default function Footer() {
              </div>
           </div>
           
-          <div>
-             <h4 className="text-[12px] uppercase tracking-widest font-bold text-text-primary mb-6">Legal</h4>
-             <ul className="space-y-4">
-               <li><Link to="/about" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">About</Link></li>
-               <li><Link to="/contact" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Contact</Link></li>
-               <li><Link to="/admin" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Management</Link></li>
-               <li><Link to="/privacy" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Privacy</Link></li>
-             </ul>
-          </div>
         </div>
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold uppercase tracking-widest text-text-secondary">
