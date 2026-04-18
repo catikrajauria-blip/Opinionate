@@ -24,6 +24,7 @@ export default function Newsletter() {
   const [news, setNews] = useState<Record<string, NewsItem[]>>({});
   const [activeCategory, setActiveCategory] = useState('finance');
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!news[activeCategory]) {
@@ -32,9 +33,16 @@ export default function Newsletter() {
   }, [activeCategory]);
 
   const fetchCategoryNews = async (categoryId: string) => {
+    setError(null);
     setLoadingCategory(categoryId);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+      const apiKey = process.env.GEMINI_API_KEY;
+      
+      if (!apiKey || apiKey === "") {
+        throw new Error("API_KEY_MISSING");
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       const categoryName = CATEGORIES.find(c => c.id === categoryId)?.name;
 
       const prompt = `
@@ -63,8 +71,13 @@ export default function Newsletter() {
       const text = response.text;
       const parsedNews = JSON.parse(text);
       setNews(prev => ({ ...prev, [categoryId]: parsedNews }));
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error fetching ${categoryId} news:`, err);
+      if (err.message === "API_KEY_MISSING") {
+        setError("Gemini API Key is missing. Please add GEMINI_API_KEY to your deployment environment variables and redeploy.");
+      } else {
+        setError("Temporary connection issue while fetching news. Please try again later.");
+      }
     } finally {
       setLoadingCategory(null);
     }
@@ -162,6 +175,22 @@ export default function Newsletter() {
           <div className="py-24 flex flex-col items-center justify-center text-text-secondary bg-surface rounded-xl border border-border">
              <Loader2 size={32} className="animate-spin mb-4" />
              <p className="font-serif italic text-sm">Aggregating insights from global sources...</p>
+          </div>
+        ) : error ? (
+          <div className="py-20 flex flex-col items-center justify-center text-center px-10 bg-red-50 rounded-xl border border-red-100">
+             <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6">
+                <Mail size={24} />
+             </div>
+             <h3 className="text-lg font-serif font-bold text-red-900 mb-2">Notice</h3>
+             <p className="text-red-700 font-serif max-w-md mx-auto text-sm leading-relaxed mb-8">
+                {error}
+             </p>
+             <button 
+               onClick={() => fetchCategoryNews(activeCategory)}
+               className="btn-minimal px-8 py-2 text-red-700 border-red-200 hover:bg-red-100"
+             >
+                Try refreshing
+             </button>
           </div>
         ) : (
           <div className="space-y-6">
