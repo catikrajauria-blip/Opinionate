@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { blogService } from '../lib/blogService';
 import { auth, signInWithGoogle } from '../lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
