@@ -45,15 +45,15 @@
 }
 
 .blog-content {
-  @apply prose prose-neutral max-w-none font-serif text-lg leading-relaxed;
+  @apply prose prose-neutral dark:prose-invert max-w-none font-serif text-lg leading-relaxed;
 }
 
 .badge-minimal {
-  @apply inline-block uppercase text-[10px] tracking-[1px] bg-gray-100 px-2 py-1 rounded font-bold mb-4 text-text-secondary;
+  @apply inline-block uppercase text-[10px] tracking-[1px] bg-surface px-2 py-1 rounded font-bold mb-4 text-text-secondary border border-border;
 }
 
 .btn-minimal {
-  @apply flex items-center gap-2 px-4 py-2 border border-border rounded-lg bg-white text-[13px] font-medium transition-colors hover:bg-gray-50;
+  @apply flex items-center gap-2 px-4 py-2 border border-border rounded-lg bg-surface text-text-primary text-[13px] font-medium transition-colors hover:bg-bg-page hover:border-text-primary;
 }
 
 .btn-minimal-primary {

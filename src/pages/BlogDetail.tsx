@@ -133,7 +133,7 @@ export default function BlogDetail() {
                 onClick={toggleSave}
                 className={cn(
                   "btn-minimal",
-                  isSaved && "bg-gray-100 text-black border-gray-300"
+                  isSaved && "bg-text-primary text-bg-page border-text-primary"
                 )}
               >
                 {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}

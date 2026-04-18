@@ -74,7 +74,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-surface rounded-3xl p-12 border border-border"
         >
-          <h2 className="text-3xl font-serif font-bold text-text-secondary mb-4 italic text-opacity-30">Today's opinion coming soon</h2>
+          <h2 className="text-3xl font-serif font-bold text-text-secondary mb-4 italic opacity-30">Today's opinion coming soon</h2>
           <p className="text-text-secondary mb-8 font-serif">Check back later or browse our archive for previous deep dives.</p>
         </motion.div>
       </div>
@@ -139,7 +139,7 @@ export default function Home() {
                 onClick={toggleSave}
                 className={cn(
                   "btn-minimal",
-                  isSaved && "bg-gray-100 text-black border-gray-300"
+                  isSaved && "bg-text-primary text-bg-page border-text-primary"
                 )}
               >
                 {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}

@@ -32,7 +32,7 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
   return (
     <div className={cn(
       "w-full",
-      variant === 'dark' ? "text-white" : "text-gray-900"
+      variant === 'dark' ? "text-bg-page" : "text-text-primary"
     )}>
       <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
         <input 
@@ -45,8 +45,8 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
           className={cn(
             "w-full px-4 py-3 rounded-lg outline-none border transition-all text-[13px] font-medium",
             variant === 'dark' 
-              ? "bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/20"
-              : "bg-white border-border focus:border-black text-text-primary"
+              ? "bg-text-primary/10 border-text-primary/20 text-text-primary placeholder:text-text-secondary focus:bg-text-primary/20"
+              : "bg-surface border-border focus:border-text-primary text-text-primary"
           )}
         />
         <button 
@@ -54,8 +54,8 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
           className={cn(
             "w-full px-4 py-3 rounded-lg font-bold text-[13px] transition-all flex items-center justify-center gap-2",
             variant === 'dark'
-              ? "bg-white text-black hover:bg-gray-100"
-              : "bg-accent text-white hover:bg-black"
+              ? "bg-text-primary text-bg-page hover:opacity-90"
+              : "bg-text-primary text-bg-page hover:opacity-90"
           )}
         >
           {status === 'loading' ? 'Joining...' : 'Subscribe Now'}

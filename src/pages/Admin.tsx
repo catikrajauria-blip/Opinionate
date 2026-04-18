@@ -129,15 +129,20 @@ export default function Admin() {
     
     setSubmitting(true);
     try {
-      await blogService.createBlog({
+      const blogData: any = {
         title,
         date,
         summary,
         content,
         author,
-        image: imageUrl || undefined,
         slug: generateSlug(title)
-      });
+      };
+      
+      if (imageUrl) {
+        blogData.image = imageUrl;
+      }
+
+      await blogService.createBlog(blogData);
       setSuccess(true);
       setTitle('');
       setSummary('');
@@ -347,18 +352,18 @@ export default function Admin() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Blog Title</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Blog Title</label>
                     <input 
                        type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
-                       className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium"
+                       className="w-full bg-surface border border-border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/10 focus:bg-bg-page transition-all font-medium text-text-primary"
                        placeholder="The Future of AI Regulation..."
                     />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Publish Date</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Publish Date</label>
                     <input 
                        type="date" required value={date} onChange={(e) => setDate(e.target.value)}
-                       className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium"
+                       className="w-full bg-surface border border-border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/10 focus:bg-bg-page transition-all font-medium text-text-primary"
                     />
                  </div>
               </div>

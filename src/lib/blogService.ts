@@ -13,7 +13,8 @@ import {
   increment, 
   Timestamp,
   serverTimestamp,
-  runTransaction
+  runTransaction,
+  collectionGroup
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Blog, Comment, Subscriber, ContactMessage, Rating, Like, View } from '../types';
@@ -202,5 +203,34 @@ export const blogService = {
   async deleteNews(newsId: string) {
     const { deleteDoc } = await import('firebase/firestore');
     await deleteDoc(doc(db, NEWS_COL, newsId));
+  },
+
+  async getGlobalRecentComments(limitCount = 5) {
+    const q = query(
+      collectionGroup(db, COMMENTS_COL),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    
+    // We need to fetch the parent blog slug to make links work
+    const results = await Promise.all(snapshot.docs.map(async (commentDoc) => {
+      const data = commentDoc.data();
+      const blogId = data.blogId;
+      
+      // Fetch minimum blog info for the link
+      const blogRef = doc(db, BLOGS_COL, blogId);
+      const blogSnap = await getDoc(blogRef);
+      const blogData = blogSnap.data();
+      
+      return {
+        id: commentDoc.id,
+        ...data,
+        blogSlug: blogData?.slug || '',
+        blogTitle: blogData?.title || 'Unknown Blog'
+      } as any;
+    }));
+
+    return results;
   }
 };
