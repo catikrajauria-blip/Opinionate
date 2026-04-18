@@ -15,6 +15,8 @@ export default function Admin() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   // Post Form State
@@ -188,6 +190,25 @@ export default function Admin() {
     }
   };
 
+  const handleSignIn = async () => {
+    setLoginError(null);
+    setLoginLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (err: any) {
+      console.error('Sign-in Error:', err);
+      if (err.code === 'auth/unauthorized-domain') {
+        setLoginError('Vercel domain not authorized. Please add this URL to "Authorized Domains" in your Firebase console.');
+      } else if (err.code === 'auth/popup-blocked') {
+        setLoginError('Sign-in popup was blocked. Please enable popups for this site.');
+      } else {
+        setLoginError(err.message || 'Failed to sign in. Please try again.');
+      }
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
   if (loading) {
     return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div></div>;
   }
@@ -199,13 +220,40 @@ export default function Admin() {
           <div className="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-orange-200">
              <Settings size={40} className="text-orange-600" />
           </div>
-          <h1 className="text-3xl font-display font-bold mb-4">Admin Access</h1>
-          <p className="text-gray-500 mb-8">Please sign in with your authorized Google account to manage the blog.</p>
+          <h1 className="text-3xl font-display font-bold mb-4 text-text-primary">Admin Access</h1>
+          <p className="text-text-secondary mb-8 font-serif leading-relaxed">Please sign in with your authorized Google account to manage the blog and newsletter.</p>
+          
+          <AnimatePresence>
+            {loginError && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0 }}
+                className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-xs font-bold mb-6 border border-red-100 dark:border-red-900/30 leading-relaxed text-left"
+              >
+                <p className="mb-2">⚠️ {loginError}</p>
+                {loginError.includes('Authorized Domains') && (
+                  <div className="space-y-1 font-serif font-normal opacity-80">
+                    <p>1. Go to Firebase Console &gt; Authentication &gt; Settings.</p>
+                    <p>2. Add this domain to "Authorized domains".</p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <button 
-            onClick={() => signInWithGoogle()}
-            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 active:scale-95"
+            onClick={handleSignIn}
+            disabled={loginLoading}
+            className="w-full py-4 bg-text-primary text-bg-page rounded-2xl font-bold flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl shadow-black/5 active:scale-95 disabled:opacity-50"
           >
-            Sign in with Google
+            {loginLoading ? (
+              <span className="flex items-center gap-2">
+                <LayoutGrid className="animate-spin" size={18} /> Connecting...
+              </span>
+            ) : (
+              'Sign in with Google'
+            )}
           </button>
         </div>
       </div>
