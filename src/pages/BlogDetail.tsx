@@ -15,7 +15,7 @@ export default function BlogDetail() {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
-  const userId = generateUserId();
+  const [userId] = useState(() => generateUserId());
 
   useEffect(() => {
     async function loadBlog() {

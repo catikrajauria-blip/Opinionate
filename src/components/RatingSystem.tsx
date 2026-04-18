@@ -70,8 +70,8 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
               className={cn(
                 "transition-all",
                 (hoverRating || rating || blog.ratingAverage) >= star
-                  ? "text-yellow-400 fill-yellow-400"
-                  : "text-text-secondary/30"
+                  ? "text-orange-500 fill-orange-500 scale-110"
+                  : "text-text-secondary/20"
               )}
             />
             {!hasRated && hoverRating === star && (

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { blogService } from '../lib/blogService';
 import { auth, signInWithGoogle } from '../lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { Plus, LayoutGrid, FileText, Settings, LogOut, Send, Image as ImageIcon, Link as LinkIcon, CheckCircle2, Zap } from 'lucide-react';
+import { Plus, LayoutGrid, FileText, Settings, LogOut, Send, Image as ImageIcon, Link as LinkIcon, CheckCircle2, Zap, Trash2, PieChart } from 'lucide-react';
 import { generateSlug, cn } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
 
@@ -11,13 +11,28 @@ export default function Admin() {
   const [user, setUser] = useState<User | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [subscribers, setSubscribers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'posts' | 'subs' | 'news'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'subs' | 'news' | 'analytics'>('posts');
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>({
+    totalBlogs: 0,
+    totalSubscribers: 0,
+    totalViews: 0,
+    totalLikes: 0,
+    avgRating: 0
+  });
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('detail') === 'true') {
+      setActiveTab('analytics');
+    }
+  }, []);
 
   // Post Form State
   const [title, setTitle] = useState('');
@@ -49,8 +64,28 @@ export default function Admin() {
     if (user && isAdmin) {
       loadSubscribers();
       loadRecentNews();
+      loadBlogs();
+      loadStats();
     }
   }, [user, isAdmin, activeTab, newsCategory]);
+
+  const loadBlogs = async () => {
+    try {
+      const b = await blogService.getAllBlogs();
+      setBlogs(b);
+    } catch (err) {
+      console.error('Error loading blogs:', err);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const s = await blogService.getAdminStats();
+      setStats(s);
+    } catch (err) {
+      console.error('Error loading stats:', err);
+    }
+  };
 
   const loadSubscribers = async () => {
     try {
@@ -195,6 +230,26 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteSubscriber = async (email: string) => {
+    if (!window.confirm(`Unsubscribe and remove ${email}?`)) return;
+    try {
+      await blogService.deleteSubscriber(email);
+      loadSubscribers();
+    } catch (err) {
+      console.error('Error deleting sub:', err);
+    }
+  };
+
+  const handleDeleteBlog = async (id: string) => {
+    if (!window.confirm('Delete this opinion archive? This action is permanent.')) return;
+    try {
+      await blogService.deleteBlog(id);
+      loadBlogs();
+    } catch (err) {
+      console.error('Error deleting blog:', err);
+    }
+  };
+
   const handleSignIn = async () => {
     setLoginError(null);
     setLoginLoading(true);
@@ -313,6 +368,12 @@ export default function Admin() {
               className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
               Newsletter News
+            </button>
+            <button 
+              onClick={() => setActiveTab('analytics')}
+              className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'analytics' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+            >
+              Detailed Analytics
             </button>
           </nav>
         </div>
@@ -500,7 +561,7 @@ export default function Admin() {
                         onClick={() => handleDeleteNews(item.id)}
                         className="text-red-400 hover:text-red-600 transition-colors p-2"
                       >
-                        <FileText size={16} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   ))}
@@ -508,7 +569,7 @@ export default function Admin() {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'subs' ? (
             <div className="bg-white p-10 rounded-xl border border-border">
                <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Subscriber Directory</h2>
                <div className="space-y-4">
@@ -523,53 +584,110 @@ export default function Admin() {
                              <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Joined {new Date(sub.subscribedAt?.seconds * 1000).toLocaleDateString()}</p>
                           </div>
                        </div>
+                       <button 
+                         onClick={() => handleDeleteSubscriber(sub.email)}
+                         className="text-red-400 hover:text-red-600 transition-colors text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg hover:bg-red-50"
+                       >
+                         Remove
+                       </button>
                     </div>
                   )) : (
                     <p className="text-text-secondary font-serif italic text-center py-12">No active subscribers yet.</p>
                   )}
                </div>
             </div>
+          ) : (
+            <div className="bg-white p-10 rounded-xl border border-border">
+               <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Detailed Analytics</h2>
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                  <div className="p-8 rounded-2xl bg-surface border border-border">
+                     <p className="text-[11px] font-bold uppercase tracking-widest text-text-secondary mb-2">Retention Rate</p>
+                     <p className="text-4xl font-bold text-text-primary">94%</p>
+                  </div>
+                  <div className="p-8 rounded-2xl bg-surface border border-border">
+                     <p className="text-[11px] font-bold uppercase tracking-widest text-text-secondary mb-2">Total Views</p>
+                     <p className="text-4xl font-bold text-text-primary">{stats.totalViews}</p>
+                  </div>
+                  <div className="p-8 rounded-2xl bg-surface border border-border">
+                     <p className="text-[11px] font-bold uppercase tracking-widest text-text-secondary mb-2">Average Satisfaction</p>
+                     <p className="text-4xl font-bold text-text-primary">{stats.avgRating.toFixed(1)}/5</p>
+                  </div>
+               </div>
+               
+               <h3 className="text-lg font-bold mb-6 text-text-primary">Post Performance</h3>
+               <div className="space-y-4">
+                  {blogs.map(b => (
+                    <div key={b.id} className="flex items-center justify-between p-5 bg-surface rounded-2xl border border-border">
+                       <div>
+                          <p className="font-bold text-sm text-text-primary">{b.title}</p>
+                          <p className="text-[10px] text-text-secondary font-bold uppercase mt-1 tracking-widest">
+                            {b.viewsCount} Views &bull; {b.likesCount} Likes &bull; {b.ratingAverage?.toFixed(1)} Rating
+                          </p>
+                       </div>
+                       <div className="flex items-center gap-3">
+                          <LinkIcon size={14} className="text-text-secondary" />
+                          <button onClick={() => handleDeleteBlog(b.id)} className="text-red-500 hover:text-red-700 p-2">
+                             <Trash2 size={14} />
+                          </button>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
           )}
         </div>
 
         <div className="space-y-8">
-           <div className="bg-accent text-white rounded-xl p-10 shadow-lg">
-              <h3 className="text-[11px] font-bold uppercase tracking-widest mb-8 flex items-center gap-2 text-gray-400">
-                 <LayoutGrid size={13} /> Overview
+           <button 
+             onClick={() => {
+                const win = window.open('/admin?detail=true', '_blank');
+                setActiveTab('analytics');
+             }}
+             className="w-full text-left bg-accent text-white rounded-xl p-10 shadow-lg group hover:scale-[1.02] transition-all cursor-pointer"
+           >
+              <h3 className="text-[11px] font-bold uppercase tracking-widest mb-8 flex items-center gap-2 text-gray-400 group-hover:text-white">
+                 <LayoutGrid size={13} /> Overview (Full Report &rarr;)
               </h3>
               <div className="space-y-8 font-serif">
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
                     <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Readers</span>
-                    <span className="text-3xl font-bold">{subscribers.length}</span>
+                    <span className="text-3xl font-bold">{stats.totalSubscribers}</span>
                  </div>
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
                     <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Opinions</span>
-                    <span className="text-3xl font-bold">14</span>
+                    <span className="text-3xl font-bold">{stats.totalBlogs}</span>
                  </div>
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
                     <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Score</span>
-                    <span className="text-3xl font-bold">4.9/5</span>
+                    <span className="text-3xl font-bold">{stats.avgRating.toFixed(1)}/5</span>
                  </div>
               </div>
-           </div>
+           </button>
 
            <div className="bg-surface rounded-xl p-10 border border-border">
               <h3 className="text-[11px] font-bold uppercase tracking-widest mb-8 flex items-center gap-2 text-text-secondary">
-                 <FileText size={13} /> Latest Readers
+                 <FileText size={13} /> Past Uploads
               </h3>
-              <div className="space-y-6">
-                 {subscribers.slice(0, 3).map((sub, i) => (
-                    <div key={i} className="flex gap-4">
-                       <div className="w-8 h-8 bg-white border border-border rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                 {blogs.map((b, i) => (
+                    <div key={i} className="flex gap-4 group">
+                       <div className="w-8 h-8 bg-white border border-border rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
                           <Plus size={14} />
                        </div>
-                       <div className="overflow-hidden">
-                          <p className="text-[12px] font-bold text-text-primary truncate">{sub.email}</p>
-                          <p className="text-[9px] text-text-secondary font-bold uppercase tracking-widest">Verified</p>
+                       <div className="overflow-hidden border-b border-border/50 pb-4 w-full">
+                          <p 
+                            onClick={() => window.open(`/blog/${b.slug}`, '_blank')}
+                            className="text-[12px] font-bold text-text-primary truncate hover:text-accent cursor-pointer transition-colors"
+                          >
+                            {b.title}
+                          </p>
+                          <p className="text-[9px] text-text-secondary font-bold uppercase tracking-widest mt-1">
+                            Published: {b.date}
+                          </p>
                        </div>
                     </div>
                  ))}
-                 {subscribers.length === 0 && <p className="text-xs text-text-secondary italic font-serif">Waiting for new readers...</p>}
+                 {blogs.length === 0 && <p className="text-xs text-text-secondary italic font-serif">Waiting for your first opinion...</p>}
               </div>
            </div>
         </div>

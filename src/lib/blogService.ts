@@ -163,6 +163,30 @@ export const blogService = {
     return snapshot.docs.map(doc => ({ email: doc.id, ...doc.data() } as Subscriber));
   },
 
+  async deleteSubscriber(email: string) {
+    const { deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, SUBSCRIBERS_COL, email));
+  },
+
+  async getAdminStats() {
+    const blogs = await this.getAllBlogs();
+    const subs = await this.getSubscribers();
+    
+    const totalViews = blogs.reduce((acc, b) => acc + (b.viewsCount || 0), 0);
+    const totalLikes = blogs.reduce((acc, b) => acc + (b.likesCount || 0), 0);
+    const avgRating = blogs.length > 0 
+      ? blogs.reduce((acc, b) => acc + (b.ratingAverage || 0), 0) / blogs.length 
+      : 0;
+
+    return {
+      totalBlogs: blogs.length,
+      totalSubscribers: subs.length,
+      totalViews,
+      totalLikes,
+      avgRating
+    };
+  },
+
   async getAllBlogs() {
     const q = query(collection(db, BLOGS_COL), orderBy('date', 'desc'));
     const snapshot = await getDocs(q);

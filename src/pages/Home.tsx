@@ -7,14 +7,14 @@ import RatingSystem from '../components/RatingSystem';
 import CommentSection from '../components/CommentSection';
 import NewsletterBox from '../components/NewsletterBox';
 import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
-import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function Home() {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
-  const userId = generateUserId();
+  const [userId] = useState(() => generateUserId());
 
   useEffect(() => {
     async function loadTodayBlog() {
@@ -83,77 +83,88 @@ export default function Home() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <motion.article 
+      <motion.section 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-20"
       >
-        <header className="mb-12">
-          <div className="badge-minimal">
-            Today's Editorial &bull; {formatDate(blog.date)}
+        <div className="bg-surface rounded-[2.5rem] overflow-hidden border border-border shadow-2xl shadow-black/5 hover:shadow-black/10 transition-shadow">
+          <div className="relative aspect-[21/9] overflow-hidden group">
+            {blog.image ? (
+              <img 
+                src={blog.image} 
+                alt={blog.title} 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                referrerPolicy="no-referrer" 
+              />
+            ) : (
+              <div className="w-full h-full bg-accent flex items-center justify-center">
+                 <Zap size={60} className="text-white opacity-20" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-6 left-8">
+               <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest inline-block mb-3">
+                  Today's Featured Opinion
+               </div>
+               <h2 className="text-2xl md:text-3xl font-serif font-bold text-white leading-tight">
+                  {blog.title}
+               </h2>
+            </div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight mb-8">
-            {blog.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-6 pb-6 border-b border-border text-text-secondary text-sm font-medium">
-            <div className="flex items-center gap-2">
-              <span className="text-text-primary">By <strong>{blog.author}</strong></span>
-            </div>
-            <span>&bull; {calculateReadingTime(blog.content)} min read</span>
-            <div className="flex items-center gap-1.5">
-               <span>👁️ {blog.viewsCount} Views</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-               <span>💬 {blog.ratingCount} ratings</span>
-            </div>
-            <div className="flex items-center gap-1.5 ml-auto">
-               <span className="text-yellow-500">★★★★☆</span>
-               <span className="text-text-primary">{blog.ratingAverage.toFixed(1)}</span>
+          <div className="p-8 md:p-12">
+            <p className="text-lg text-text-secondary font-serif leading-relaxed mb-8 italic">
+               "{blog.summary}"
+            </p>
+            
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border">
+               <div className="flex items-center gap-6">
+                  <div className="flex flex-col">
+                     <span className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mb-1">Author</span>
+                     <span className="text-sm font-bold text-text-primary">{blog.author}</span>
+                  </div>
+                  <div className="flex flex-col border-l border-border pl-6">
+                     <span className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mb-1">Time</span>
+                     <span className="text-sm font-bold text-text-primary">{calculateReadingTime(blog.content)} Min</span>
+                  </div>
+               </div>
+               
+               <div className="flex items-center gap-4">
+                  <button 
+                    onClick={handleLike}
+                    className="flex items-center gap-2 text-text-secondary hover:text-red-500 transition-colors"
+                  >
+                     <Heart size={20} className={cn(blog.likesCount > 0 && "fill-red-500 text-red-500")} />
+                     <span className="font-bold text-xs">{blog.likesCount}</span>
+                  </button>
+                  <a 
+                    href={`/blog/${blog.slug}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-minimal-primary px-8 py-3 text-sm font-bold shadow-xl shadow-accent/20"
+                  >
+                    Read Full Analysis &rarr;
+                  </a>
+               </div>
             </div>
           </div>
-        </header>
-
-        {blog.image && (
-          <div className="mb-12 rounded-xl overflow-hidden aspect-[16/9] border border-border">
-            <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-          </div>
-        )}
-
-        <div className="blog-content mb-16 px-0 lg:px-4">
-          <ReactMarkdown>{blog.content}</ReactMarkdown>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-border mt-16">
-           <div className="flex items-center gap-3">
-              <button 
-                onClick={handleLike}
-                className="btn-minimal group"
-              >
-                 <Heart size={16} className="text-gray-400 group-hover:text-red-500" />
-                 <span>Like ({blog.likesCount})</span>
-              </button>
-
-              <button 
-                onClick={toggleSave}
-                className={cn(
-                  "btn-minimal",
-                  isSaved && "bg-text-primary text-bg-page border-text-primary"
-                )}
-              >
-                {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                <span>{isSaved ? 'Saved' : 'Save for later'}</span>
-              </button>
+        <div className="mt-16 pt-16 border-t border-border">
+           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+              <div>
+                 <h3 className="text-3xl font-serif font-bold text-text-primary mb-2">Rate Today's Insight</h3>
+                 <p className="text-text-secondary font-serif text-sm">Was this briefing valuable for your perspective?</p>
+              </div>
+              <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
            </div>
-           
-           <button className="btn-minimal-primary">
-              Share Opinion
-           </button>
         </div>
 
-        <CommentSection blogId={blog.id} />
-      </motion.article>
+        <div className="mt-20">
+           <CommentSection blogId={blog.id} />
+        </div>
+      </motion.section>
     </div>
   );
 }
