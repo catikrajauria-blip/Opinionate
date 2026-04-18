@@ -20,8 +20,24 @@ const CATEGORIES = [
   { id: 'tech', name: 'Industry & Tech', icon: <Zap size={14} /> }
 ];
 
+const CACHE_KEY = 'opinion_news_cache';
+const CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
+
 export default function Newsletter() {
-  const [news, setNews] = useState<Record<string, NewsItem[]>>({});
+  const [news, setNews] = useState<Record<string, NewsItem[]>>(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) {
+          return data;
+        }
+      }
+    } catch (e) {
+      console.error('Cache read error:', e);
+    }
+    return {};
+  });
   const [activeCategory, setActiveCategory] = useState('finance');
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,17 +86,27 @@ export default function Newsletter() {
 
       const text = response.text;
       const parsedNews = JSON.parse(text);
-      setNews(prev => ({ ...prev, [categoryId]: parsedNews }));
+      
+      setNews(prev => {
+        const updated = { ...prev, [categoryId]: parsedNews };
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          data: updated,
+          timestamp: Date.now()
+        }));
+        return updated;
+      });
     } catch (err: any) {
       console.error(`Error fetching ${categoryId} news:`, err);
       let errorMsg = "An unexpected error occurred.";
       
+      const isQuota = err.message && err.message.toLowerCase().includes("quota");
+
       if (err.message === "API_KEY_MISSING") {
         errorMsg = "Gemini API Key is missing. Please add GEMINI_API_KEY to your Vercel Environment Variables.";
       } else if (err.status === 403 || (err.message && err.message.includes("API key not valid"))) {
         errorMsg = "The provided API Key is invalid. Please double-check your key in Google AI Studio.";
-      } else if (err.message && err.message.includes("quota")) {
-        errorMsg = "API quota exceeded. Please wait a moment or check your billing status.";
+      } else if (isQuota) {
+        errorMsg = "API quota exceeded. The Free Tier of Gemini has a limit on requests per minute.";
       } else {
         errorMsg = err.message || "Temporary connection issue. This can happen if the AI model is busy or searching the web takes too long.";
       }
