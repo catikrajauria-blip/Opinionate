@@ -14,10 +14,35 @@ import {
   Timestamp,
   serverTimestamp,
   runTransaction,
-  collectionGroup
+  collectionGroup,
+  getDocFromServer
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import { Blog, Comment, Subscriber, ContactMessage, Rating, Like, View } from '../types';
+
+const handleFirestoreError = (error: any, operationType: string, path: string | null = null) => {
+  if (error?.code === 'permission-denied') {
+    const user = auth.currentUser;
+    const errorInfo = {
+      error: error.message,
+      operationType,
+      path,
+      authInfo: {
+        userId: user?.uid || 'anonymous',
+        email: user?.email || 'none',
+        emailVerified: user?.emailVerified || false,
+        isAnonymous: user?.isAnonymous || true,
+        providerInfo: user?.providerData.map(p => ({
+          providerId: p.providerId,
+          displayName: p.displayName || '',
+          email: p.email || ''
+        })) || []
+      }
+    };
+    throw new Error(JSON.stringify(errorInfo));
+  }
+  throw error;
+};
 
 const BLOGS_COL = 'blogs';
 const COMMENTS_COL = 'comments';
@@ -44,13 +69,11 @@ export const blogService = {
     return { id: blogDoc.id, ...blogDoc.data() } as Blog;
   },
 
-  async getTodayBlog() {
+  async getTodayBlogs() {
     const today = new Date().toISOString().split('T')[0];
-    const q = query(collection(db, BLOGS_COL), where('date', '==', today), limit(1));
+    const q = query(collection(db, BLOGS_COL), where('date', '==', today), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    if (snapshot.empty) return null;
-    const blogDoc = snapshot.docs[0];
-    return { id: blogDoc.id, ...blogDoc.data() } as Blog;
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Blog));
   },
 
   async createBlog(blog: Omit<Blog, 'id' | 'likesCount' | 'viewsCount' | 'ratingAverage' | 'ratingCount' | 'createdAt'>) {
@@ -102,28 +125,32 @@ export const blogService = {
     const ratingRef = doc(db, RATINGS_COL, ratingId);
     const blogRef = doc(db, BLOGS_COL, blogId);
 
-    const ratingSnap = await getDoc(ratingRef);
-    if (ratingSnap.exists()) {
-       throw new Error('You already rated this blog');
-    }
+    try {
+      const ratingSnap = await getDoc(ratingRef);
+      if (ratingSnap.exists()) {
+         throw new Error('You already rated this blog');
+      }
 
-    await runTransaction(db, async (transaction) => {
-      const blogSnap = await transaction.get(blogRef);
-      if (!blogSnap.exists()) throw new Error('Blog not found');
-      
-      const blogData = blogSnap.data() as Blog;
-      const currentCount = blogData.ratingCount || 0;
-      const currentAverage = blogData.ratingAverage || 0;
-      
-      const newRatingCount = currentCount + 1;
-      const newAverage = ((currentAverage * currentCount) + score) / newRatingCount;
-      
-      transaction.set(ratingRef, { blogId, userId, score, createdAt: serverTimestamp() });
-      transaction.update(blogRef, {
-        ratingAverage: newAverage,
-        ratingCount: newRatingCount
+      await runTransaction(db, async (transaction) => {
+        const blogSnap = await transaction.get(blogRef);
+        if (!blogSnap.exists()) throw new Error('Blog not found');
+        
+        const blogData = blogSnap.data() as Blog;
+        const currentCount = blogData.ratingCount || 0;
+        const currentAverage = blogData.ratingAverage || 0;
+        
+        const newRatingCount = currentCount + 1;
+        const newAverage = ((currentAverage * currentCount) + score) / newRatingCount;
+        
+        transaction.set(ratingRef, { blogId, userId, score, createdAt: serverTimestamp() });
+        transaction.update(blogRef, {
+          ratingAverage: newAverage,
+          ratingCount: newRatingCount
+        });
       });
-    });
+    } catch (error) {
+      handleFirestoreError(error, 'write', `blogs/${blogId}/ratings`);
+    }
   },
 
   // Comment operations

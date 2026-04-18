@@ -11,52 +11,28 @@ import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap,
 import ReactMarkdown from 'react-markdown';
 
 export default function Home() {
-  const [blog, setBlog] = useState<Blog | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isSaved, setIsSaved] = useState(false);
   const [userId] = useState(() => generateUserId());
 
   useEffect(() => {
-    async function loadTodayBlog() {
+    async function loadTodayBlogs() {
       try {
-        const todayBlog = await blogService.getTodayBlog();
-        if (todayBlog) {
-          setBlog(todayBlog);
-          await blogService.incrementViews(todayBlog.id, userId);
-          
-          // Check if saved
-          const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
-          setIsSaved(saved.includes(todayBlog.slug));
+        const todayBlogs = await blogService.getTodayBlogs();
+        setBlogs(todayBlogs);
+        
+        // Track views for the first one if it exists
+        if (todayBlogs.length > 0) {
+           await blogService.incrementViews(todayBlogs[0].id, userId);
         }
       } catch (error) {
-        console.error('Error loading today blog:', error);
+        console.error('Error loading today blogs:', error);
       } finally {
         setLoading(false);
       }
     }
-    loadTodayBlog();
+    loadTodayBlogs();
   }, [userId]);
-
-  const toggleSave = () => {
-    if (!blog) return;
-    const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
-    let newSaved;
-    if (isSaved) {
-      newSaved = saved.filter((s: string) => s !== blog.slug);
-    } else {
-      newSaved = [...saved, blog.slug];
-    }
-    localStorage.setItem('saved_blogs', JSON.stringify(newSaved));
-    setIsSaved(!isSaved);
-  };
-
-  const handleLike = async () => {
-    if (!blog) return;
-    const success = await blogService.incrementLikes(blog.id, userId);
-    if (success) {
-      setBlog({ ...blog, likesCount: blog.likesCount + 1 });
-    }
-  };
 
   if (loading) {
     return (
@@ -66,7 +42,7 @@ export default function Home() {
     );
   }
 
-  if (!blog) {
+  if (blogs.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
         <motion.div
@@ -82,89 +58,109 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <motion.section 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-20"
-      >
-        <div className="bg-surface rounded-[2.5rem] overflow-hidden border border-border shadow-2xl shadow-black/5 hover:shadow-black/10 transition-shadow">
-          <div className="relative aspect-[21/9] overflow-hidden group">
-            {blog.image ? (
-              <img 
-                src={blog.image} 
-                alt={blog.title} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                referrerPolicy="no-referrer" 
-              />
-            ) : (
-              <div className="w-full h-full bg-accent flex items-center justify-center">
-                 <Zap size={60} className="text-white opacity-20" />
+    <div className="max-w-6xl mx-auto px-4">
+      <header className="mb-16 text-center">
+         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Today's Briefing</h1>
+         <p className="text-text-secondary font-serif italic text-lg">{formatDate(new Date().toISOString().split('T')[0])}</p>
+      </header>
+
+      <div className="grid grid-cols-1 gap-16 mb-20">
+        {blogs.map((blog, idx) => (
+          <motion.section 
+            key={blog.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            className="group"
+          >
+            <div className="bg-surface rounded-[2.5rem] overflow-hidden border border-border shadow-xl hover:shadow-2xl transition-all duration-500">
+              <div className="grid grid-cols-1 lg:grid-cols-2">
+                <div className="relative aspect-video lg:aspect-auto overflow-hidden">
+                  {blog.image ? (
+                    <img 
+                      src={blog.image} 
+                      alt={blog.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+                      referrerPolicy="no-referrer" 
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-accent flex items-center justify-center">
+                       <Zap size={60} className="text-white opacity-20" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="p-8 md:p-12 flex flex-col justify-center">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="bg-text-primary/5 text-text-primary px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest border border-text-primary/10">
+                       Opinion {idx + 1}
+                    </span>
+                    <span className="text-text-secondary text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                       <Clock size={12} /> {calculateReadingTime(blog.content)} Min
+                    </span>
+                  </div>
+
+                  <h2 className="text-2xl md:text-3xl font-serif font-bold text-text-primary leading-tight mb-6">
+                     {blog.title}
+                  </h2>
+
+                  <p className="text-lg text-text-secondary font-serif leading-relaxed mb-8 italic line-clamp-3">
+                     "{blog.summary}"
+                  </p>
+                  
+                  <div className="flex items-center justify-between gap-6 pt-8 border-t border-border mt-auto">
+                     <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-xs font-bold">
+                           {blog.author.charAt(0)}
+                        </div>
+                        <span className="text-xs font-bold text-text-primary uppercase tracking-wider">{blog.author}</span>
+                     </div>
+                     
+                     <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1 text-text-secondary">
+                           <Eye size={14} />
+                           <span className="text-[10px] font-bold">{blog.viewsCount}</span>
+                        </div>
+                        <a 
+                          href={`/blog/${blog.slug}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="btn-minimal-primary px-6 py-2 text-xs font-bold"
+                        >
+                          Read &rarr;
+                        </a>
+                     </div>
+                  </div>
+                </div>
               </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute bottom-6 left-8">
-               <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest inline-block mb-3">
-                  Today's Featured Opinion
-               </div>
-               <h2 className="text-2xl md:text-3xl font-serif font-bold text-white leading-tight">
-                  {blog.title}
-               </h2>
             </div>
-          </div>
-          
-          <div className="p-8 md:p-12">
-            <p className="text-lg text-text-secondary font-serif leading-relaxed mb-8 italic">
-               "{blog.summary}"
-            </p>
             
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border">
-               <div className="flex items-center gap-6">
-                  <div className="flex flex-col">
-                     <span className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mb-1">Author</span>
-                     <span className="text-sm font-bold text-text-primary">{blog.author}</span>
-                  </div>
-                  <div className="flex flex-col border-l border-border pl-6">
-                     <span className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mb-1">Time</span>
-                     <span className="text-sm font-bold text-text-primary">{calculateReadingTime(blog.content)} Min</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4">
+               <div className="bg-surface rounded-2xl p-6 border border-border flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-text-secondary mb-1">Expert Consensus</p>
+                    <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => {
+                       const newBlogs = [...blogs];
+                       newBlogs[idx] = { ...newBlogs[idx], ratingAverage: avg, ratingCount: count };
+                       setBlogs(newBlogs);
+                    }} />
                   </div>
                </div>
-               
-               <div className="flex items-center gap-4">
-                  <button 
-                    onClick={handleLike}
-                    className="flex items-center gap-2 text-text-secondary hover:text-red-500 transition-colors"
-                  >
-                     <Heart size={20} className={cn(blog.likesCount > 0 && "fill-red-500 text-red-500")} />
-                     <span className="font-bold text-xs">{blog.likesCount}</span>
-                  </button>
-                  <a 
-                    href={`/blog/${blog.slug}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-minimal-primary px-8 py-3 text-sm font-bold shadow-xl shadow-accent/20"
-                  >
-                    Read Full Analysis &rarr;
-                  </a>
+               <div className="bg-surface rounded-2xl p-6 border border-border">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-text-secondary mb-3 flex items-center gap-2">
+                     <MessageSquare size={12} /> Conversations
+                  </p>
+                  <p className="text-sm font-serif italic text-text-secondary">Join the discussion on this analysis below.</p>
                </div>
             </div>
-          </div>
-        </div>
+          </motion.section>
+        ))}
+      </div>
 
-        <div className="mt-16 pt-16 border-t border-border">
-           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-              <div>
-                 <h3 className="text-3xl font-serif font-bold text-text-primary mb-2">Rate Today's Insight</h3>
-                 <p className="text-text-secondary font-serif text-sm">Was this briefing valuable for your perspective?</p>
-              </div>
-              <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
-           </div>
-        </div>
-
-        <div className="mt-20">
-           <CommentSection blogId={blog.id} />
-        </div>
-      </motion.section>
+      <div className="mt-32 max-w-4xl mx-auto border-t border-border pt-20">
+         <NewsletterBox />
+      </div>
     </div>
   );
 }

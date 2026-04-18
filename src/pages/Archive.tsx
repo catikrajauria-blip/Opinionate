@@ -17,7 +17,7 @@ export default function Archive() {
   useEffect(() => {
     async function loadBlogs() {
       try {
-        const allBlogs = await blogService.getLatestBlogs(50);
+        const allBlogs = await blogService.getLatestBlogs(100);
         setBlogs(allBlogs);
       } catch (error) {
         console.error('Error loading archive:', error);

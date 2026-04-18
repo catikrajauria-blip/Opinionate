@@ -27,7 +27,7 @@ service cloud.firestore {
 
     // Blogs
     match /blogs/{blogId} {
-      allow read: if true; // Publicly readable
+      allow read: if true; 
       allow create: if isAdmin() && isValidBlog(incoming());
       allow update: if (isAdmin() && isValidBlog(incoming())) || isOnlyStatUpdate();
       allow delete: if isAdmin();
@@ -40,6 +40,7 @@ service cloud.firestore {
       }
 
       function isOnlyStatUpdate() {
+        // Allows public (and admins) to update only these specific numeric stats
         return incoming().diff(existing()).affectedKeys().hasOnly(['likesCount', 'viewsCount', 'ratingAverage', 'ratingCount']);
       }
     }
