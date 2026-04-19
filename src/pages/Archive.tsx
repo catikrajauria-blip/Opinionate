@@ -107,7 +107,7 @@ export default function Archive() {
         )}>
           {filteredBlogs.map((blog, idx) => (
             viewMode === 'grid' ? (
-              <BlogCard key={blog.id} blog={blog} index={idx} />
+              <BlogCard key={blog.id} blog={blog} index={idx} isGrid={true} />
             ) : (
               <motion.div
                 key={blog.id}

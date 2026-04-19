@@ -11,7 +11,7 @@ export default function Admin() {
   const [user, setUser] = useState<User | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [subscribers, setSubscribers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'posts' | 'subs' | 'news' | 'analytics'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'analytics'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
   const [stats, setStats] = useState<any>({
     totalBlogs: 0,
@@ -375,12 +375,6 @@ export default function Admin() {
               Post Content
             </button>
             <button 
-              onClick={() => setActiveTab('subs')}
-              className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'subs' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
-            >
-              Subscribers ({subscribers.length})
-            </button>
-            <button 
               onClick={() => setActiveTab('news')}
               className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
@@ -576,42 +570,16 @@ export default function Admin() {
                       </div>
                       <button 
                         onClick={() => handleDeleteNews(item.id)}
-                        className="text-red-400 hover:text-red-600 transition-colors p-2"
+                        className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest border border-red-100"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={13} />
+                        <span>Delete</span>
                       </button>
                     </div>
                   ))}
                   {recentNews.length === 0 && <p className="text-text-secondary italic font-serif py-4">No news items in this category.</p>}
                 </div>
               </div>
-            </div>
-          ) : activeTab === 'subs' ? (
-            <div className="bg-white p-10 rounded-xl border border-border">
-               <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Subscriber Directory</h2>
-               <div className="space-y-4">
-                  {subscribers.length > 0 ? subscribers.map((sub, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 border border-border rounded-lg hover:border-black transition-all">
-                       <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-surface rounded-full flex items-center justify-center font-bold text-xs uppercase">
-                             {sub.email?.charAt(0) || 'U'}
-                          </div>
-                          <div>
-                             <p className="font-bold text-sm text-text-primary">{sub.email}</p>
-                             <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Joined {new Date(sub.subscribedAt?.seconds * 1000).toLocaleDateString()}</p>
-                          </div>
-                       </div>
-                       <button 
-                         onClick={() => handleDeleteSubscriber(sub.email)}
-                         className="text-red-400 hover:text-red-600 transition-colors text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg hover:bg-red-50"
-                       >
-                         Remove
-                       </button>
-                    </div>
-                  )) : (
-                    <p className="text-text-secondary font-serif italic text-center py-12">No active subscribers yet.</p>
-                  )}
-               </div>
             </div>
           ) : (
             <div className="bg-white p-10 rounded-xl border border-border">
@@ -666,8 +634,8 @@ export default function Admin() {
               </h3>
               <div className="space-y-8 font-serif">
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Readers (Subscribers)</span>
-                    <span className="text-3xl font-bold">{subscribers.length}</span>
+                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Reader Count (Total Views)</span>
+                    <span className="text-3xl font-bold">{stats.totalViews}</span>
                  </div>
                  
                  {/* News Category Breakdown */}
@@ -715,12 +683,21 @@ export default function Admin() {
                           <Plus size={14} />
                        </div>
                        <div className="overflow-hidden border-b border-border/50 pb-4 w-full">
-                          <p 
-                            onClick={() => { window.location.href = `/blog/${b.slug}`; }}
-                            className="text-[12px] font-bold text-text-primary truncate hover:text-accent cursor-pointer transition-colors"
-                          >
-                            {b.title}
-                          </p>
+                          <div className="flex justify-between items-start gap-3">
+                             <p 
+                               onClick={() => { window.location.href = `/blog/${b.slug}`; }}
+                               className="text-[12px] font-bold text-text-primary truncate hover:text-accent cursor-pointer transition-colors"
+                             >
+                               {b.title}
+                             </p>
+                             <button
+                               onClick={() => handleDeleteBlog(b.id)}
+                               className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 px-2.5 py-1 rounded-lg text-[9px] uppercase font-bold tracking-widest border border-red-100 flex-shrink-0"
+                             >
+                               <Trash2 size={12} />
+                               <span>Delete</span>
+                             </button>
+                          </div>
                           <p className="text-[9px] text-text-secondary font-bold uppercase tracking-widest mt-1">
                             Published: {b.date}
                           </p>

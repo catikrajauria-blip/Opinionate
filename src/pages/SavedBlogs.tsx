@@ -72,7 +72,7 @@ export default function SavedBlogs() {
                  >
                    <Trash2 size={18} />
                  </button>
-                 <BlogCard blog={blog} index={idx} />
+                 <BlogCard blog={blog} index={idx} isGrid={true} />
               </motion.div>
             ))}
           </AnimatePresence>

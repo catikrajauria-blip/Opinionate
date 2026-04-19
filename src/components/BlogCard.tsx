@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Blog } from '../types';
-import { formatDate, calculateReadingTime, generateUserId } from '../lib/utils';
+import { formatDate, calculateReadingTime, generateUserId, cn } from '../lib/utils';
 import { Eye, Heart, MessageSquare, Clock, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { blogService } from '../lib/blogService';
@@ -9,9 +9,10 @@ import { blogService } from '../lib/blogService';
 interface BlogCardProps {
   blog: Blog;
   index?: number;
+  isGrid?: boolean;
 }
 
-export default function BlogCard({ blog: initialBlog, index = 0 }: BlogCardProps) {
+export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false }: BlogCardProps) {
   const [blog, setBlog] = useState(initialBlog);
   const [userId] = useState(() => generateUserId());
   const [isLiking, setIsLiking] = useState(false);
@@ -39,11 +40,23 @@ export default function BlogCard({ blog: initialBlog, index = 0 }: BlogCardProps
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="group pb-10 border-b border-border last:border-0"
+      className={cn(
+        "group border-border last:border-0",
+        isGrid ? "pb-6" : "pb-10 border-b"
+      )}
     >
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className={cn(
+        "flex gap-6",
+        isGrid ? "flex-col" : "flex-col md:flex-row md:gap-8"
+      )}>
         {blog.image && (
-          <Link to={`/blog/${blog.slug}`} className="w-full md:w-48 h-32 rounded-lg overflow-hidden flex-shrink-0 border border-border">
+          <Link 
+            to={`/blog/${blog.slug}`} 
+            className={cn(
+               "rounded-lg overflow-hidden flex-shrink-0 border border-border bg-surface",
+               isGrid ? "w-full aspect-[16/10] mb-2" : "w-full md:w-48 h-32"
+            )}
+          >
             <img 
               src={blog.image} 
               alt={blog.title}
@@ -52,13 +65,16 @@ export default function BlogCard({ blog: initialBlog, index = 0 }: BlogCardProps
             />
           </Link>
         )}
-        <div className="flex-grow">
+        <div className="flex-grow min-w-0">
           <div className="badge-minimal mb-3">
             {formatDate(blog.date)}
           </div>
           
           <Link to={`/blog/${blog.slug}`}>
-            <h3 className="text-2xl font-serif font-bold mb-3 group-hover:text-text-secondary transition-colors leading-tight">
+            <h3 className={cn(
+               "font-serif font-bold mb-3 group-hover:text-text-secondary transition-colors leading-tight",
+               isGrid ? "text-xl" : "text-2xl"
+            )}>
               {blog.title}
             </h3>
           </Link>

@@ -57,9 +57,15 @@ export default function BlogDetail() {
 
   const handleLike = async () => {
     if (!blog) return;
-    const success = await blogService.incrementLikes(blog.id, userId);
-    if (success) {
-      setBlog({ ...blog, likesCount: blog.likesCount + 1 });
+    try {
+      const success = await blogService.incrementLikes(blog.id, userId);
+      if (success) {
+        setBlog({ ...blog, likesCount: (blog.likesCount || 0) + 1 });
+      } else {
+        alert("You have already liked this opinion.");
+      }
+    } catch (err) {
+      console.error('Error liking blog:', err);
     }
   };
 
