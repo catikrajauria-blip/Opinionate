@@ -367,22 +367,22 @@ export default function Admin() {
               Logged in as <span className="text-text-primary font-bold">{user.email}</span>
             </p>
           </div>
-          <nav className="flex gap-4 border-l border-border pl-8">
+          <nav className="flex flex-wrap gap-4 border-l border-border pl-4 md:pl-8">
             <button 
               onClick={() => setActiveTab('posts')}
-              className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'posts' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+              className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'posts' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
               Post Content
             </button>
             <button 
               onClick={() => setActiveTab('news')}
-              className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+              className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
               Newsletter News ({Object.values(newsCounts).reduce((a, b) => a + b, 0)})
             </button>
             <button 
               onClick={() => setActiveTab('analytics')}
-              className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'analytics' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+              className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'analytics' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
               Detailed Analytics
             </button>
@@ -399,7 +399,7 @@ export default function Admin() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2">
           {activeTab === 'posts' ? (
-            <form onSubmit={handleCreateBlog} className="bg-white p-10 rounded-xl border border-border space-y-8">
+            <form onSubmit={handleCreateBlog} className="bg-surface p-10 rounded-xl border border-border space-y-8">
                <div className="flex items-center justify-between">
                   <h2 className="text-xl font-serif font-bold text-text-primary">
                      Daily Opinion Entry
@@ -563,14 +563,14 @@ export default function Admin() {
                 <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Recently Added ({newsCategory})</h2>
                 <div className="space-y-4">
                   {recentNews.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-4 border border-border rounded-lg group bg-white dark:bg-zinc-800">
+                    <div key={item.id} className="flex items-center justify-between p-4 border border-border rounded-lg group bg-bg-page hover:border-text-primary transition-all">
                       <div>
                         <p className="font-bold text-sm text-text-primary">{item.title}</p>
                         <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">{item.source}</p>
                       </div>
                       <button 
                         onClick={() => handleDeleteNews(item.id)}
-                        className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest border border-red-100"
+                        className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 dark:bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest border border-red-100 dark:border-red-500/20"
                       >
                         <Trash2 size={13} />
                         <span>Delete</span>
@@ -582,7 +582,7 @@ export default function Admin() {
               </div>
             </div>
           ) : (
-            <div className="bg-white p-10 rounded-xl border border-border">
+            <div className="bg-surface p-10 rounded-xl border border-border">
                <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Detailed Analytics</h2>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                   <div className="p-8 rounded-2xl bg-surface border border-border">
@@ -627,47 +627,47 @@ export default function Admin() {
              onClick={() => {
                 setActiveTab('analytics');
              }}
-             className="w-full text-left bg-accent text-white rounded-xl p-10 shadow-lg group hover:scale-[1.02] transition-all cursor-pointer"
+             className="w-full text-left bg-accent text-bg-page rounded-xl p-6 md:p-10 shadow-lg group hover:scale-[1.01] transition-all cursor-pointer border border-accent/20"
            >
-              <h3 className="text-[11px] font-bold uppercase tracking-widest mb-8 flex items-center gap-2 text-gray-400 group-hover:text-white">
+              <h3 className="text-[10px] md:text-[11px] font-bold uppercase tracking-widest mb-6 md:mb-8 flex items-center gap-2 text-bg-page/70 group-hover:text-bg-page">
                  <LayoutGrid size={13} /> Overview (Click for Full Report)
               </h3>
-              <div className="space-y-8 font-serif">
-                 <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Reader Count (Total Views)</span>
-                    <span className="text-3xl font-bold">{stats.totalViews}</span>
+              <div className="space-y-6 md:space-y-8 font-serif">
+                 <div className="flex justify-between items-end border-b border-bg-page/10 pb-4">
+                    <span className="text-bg-page/60 text-[10px] font-bold uppercase tracking-widest">Reader Count (Total Views)</span>
+                    <span className="text-2xl md:text-3xl font-bold">{stats.totalViews}</span>
                  </div>
                  
                  {/* News Category Breakdown */}
                  <div className="pt-2">
-                    <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mb-4">News Breakdown</p>
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="bg-white/5 rounded-lg p-3">
+                    <p className="text-bg-page/60 text-[9px] font-bold uppercase tracking-widest mb-4">News Breakdown</p>
+                    <div className="grid grid-cols-2 gap-2 md:gap-4">
+                       <div className="bg-bg-page/10 rounded-lg p-3 border border-bg-page/5">
                           <p className="text-[9px] uppercase tracking-tighter opacity-50">Finance</p>
                           <p className="text-lg font-bold">{newsCounts.finance || 0}</p>
                        </div>
-                       <div className="bg-white/5 rounded-lg p-3">
+                       <div className="bg-bg-page/10 rounded-lg p-3 border border-bg-page/5">
                           <p className="text-[9px] uppercase tracking-tighter opacity-50">Politics</p>
                           <p className="text-lg font-bold">{newsCounts.politics || 0}</p>
                        </div>
-                       <div className="bg-white/5 rounded-lg p-3">
+                       <div className="bg-bg-page/10 rounded-lg p-3 border border-bg-page/5">
                           <p className="text-[9px] uppercase tracking-tighter opacity-50">Geo</p>
                           <p className="text-lg font-bold">{newsCounts.geopolitics || 0}</p>
                        </div>
-                       <div className="bg-white/5 rounded-lg p-3">
+                       <div className="bg-bg-page/10 rounded-lg p-3 border border-bg-page/5">
                           <p className="text-[9px] uppercase tracking-tighter opacity-50">Tech</p>
                           <p className="text-lg font-bold">{newsCounts.tech || 0}</p>
                        </div>
                     </div>
                  </div>
 
-                 <div className="flex justify-between items-end border-b border-white/10 pb-4 pt-4">
-                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Opinions</span>
-                    <span className="text-3xl font-bold">{blogs.length}</span>
+                 <div className="flex justify-between items-end border-b border-bg-page/10 pb-4 pt-4">
+                    <span className="text-bg-page/60 text-[10px] font-bold uppercase tracking-widest">Opinions</span>
+                    <span className="text-2xl md:text-3xl font-bold">{blogs.length}</span>
                  </div>
-                 <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Score</span>
-                    <span className="text-3xl font-bold">{stats.avgRating.toFixed(1)}/5</span>
+                 <div className="flex justify-between items-end border-b border-bg-page/10 pb-4">
+                    <span className="text-bg-page/60 text-[10px] font-bold uppercase tracking-widest">Score</span>
+                    <span className="text-2xl md:text-3xl font-bold">{stats.avgRating.toFixed(1)}/5</span>
                  </div>
               </div>
            </button>
@@ -690,13 +690,13 @@ export default function Admin() {
                              >
                                {b.title}
                              </p>
-                             <button
-                               onClick={() => handleDeleteBlog(b.id)}
-                               className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 px-2.5 py-1 rounded-lg text-[9px] uppercase font-bold tracking-widest border border-red-100 flex-shrink-0"
-                             >
-                               <Trash2 size={12} />
-                               <span>Delete</span>
-                             </button>
+                              <button
+                                onClick={() => handleDeleteBlog(b.id)}
+                                className="flex items-center gap-1 text-red-500 hover:text-red-700 transition-colors bg-red-50 dark:bg-red-500/10 px-2.5 py-1 rounded-lg text-[9px] uppercase font-bold tracking-widest border border-red-100 dark:border-red-500/20 flex-shrink-0"
+                              >
+                                <Trash2 size={12} />
+                                <span>Delete</span>
+                              </button>
                           </div>
                           <p className="text-[9px] text-text-secondary font-bold uppercase tracking-widest mt-1">
                             Published: {b.date}

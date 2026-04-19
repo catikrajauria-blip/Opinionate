@@ -110,7 +110,7 @@ export default function Home() {
                     />
                   ) : (
                     <div className="w-full h-full bg-accent flex items-center justify-center">
-                       <Zap size={60} className="text-white opacity-20" />
+                       <Zap size={60} className="text-bg-page opacity-20" />
                     </div>
                   )}
                 </div>
@@ -135,7 +135,7 @@ export default function Home() {
                   
                   <div className="flex items-center justify-between gap-6 pt-8 border-t border-border mt-auto">
                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-xs font-bold">
+                        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-bg-page text-xs font-bold">
                            {blog.author.charAt(0)}
                         </div>
                         <span className="text-xs font-bold text-text-primary uppercase tracking-wider">{blog.author}</span>

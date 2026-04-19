@@ -65,5 +65,5 @@
 }
 
 .btn-minimal-primary {
-  @apply flex items-center gap-2 px-4 py-2 bg-accent text-white border border-accent rounded-lg text-[13px] font-medium transition-colors hover:bg-black;
+  @apply flex items-center gap-2 px-4 py-2 bg-accent text-bg-page border-accent rounded-lg text-[13px] font-medium transition-colors hover:bg-black dark:hover:bg-white/90;
 }

@@ -47,7 +47,7 @@ export default function Archive() {
 
         <div className="flex flex-col lg:flex-row gap-6 items-center justify-between border-y border-border py-8">
           <div className="relative w-full lg:max-w-md">
-            <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
             <input 
               type="text" 
               placeholder="Search opinions..."
@@ -77,7 +77,7 @@ export default function Archive() {
                 onClick={() => setViewMode('grid')}
                 className={cn(
                   "p-2 rounded-md transition-all",
-                  viewMode === 'grid' ? "bg-accent text-white" : "text-gray-400"
+                  viewMode === 'grid' ? "bg-accent text-bg-page" : "text-text-secondary"
                 )}
               >
                 <LayoutGrid size={16} />
@@ -86,7 +86,7 @@ export default function Archive() {
                 onClick={() => setViewMode('list')}
                 className={cn(
                   "p-2 rounded-md transition-all",
-                  viewMode === 'list' ? "bg-accent text-white" : "text-gray-400"
+                  viewMode === 'list' ? "bg-accent text-bg-page" : "text-text-secondary"
                 )}
               >
                 <ListIcon size={16} />

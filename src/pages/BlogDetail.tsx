@@ -15,6 +15,7 @@ export default function BlogDetail() {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
+  const [hasLiked, setHasLiked] = useState(false);
   const [userId] = useState(() => generateUserId());
 
   useEffect(() => {
@@ -32,6 +33,9 @@ export default function BlogDetail() {
           
           const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
           setIsSaved(saved.includes(slug));
+
+          const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+          setHasLiked(liked.includes(data.id));
         }
       } catch (error) {
         console.error('Error loading blog:', error);
@@ -56,12 +60,20 @@ export default function BlogDetail() {
   };
 
   const handleLike = async () => {
-    if (!blog) return;
+    if (!blog || hasLiked) return;
     try {
       const success = await blogService.incrementLikes(blog.id, userId);
       if (success) {
         setBlog({ ...blog, likesCount: (blog.likesCount || 0) + 1 });
+        setHasLiked(true);
+        const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+        localStorage.setItem('liked_blogs', JSON.stringify([...liked, blog.id]));
       } else {
+        setHasLiked(true);
+        const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+        if (!liked.includes(blog.id)) {
+          localStorage.setItem('liked_blogs', JSON.stringify([...liked, blog.id]));
+        }
         alert("You have already liked this opinion.");
       }
     } catch (err) {
@@ -117,9 +129,12 @@ export default function BlogDetail() {
                <span className="text-text-primary mr-4">{blog.ratingAverage.toFixed(1)}</span>
                <button 
                  onClick={handleLike}
-                 className="flex items-center gap-1 hover:text-red-500 transition-colors"
+                 className={cn(
+                   "flex items-center gap-1 transition-colors",
+                   hasLiked ? "text-red-500" : "hover:text-red-500"
+                 )}
                >
-                 <Heart size={16} className={blog.likesCount > 0 ? "fill-red-500 text-red-500" : ""} />
+                 <Heart size={16} className={hasLiked ? "fill-red-500 text-red-500" : ""} />
                  <span className="text-text-primary font-bold">{blog.likesCount}</span>
                </button>
             </div>
@@ -140,10 +155,16 @@ export default function BlogDetail() {
            <div className="flex items-center gap-3">
               <button 
                 onClick={handleLike}
-                className="btn-minimal group"
+                className={cn(
+                  "btn-minimal group",
+                  hasLiked && "text-red-500 border-red-500/20 bg-red-500/5 transition-all"
+                )}
               >
-                 <Heart size={16} className="text-gray-400 group-hover:text-red-500" />
-                 <span>Like ({blog.likesCount})</span>
+                 <Heart size={16} className={cn(
+                   "transition-colors",
+                   hasLiked ? "fill-red-500 text-red-500" : "text-text-secondary group-hover:text-red-500"
+                 )} />
+                 <span>{hasLiked ? 'Liked' : 'Like'} ({blog.likesCount})</span>
               </button>
 
               <button 

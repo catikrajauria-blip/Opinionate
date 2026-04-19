@@ -16,17 +16,24 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
   const [blog, setBlog] = useState(initialBlog);
   const [userId] = useState(() => generateUserId());
   const [isLiking, setIsLiking] = useState(false);
+  const [hasLiked, setHasLiked] = useState(() => {
+    const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+    return liked.includes(blog.id);
+  });
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isLiking) return;
+    if (isLiking || hasLiked) return;
     
     setIsLiking(true);
     try {
       const success = await blogService.incrementLikes(blog.id, userId);
       if (success) {
         setBlog(prev => ({ ...prev, likesCount: prev.likesCount + 1 }));
+        setHasLiked(true);
+        const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+        localStorage.setItem('liked_blogs', JSON.stringify([...liked, blog.id]));
       }
     } catch (err) {
       console.error('Error liking blog:', err);
@@ -90,10 +97,16 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
              <button 
                 onClick={handleLike}
                 disabled={isLiking}
-                className="flex items-center gap-1 hover:text-red-500 transition-colors disabled:opacity-50"
+                className={cn(
+                  "flex items-center gap-1 transition-colors disabled:opacity-50",
+                  hasLiked ? "text-red-500" : "hover:text-red-500"
+                )}
              >
-                <Heart size={14} className={isLiking ? "animate-pulse" : ""} />
-                <span>{blog.likesCount} Likes</span>
+                <Heart size={14} className={cn(
+                  isLiking ? "animate-pulse" : "",
+                  hasLiked && "fill-red-500"
+                )} />
+                <span>{blog.likesCount} <span className="hidden sm:inline">Likes</span></span>
              </button>
              <div className="flex items-center gap-1">
                 <span className="text-yellow-600">★</span>
