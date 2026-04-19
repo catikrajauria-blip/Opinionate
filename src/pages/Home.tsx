@@ -23,7 +23,11 @@ export default function Home() {
         
         // Track views for the first one if it exists
         if (todayBlogs.length > 0) {
-           await blogService.incrementViews(todayBlogs[0].id, userId);
+           try {
+             await blogService.incrementViews(todayBlogs[0].id, userId);
+           } catch (viewError) {
+             console.warn('Failed to increment views on home:', viewError);
+           }
         }
       } catch (error) {
         console.error('Error loading today blogs:', error);
@@ -124,8 +128,6 @@ export default function Home() {
                         </div>
                         <a 
                           href={`/blog/${blog.slug}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
                           className="btn-minimal-primary px-6 py-2 text-xs font-bold"
                         >
                           Read &rarr;

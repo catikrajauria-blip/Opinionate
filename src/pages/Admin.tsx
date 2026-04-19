@@ -26,6 +26,7 @@ export default function Admin() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [newsCounts, setNewsCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -66,8 +67,18 @@ export default function Admin() {
       loadRecentNews();
       loadBlogs();
       loadStats();
+      loadNewsCounts();
     }
   }, [user, isAdmin, activeTab, newsCategory]);
+
+  const loadNewsCounts = async () => {
+    try {
+      const counts = await blogService.getNewsCounts();
+      setNewsCounts(counts);
+    } catch (err) {
+      console.error('Error loading news counts:', err);
+    }
+  };
 
   const loadBlogs = async () => {
     try {
@@ -225,8 +236,10 @@ export default function Admin() {
     try {
       await blogService.deleteNews(id);
       loadRecentNews();
-    } catch (err) {
+      loadNewsCounts();
+    } catch (err: any) {
       console.error('Error deleting news:', err);
+      alert(`Failed to delete news: ${err.message || 'Permission denied'}`);
     }
   };
 
@@ -235,8 +248,10 @@ export default function Admin() {
     try {
       await blogService.deleteSubscriber(email);
       loadSubscribers();
-    } catch (err) {
+      loadStats(); // Update reader count in overview
+    } catch (err: any) {
       console.error('Error deleting sub:', err);
+      alert(`Failed to delete subscriber: ${err.message || 'Permission denied'}`);
     }
   };
 
@@ -245,8 +260,10 @@ export default function Admin() {
     try {
       await blogService.deleteBlog(id);
       loadBlogs();
-    } catch (err) {
+      loadStats(); // Update blog count in overview
+    } catch (err: any) {
       console.error('Error deleting blog:', err);
+      alert(`Failed to delete blog: ${err.message || 'Permission denied'}`);
     }
   };
 
@@ -367,7 +384,7 @@ export default function Admin() {
               onClick={() => setActiveTab('news')}
               className={cn("text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
-              Newsletter News
+              Newsletter News ({Object.values(newsCounts).reduce((a, b) => a + b, 0)})
             </button>
             <button 
               onClick={() => setActiveTab('analytics')}
@@ -504,10 +521,10 @@ export default function Admin() {
                         value={newsCategory} onChange={(e) => setNewsCategory(e.target.value)}
                         className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
                       >
-                        <option value="finance">Finance & Markets</option>
-                        <option value="politics">Indian Politics</option>
-                        <option value="geopolitics">Geopolitics</option>
-                        <option value="tech">Industry & Tech</option>
+                        <option value="finance">Finance & Markets ({newsCounts.finance || 0})</option>
+                        <option value="politics">Indian Politics ({newsCounts.politics || 0})</option>
+                        <option value="geopolitics">Geopolitics ({newsCounts.geopolitics || 0})</option>
+                        <option value="tech">Industry & Tech ({newsCounts.tech || 0})</option>
                       </select>
                   </div>
                 </div>
@@ -640,13 +657,12 @@ export default function Admin() {
         <div className="space-y-8">
            <button 
              onClick={() => {
-                const win = window.open('/admin?detail=true', '_blank');
                 setActiveTab('analytics');
              }}
              className="w-full text-left bg-accent text-white rounded-xl p-10 shadow-lg group hover:scale-[1.02] transition-all cursor-pointer"
            >
               <h3 className="text-[11px] font-bold uppercase tracking-widest mb-8 flex items-center gap-2 text-gray-400 group-hover:text-white">
-                 <LayoutGrid size={13} /> Overview (Full Report &rarr;)
+                 <LayoutGrid size={13} /> Overview (Click for Full Report)
               </h3>
               <div className="space-y-8 font-serif">
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
@@ -676,7 +692,7 @@ export default function Admin() {
                        </div>
                        <div className="overflow-hidden border-b border-border/50 pb-4 w-full">
                           <p 
-                            onClick={() => window.open(`/blog/${b.slug}`, '_blank')}
+                            onClick={() => { window.location.href = `/blog/${b.slug}`; }}
                             className="text-[12px] font-bold text-text-primary truncate hover:text-accent cursor-pointer transition-colors"
                           >
                             {b.title}

@@ -14,6 +14,7 @@ import {
   Timestamp,
   serverTimestamp,
   runTransaction,
+  deleteDoc,
   collectionGroup,
   getDocFromServer
 } from 'firebase/firestore';
@@ -191,7 +192,6 @@ export const blogService = {
   },
 
   async deleteSubscriber(email: string) {
-    const { deleteDoc } = await import('firebase/firestore');
     await deleteDoc(doc(db, SUBSCRIBERS_COL, email));
   },
 
@@ -221,10 +221,7 @@ export const blogService = {
   },
 
   async deleteBlog(blogId: string) {
-    // Note: In a real app, you'd also delete comments, but rules handle subcollections
-    // For simplicity, we just delete the blog document.
-    await updateDoc(doc(db, BLOGS_COL, blogId), { deletedAt: serverTimestamp() });
-    // In many designs, we use a soft delete
+    await deleteDoc(doc(db, BLOGS_COL, blogId));
   },
 
   // Contact operations
@@ -255,8 +252,22 @@ export const blogService = {
   },
 
   async deleteNews(newsId: string) {
-    const { deleteDoc } = await import('firebase/firestore');
     await deleteDoc(doc(db, NEWS_COL, newsId));
+  },
+
+  async getNewsCounts() {
+    const snap = await getDocs(collection(db, NEWS_COL));
+    const counts: Record<string, number> = {
+      finance: 0,
+      politics: 0,
+      geopolitics: 0,
+      tech: 0
+    };
+    snap.forEach(doc => {
+      const cat = doc.data().category;
+      if (counts[cat] !== undefined) counts[cat]++;
+    });
+    return counts;
   },
 
   async getGlobalRecentComments(limitCount = 5) {

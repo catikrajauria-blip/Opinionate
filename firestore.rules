@@ -11,9 +11,9 @@ service cloud.firestore {
       return request.auth != null;
     }
     function isAdmin() {
-      return isSignedIn() && (
-        request.auth.token.email == 'catikrajauria@gmail.com'
-      );
+      return isSignedIn() && 
+             request.auth.token.keys().hasAll(['email']) && 
+             request.auth.token.email.lower() == 'catikrajauria@gmail.com';
     }
     function isValidId(id) {
        return id is string && id.size() <= 256;
@@ -33,10 +33,10 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       function isValidBlog(data) {
-        return data.title is string && data.title.size() <= 500 &&
-               data.slug is string && data.slug.size() <= 500 &&
-               data.summary is string && data.summary.size() <= 5000 &&
-               data.content is string && data.content.size() <= 100000;
+        return data.title is string && data.title.size() <= 800 &&
+               data.slug is string && data.slug.size() <= 800 &&
+               data.summary is string && data.summary.size() <= 8000 &&
+               data.content is string && data.content.size() <= 300000;
       }
 
       function isOnlyStatUpdate() {
@@ -66,7 +66,7 @@ service cloud.firestore {
     // Subscribers
     match /subscribers/{email} {
       allow read: if isAdmin();
-      allow create: if incoming().email == email && incoming().status == 'active';
+      allow create, update: if (incoming().email == email && incoming().status == 'active') || isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -80,18 +80,16 @@ service cloud.firestore {
       }
     }
 
-    // Ratings/Likes/Views (Public can create once)
+    // Ratings/Likes/Views
     match /ratings/{ratingId} {
       allow read: if true;
-      allow create: if incoming().score >= 1 && incoming().score <= 5;
+      allow write: if (incoming().score >= 1 && incoming().score <= 5) || isAdmin();
     }
     match /likes/{likeId} {
-      allow read: if true;
-      allow create: if true;
+      allow read, write: if true;
     }
     match /views/{viewId} {
-      allow read: if true;
-      allow create: if true;
+      allow read, write: if true;
     }
 
     // Curated News

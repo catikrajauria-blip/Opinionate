@@ -24,7 +24,11 @@ export default function BlogDetail() {
         const data = await blogService.getBlogBySlug(slug);
         if (data) {
           setBlog(data);
-          await blogService.incrementViews(data.id, userId);
+          try {
+            await blogService.incrementViews(data.id, userId);
+          } catch (viewError) {
+            console.warn('Failed to increment views:', viewError);
+          }
           
           const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
           setIsSaved(saved.includes(slug));
