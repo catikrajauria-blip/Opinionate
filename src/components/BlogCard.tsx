@@ -1,16 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Blog } from '../types';
-import { formatDate, calculateReadingTime } from '../lib/utils';
+import { formatDate, calculateReadingTime, generateUserId } from '../lib/utils';
 import { Eye, Heart, MessageSquare, Clock, Star } from 'lucide-react';
 import { motion } from 'motion/react';
+import { blogService } from '../lib/blogService';
 
 interface BlogCardProps {
   blog: Blog;
   index?: number;
 }
 
-export default function BlogCard({ blog, index = 0 }: BlogCardProps) {
+export default function BlogCard({ blog: initialBlog, index = 0 }: BlogCardProps) {
+  const [blog, setBlog] = useState(initialBlog);
+  const [userId] = useState(() => generateUserId());
+  const [isLiking, setIsLiking] = useState(false);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isLiking) return;
+    
+    setIsLiking(true);
+    try {
+      const success = await blogService.incrementLikes(blog.id, userId);
+      if (success) {
+        setBlog(prev => ({ ...prev, likesCount: prev.likesCount + 1 }));
+      }
+    } catch (err) {
+      console.error('Error liking blog:', err);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -48,9 +71,14 @@ export default function BlogCard({ blog, index = 0 }: BlogCardProps) {
              <div className="flex items-center gap-1">
                 <span>👁️ {blog.viewsCount} Views</span>
              </div>
-             <div className="flex items-center gap-1">
-                <span>❤️ {blog.likesCount} Likes</span>
-             </div>
+             <button 
+                onClick={handleLike}
+                disabled={isLiking}
+                className="flex items-center gap-1 hover:text-red-500 transition-colors disabled:opacity-50"
+             >
+                <Heart size={14} className={isLiking ? "animate-pulse" : ""} />
+                <span>{blog.likesCount} Likes</span>
+             </button>
              <div className="flex items-center gap-1">
                 <span className="text-yellow-600">★</span>
                 <span>{blog.ratingAverage.toFixed(1)}</span>

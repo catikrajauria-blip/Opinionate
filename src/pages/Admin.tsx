@@ -51,7 +51,7 @@ export default function Admin() {
   const [newsSource, setNewsSource] = useState('');
   const [recentNews, setRecentNews] = useState<any[]>([]);
 
-  const isAdmin = user?.email === 'catikrajauria@gmail.com';
+  const isAdmin = user?.email?.toLowerCase() === 'catikrajauria@gmail.com';
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -666,12 +666,36 @@ export default function Admin() {
               </h3>
               <div className="space-y-8 font-serif">
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Readers</span>
-                    <span className="text-3xl font-bold">{stats.totalSubscribers}</span>
+                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Readers (Subscribers)</span>
+                    <span className="text-3xl font-bold">{subscribers.length}</span>
                  </div>
-                 <div className="flex justify-between items-end border-b border-white/10 pb-4">
+                 
+                 {/* News Category Breakdown */}
+                 <div className="pt-2">
+                    <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mb-4">News Breakdown</p>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-[9px] uppercase tracking-tighter opacity-50">Finance</p>
+                          <p className="text-lg font-bold">{newsCounts.finance || 0}</p>
+                       </div>
+                       <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-[9px] uppercase tracking-tighter opacity-50">Politics</p>
+                          <p className="text-lg font-bold">{newsCounts.politics || 0}</p>
+                       </div>
+                       <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-[9px] uppercase tracking-tighter opacity-50">Geo</p>
+                          <p className="text-lg font-bold">{newsCounts.geopolitics || 0}</p>
+                       </div>
+                       <div className="bg-white/5 rounded-lg p-3">
+                          <p className="text-[9px] uppercase tracking-tighter opacity-50">Tech</p>
+                          <p className="text-lg font-bold">{newsCounts.tech || 0}</p>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="flex justify-between items-end border-b border-white/10 pb-4 pt-4">
                     <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Opinions</span>
-                    <span className="text-3xl font-bold">{stats.totalBlogs}</span>
+                    <span className="text-3xl font-bold">{blogs.length}</span>
                  </div>
                  <div className="flex justify-between items-end border-b border-white/10 pb-4">
                     <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Score</span>

@@ -123,6 +123,11 @@ export default function Archive() {
                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                    <h3 className="text-2xl font-serif font-bold group-hover:text-text-secondary transition-colors leading-tight">{blog.title}</h3>
                    <p className="text-text-secondary font-serif text-sm line-clamp-2 max-w-2xl">{blog.summary}</p>
+                   <div className="flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-text-secondary opacity-60">
+                      <span>👁️ {blog.viewsCount || 0}</span>
+                      <span>❤️ {blog.likesCount || 0}</span>
+                      <span>★ {blog.ratingAverage?.toFixed(1) || '0.0'}</span>
+                   </div>
                    <Link to={`/blog/${blog.slug}`} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-text-primary group/link border-b border-text-primary pb-0.5 self-start">
                       Read Opinion <ChevronRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
                    </Link>

@@ -14,6 +14,7 @@ export default function Home() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId] = useState(() => generateUserId());
+  const [likingId, setLikingId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadTodayBlogs() {
@@ -37,6 +38,25 @@ export default function Home() {
     }
     loadTodayBlogs();
   }, [userId]);
+
+  const handleLike = async (e: React.MouseEvent, blogId: string, idx: number) => {
+    e.preventDefault();
+    if (likingId) return;
+    
+    setLikingId(blogId);
+    try {
+      const success = await blogService.incrementLikes(blogId, userId);
+      if (success) {
+        const newBlogs = [...blogs];
+        newBlogs[idx] = { ...newBlogs[idx], likesCount: (newBlogs[idx].likesCount || 0) + 1 };
+        setBlogs(newBlogs);
+      }
+    } catch (err) {
+      console.error('Error liking blog:', err);
+    } finally {
+      setLikingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -126,6 +146,14 @@ export default function Home() {
                            <Eye size={14} />
                            <span className="text-[10px] font-bold">{blog.viewsCount}</span>
                         </div>
+                        <button 
+                          onClick={(e) => handleLike(e, blog.id, idx)}
+                          disabled={likingId === blog.id}
+                          className="flex items-center gap-1 text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50"
+                        >
+                           <Heart size={14} className={likingId === blog.id ? "animate-pulse" : ""} />
+                           <span className="text-[10px] font-bold">{blog.likesCount}</span>
+                        </button>
                         <a 
                           href={`/blog/${blog.slug}`} 
                           className="btn-minimal-primary px-6 py-2 text-xs font-bold"

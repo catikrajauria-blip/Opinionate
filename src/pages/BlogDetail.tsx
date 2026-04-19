@@ -108,7 +108,14 @@ export default function BlogDetail() {
             </div>
             <div className="flex items-center gap-1.5 ml-auto">
                <span className="text-yellow-500">★★★★☆</span>
-               <span className="text-text-primary">{blog.ratingAverage.toFixed(1)}</span>
+               <span className="text-text-primary mr-4">{blog.ratingAverage.toFixed(1)}</span>
+               <button 
+                 onClick={handleLike}
+                 className="flex items-center gap-1 hover:text-red-500 transition-colors"
+               >
+                 <Heart size={16} className={blog.likesCount > 0 ? "fill-red-500 text-red-500" : ""} />
+                 <span className="text-text-primary font-bold">{blog.likesCount}</span>
+               </button>
             </div>
           </div>
         </header>
