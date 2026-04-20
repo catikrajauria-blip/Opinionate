@@ -73,9 +73,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
             setProfile(newProfile);
           } else {
-            const profileData = userSnap.data() as any;
+            let profileData = userSnap.data() as any;
             
-            // Only update lastLogin to avoid unnecessary writes
+            // Check if this is the hardcoded admin and update role if necessary
+            if (firebaseUser.email?.toLowerCase() === 'catikrajauria@gmail.com' && profileData.role !== 'admin') {
+              console.log('Upgrading profile to admin role...');
+              await setDoc(userRef, { role: 'admin' }, { merge: true });
+              profileData.role = 'admin';
+            }
+
+            // Always update lastLogin
             await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
             
             setProfile({

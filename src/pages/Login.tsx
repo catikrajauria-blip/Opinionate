@@ -22,7 +22,14 @@ export default function Login() {
     try {
       await signIn();
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in. Please try again.');
+      console.error('Sign in error details:', err);
+      if (err.code === 'auth/unauthorized-domain') {
+        setError('Unauthorized Domain: You must add this Vercel URL to your Firebase Console under Authentication > Settings > Authorized Domains.');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Login cancelled. Please finish the process in the popup window.');
+      } else {
+        setError(err.message || 'Failed to sign in. Please try again.');
+      }
     } finally {
       setSigningIn(false);
     }

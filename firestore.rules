@@ -123,11 +123,15 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       function isValidUser(data) {
-        return data.uid == uid && data.role == 'user' && data.isBlocked == false;
+        let isDefaultAdmin = data.email.lower() == 'catikrajauria@gmail.com';
+        let allowedRole = isDefaultAdmin ? 'admin' : 'user';
+        return data.uid == uid && data.role == allowedRole && data.isBlocked == false;
       }
       function isValidUserUpdate(curr, prev) {
-         // User cannot change their role or block status
-         return curr.role == prev.role && curr.isBlocked == prev.isBlocked;
+         // Standard check: user cannot change their own role or blocked status
+         // Except we allow the hardcoded admin to keep their status
+         let isDefaultAdmin = curr.email.lower() == 'catikrajauria@gmail.com';
+         return isDefaultAdmin || (curr.role == prev.role && curr.isBlocked == prev.isBlocked);
       }
 
       match /saved_blogs/{blogId} {
