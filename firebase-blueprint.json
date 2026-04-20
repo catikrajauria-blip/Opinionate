@@ -103,6 +103,32 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "url", "summary", "category", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Registered application users",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "isBlocked": { "type": "boolean" },
+        "lastLogin": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "isBlocked", "createdAt"]
+    },
+    "SavedBlog": {
+      "title": "SavedBlog",
+      "description": "Reference to a blog saved by a user",
+      "type": "object",
+      "properties": {
+        "blogId": { "type": "string" },
+        "savedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["blogId", "savedAt"]
     }
   },
   "firestore": {
@@ -137,6 +163,14 @@
     "/news/{newsId}": {
       "schema": "NewsItem",
       "description": "Curated news articles"
+    },
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/users/{uid}/saved_blogs/{blogId}": {
+      "schema": "SavedBlog",
+      "description": "Blogs saved by a specific user"
     }
   }
 }

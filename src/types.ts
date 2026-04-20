@@ -58,3 +58,19 @@ export interface Like {
   blogId: string;
   userId: string;
 }
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+  role: 'admin' | 'user';
+  isBlocked: boolean;
+  lastLogin?: string;
+  createdAt: string;
+}
+
+export interface SavedBlog {
+  blogId: string;
+  savedAt: Timestamp;
+}

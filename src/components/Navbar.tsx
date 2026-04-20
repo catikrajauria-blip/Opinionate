@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Sun, Moon, Search, Bookmark, Mail, User } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Bookmark, Mail, User, LogOut, ChevronDown, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const { profile, signOut, isAdmin: isUserAdmin } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,12 +74,75 @@ export default function Navbar() {
               >
                 {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
               </button>
-              <Link 
-                to="/admin" 
-                className="btn-minimal p-2"
-              >
-                <User size={16} />
-              </Link>
+              
+              {profile ? (
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="flex items-center gap-2 btn-minimal p-1 pr-3"
+                  >
+                    {profile.photoURL ? (
+                      <img src={profile.photoURL} alt="" className="w-8 h-8 rounded-full border border-border" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-accent text-bg-page flex items-center justify-center font-bold text-xs">
+                        {profile.displayName.charAt(0)}
+                      </div>
+                    )}
+                    <ChevronDown size={14} className={cn("transition-transform", showProfileMenu && "rotate-180")} />
+                  </button>
+
+                  <AnimatePresence>
+                    {showProfileMenu && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-48 bg-surface border border-border rounded-xl shadow-xl py-2 overflow-hidden"
+                      >
+                        <div className="px-4 py-2 border-b border-border mb-2">
+                          <p className="text-xs font-bold text-text-primary truncate">{profile.displayName}</p>
+                          <p className="text-[10px] text-text-secondary truncate">{profile.email}</p>
+                        </div>
+                        
+                        {isUserAdmin && (
+                          <Link 
+                            to="/admin" 
+                            onClick={() => setShowProfileMenu(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-text-primary hover:bg-bg-page transition-colors"
+                          >
+                            <Settings size={14} /> Admin Dashboard
+                          </Link>
+                        )}
+                        
+                        <Link 
+                          to="/saved" 
+                          onClick={() => setShowProfileMenu(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-text-primary hover:bg-bg-page transition-colors"
+                        >
+                          <Bookmark size={14} /> Reading List
+                        </Link>
+
+                        <button 
+                          onClick={() => {
+                            signOut();
+                            setShowProfileMenu(false);
+                          }}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                        >
+                          <LogOut size={14} /> Sign Out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link 
+                  to="/login" 
+                  className="btn-minimal px-4 py-2 text-xs font-bold flex items-center gap-2"
+                >
+                  <User size={14} /> Sign In
+                </Link>
+              )}
             </div>
           </div>
 
@@ -125,14 +192,46 @@ export default function Navbar() {
                 </NavLink>
               ))}
               <div className="pt-4 border-t border-border">
-                <Link
-                  to="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-4 text-base font-medium text-text-secondary hover:bg-surface rounded-lg"
-                >
-                  <User size={20} />
-                  Admin Panel
-                </Link>
+                {profile ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-3 px-3 py-2 mb-2">
+                       {profile.photoURL && <img src={profile.photoURL} alt="" className="w-10 h-10 rounded-full border border-border" referrerPolicy="no-referrer" />}
+                       <div>
+                          <p className="text-sm font-bold text-text-primary">{profile.displayName}</p>
+                          <p className="text-xs text-text-secondary">{profile.email}</p>
+                       </div>
+                    </div>
+                    {isUserAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-3 px-3 py-4 text-base font-medium text-text-secondary hover:bg-surface rounded-lg"
+                      >
+                        <Settings size={20} />
+                        Admin Panel
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-4 text-base font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg"
+                    >
+                      <LogOut size={20} />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-4 text-base font-medium text-accent hover:bg-accent/10 rounded-lg"
+                  >
+                    <User size={20} />
+                    Sign In
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>

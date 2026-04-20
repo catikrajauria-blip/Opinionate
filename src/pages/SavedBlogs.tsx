@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { blogService } from '../lib/blogService';
 import { Blog } from '../types';
 import BlogCard from '../components/BlogCard';
-import { Bookmark, LayoutGrid, Trash2, ArrowRight } from 'lucide-react';
+import { Bookmark, Search, ArrowRight, LogIn } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 export default function SavedBlogs() {
+  const { user, profile, loading: authLoading } = useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     async function loadSavedBlogs() {
-      const savedSlugs = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
-      if (savedSlugs.length === 0) {
+      if (!user) {
         setLoading(false);
         return;
       }
-
       try {
-        // Since we don't have a multi-get-by-slug, we'll just fetch all and filter
-        // In a real app we would have a specific endpoint or use firebase IN query
-        const all = await blogService.getLatestBlogs(100);
-        setBlogs(all.filter(b => savedSlugs.includes(b.slug)));
+        const data = await blogService.getSavedBlogs(user.uid);
+        setBlogs(data);
       } catch (error) {
         console.error('Error loading saved blogs:', error);
       } finally {
@@ -30,67 +29,110 @@ export default function SavedBlogs() {
       }
     }
     loadSavedBlogs();
-  }, []);
+  }, [user]);
 
-  const removeBookmark = (slug: string) => {
-    const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
-    const newSaved = saved.filter((s: string) => s !== slug);
-    localStorage.setItem('saved_blogs', JSON.stringify(newSaved));
-    setBlogs(blogs.filter(b => b.slug !== slug));
-  };
+  const filteredBlogs = blogs.filter(blog =>
+    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    blog.summary.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (authLoading || loading) {
+    return (
+      <div className="py-20 flex justify-center">
+        <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 px-4 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-surface p-12 rounded-[2.5rem] border border-border shadow-2xl"
+        >
+          <div className="w-20 h-20 bg-accent/10 text-accent rounded-3xl flex items-center justify-center mx-auto mb-8 border border-accent/20">
+            <Bookmark size={40} />
+          </div>
+          <h1 className="text-3xl font-display font-bold mb-4 text-text-primary">Your Reading List</h1>
+          <p className="text-text-secondary mb-8 font-serif leading-relaxed">
+            Sign in to start saving opinions for later reading. Your list will be synced across all your devices.
+          </p>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-text-primary text-bg-page rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl shadow-black/5"
+          >
+            <LogIn size={20} />
+            Sign in to Opinionate
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <header className="mb-16 flex items-center justify-between border-b border-border pb-10">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Reading List</h1>
-          <p className="text-text-secondary font-serif text-lg">Your curated collection of bookmarked daily blogs.</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="mb-16 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface border border-border rounded-full text-[10px] font-bold uppercase tracking-widest text-text-secondary mb-6">
+          <Bookmark size={12} className="text-accent" />
+          Personal Library
         </div>
-        <div className="hidden md:flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-text-primary font-bold text-[13px] uppercase tracking-widest">
-           {blogs.length} Saved Items
+        <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Reading List</h1>
+        <p className="text-text-secondary max-w-2xl mx-auto font-serif text-lg leading-relaxed">
+          The ideas and perspectives you've archived for deeper contemplation.
+        </p>
+
+        <div className="mt-12 max-w-xl mx-auto relative group">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" size={20} />
+          <input
+            type="text"
+            placeholder="Search your saved opinions..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-surface border border-border rounded-[2rem] py-5 pl-14 pr-8 outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-medium"
+          />
         </div>
       </header>
 
-      {loading ? (
-        <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div></div>
-      ) : blogs.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <AnimatePresence>
-            {blogs.map((blog, idx) => (
-              <motion.div 
-                key={blog.id} 
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="relative group"
-              >
-                 <button 
-                   onClick={() => removeBookmark(blog.slug)}
-                   className="absolute top-4 right-4 z-10 p-2.5 bg-white/90 backdrop-blur-md text-red-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-50"
-                   title="Remove from saved"
-                 >
-                   <Trash2 size={18} />
-                 </button>
-                 <BlogCard blog={blog} index={idx} isGrid={true} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      ) : (
-        <div className="py-32 text-center">
-            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
-               <Bookmark size={48} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-400 mb-4">No saved blogs yet</h2>
-            <p className="text-gray-500 mb-10 max-w-sm mx-auto">Found some interesting opinions? Bookmark them to read or reference them later.</p>
-            <Link 
-              to="/archive" 
-              className="px-10 py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 mx-auto w-fit hover:bg-gray-800 transition-all shadow-xl shadow-gray-200"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        <AnimatePresence mode="popLayout">
+          {filteredBlogs.map((blog) => (
+            <motion.div
+              key={blog.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
             >
-              Browse Archive
-              <ArrowRight size={20} />
+              <BlogCard blog={blog} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {blogs.length === 0 ? (
+        <div className="text-center py-20 bg-surface rounded-[2.5rem] border border-border px-10">
+          <div className="max-w-md mx-auto">
+            <Bookmark size={48} className="mx-auto text-text-secondary opacity-20 mb-6" />
+            <h2 className="text-2xl font-bold mb-4">Nothing saved yet</h2>
+            <p className="text-text-secondary font-serif mb-10">
+              Browse the archive to find opinions and reports that resonate with you.
+            </p>
+            <Link
+              to="/archive"
+              className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-accent hover:underline"
+            >
+              Explore Archive <ArrowRight size={16} />
             </Link>
+          </div>
+        </div>
+      ) : filteredBlogs.length === 0 && (
+        <div className="text-center py-20">
+          <p className="text-text-secondary font-serif italic text-xl">
+            No saved opinions match your search.
+          </p>
         </div>
       )}
     </div>

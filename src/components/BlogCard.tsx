@@ -5,6 +5,8 @@ import { formatDate, calculateReadingTime, generateUserId, cn } from '../lib/uti
 import { Eye, Heart, MessageSquare, Clock, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { blogService } from '../lib/blogService';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface BlogCardProps {
   blog: Blog;
@@ -13,27 +15,37 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false }: BlogCardProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [blog, setBlog] = useState(initialBlog);
-  const [userId] = useState(() => generateUserId());
+  const [userId] = useState(() => user?.uid || generateUserId());
   const [isLiking, setIsLiking] = useState(false);
   const [hasLiked, setHasLiked] = useState(() => {
-    const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+    const key = user ? `liked_${user.uid}` : 'liked_blogs';
+    const liked = JSON.parse(localStorage.getItem(key) || '[]');
     return liked.includes(blog.id);
   });
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
     if (isLiking || hasLiked) return;
     
     setIsLiking(true);
     try {
-      const success = await blogService.incrementLikes(blog.id, userId);
+      const success = await blogService.incrementLikes(blog.id, user.uid);
       if (success) {
         setBlog(prev => ({ ...prev, likesCount: prev.likesCount + 1 }));
         setHasLiked(true);
-        const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
-        localStorage.setItem('liked_blogs', JSON.stringify([...liked, blog.id]));
+        const likedKey = `liked_${user.uid}`;
+        const liked = JSON.parse(localStorage.getItem(likedKey) || '[]');
+        localStorage.setItem(likedKey, JSON.stringify([...liked, blog.id]));
       }
     } catch (err) {
       console.error('Error liking blog:', err);

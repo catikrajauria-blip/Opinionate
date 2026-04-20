@@ -9,14 +9,19 @@ import NewsletterBox from '../components/NewsletterBox';
 import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
 import { Eye, Heart, Clock, Share2, Bookmark, BookmarkCheck, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
+  
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
-  const [userId] = useState(() => generateUserId());
+  const [userId] = useState(() => user?.uid || generateUserId());
 
   useEffect(() => {
     async function loadBlog() {
@@ -25,17 +30,27 @@ export default function BlogDetail() {
         const data = await blogService.getBlogBySlug(slug);
         if (data) {
           setBlog(data);
-          try {
-            await blogService.incrementViews(data.id, userId);
-          } catch (viewError) {
-            console.warn('Failed to increment views:', viewError);
-          }
           
-          const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
-          setIsSaved(saved.includes(slug));
+          if (user) {
+            try {
+              await blogService.incrementViews(data.id, user.uid);
+            } catch (viewError) {
+              console.warn('Failed to increment views:', viewError);
+            }
+            
+            const savedIds = await blogService.getSavedBlogIds(user.uid);
+            setIsSaved(savedIds.includes(data.id));
 
-          const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
-          setHasLiked(liked.includes(data.id));
+            // We can also check if liked by looking up the likes collection
+            // But for now, we'll keep the local check + server increment attempt
+            const liked = JSON.parse(localStorage.getItem(`liked_${user.uid}`) || '[]');
+            setHasLiked(liked.includes(data.id));
+          } else {
+            // Anonymous view
+            try {
+              await blogService.incrementViews(data.id, userId);
+            } catch (err) {}
+          }
         }
       } catch (error) {
         console.error('Error loading blog:', error);
@@ -44,37 +59,45 @@ export default function BlogDetail() {
       }
     }
     loadBlog();
-  }, [slug, userId]);
+  }, [slug, user, userId]);
 
-  const toggleSave = () => {
-    if (!blog) return;
-    const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
-    let newSaved;
-    if (isSaved) {
-      newSaved = saved.filter((s: string) => s !== blog.slug);
-    } else {
-      newSaved = [...saved, blog.slug];
+  const toggleSave = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: { pathname: window.location.pathname } } });
+      return;
     }
-    localStorage.setItem('saved_blogs', JSON.stringify(newSaved));
-    setIsSaved(!isSaved);
+    if (!blog) return;
+    
+    try {
+      const saved = await blogService.toggleSaveBlog(user.uid, blog.id);
+      setIsSaved(saved);
+    } catch (err) {
+      console.error('Error saving blog:', err);
+    }
   };
 
   const handleLike = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: { pathname: window.location.pathname } } });
+      return;
+    }
     if (!blog || hasLiked) return;
+    
     try {
-      const success = await blogService.incrementLikes(blog.id, userId);
+      const success = await blogService.incrementLikes(blog.id, user.uid);
       if (success) {
         setBlog({ ...blog, likesCount: (blog.likesCount || 0) + 1 });
         setHasLiked(true);
-        const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
-        localStorage.setItem('liked_blogs', JSON.stringify([...liked, blog.id]));
+        const likedKey = `liked_${user.uid}`;
+        const liked = JSON.parse(localStorage.getItem(likedKey) || '[]');
+        localStorage.setItem(likedKey, JSON.stringify([...liked, blog.id]));
       } else {
         setHasLiked(true);
-        const liked = JSON.parse(localStorage.getItem('liked_blogs') || '[]');
+        const likedKey = `liked_${user.uid}`;
+        const liked = JSON.parse(localStorage.getItem(likedKey) || '[]');
         if (!liked.includes(blog.id)) {
-          localStorage.setItem('liked_blogs', JSON.stringify([...liked, blog.id]));
+          localStorage.setItem(likedKey, JSON.stringify([...liked, blog.id]));
         }
-        alert("You have already liked this opinion.");
       }
     } catch (err) {
       console.error('Error liking blog:', err);

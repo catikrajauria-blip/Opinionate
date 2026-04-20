@@ -12,8 +12,14 @@ service cloud.firestore {
     }
     function isAdmin() {
       return isSignedIn() && 
-             request.auth.token.keys().hasAll(['email']) && 
-             request.auth.token.email.lower() == 'catikrajauria@gmail.com';
+             ((request.auth.token.keys().hasAll(['email']) && request.auth.token.email.lower() == 'catikrajauria@gmail.com') ||
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    function isBlocked() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == true;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
     }
     function isValidId(id) {
        return id is string && id.size() <= 256;
@@ -29,7 +35,7 @@ service cloud.firestore {
     match /blogs/{blogId} {
       allow read: if true; 
       allow create: if isAdmin() && isValidBlog(incoming());
-      allow update: if (isAdmin() && isValidBlog(incoming())) || isOnlyStatUpdate();
+      allow update: if (isAdmin() && isValidBlog(incoming())) || (isSignedIn() && !isBlocked() && isOnlyStatUpdate());
       allow delete: if isAdmin();
 
       function isValidBlog(data) {
@@ -83,13 +89,35 @@ service cloud.firestore {
     // Ratings/Likes/Views
     match /ratings/{ratingId} {
       allow read: if true;
-      allow write: if (incoming().score >= 1 && incoming().score <= 5) || isAdmin();
+      allow write: if (isSignedIn() && !isBlocked() && (incoming().score >= 1 && incoming().score <= 5)) || isAdmin();
     }
     match /likes/{likeId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isSignedIn() && !isBlocked();
     }
     match /views/{viewId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if true; // Views can stay public for now as they use specific ID logic
+    }
+
+    // Users & Activity
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(uid) && isValidUser(incoming());
+      allow update: if (isOwner(uid) && isValidUserUpdate(incoming(), existing()) && !isBlocked()) || isAdmin();
+      allow delete: if isAdmin();
+
+      function isValidUser(data) {
+        return data.uid == uid && data.role == 'user' && data.isBlocked == false;
+      }
+      function isValidUserUpdate(curr, prev) {
+         // User cannot change their own role or blocked status
+         return curr.role == prev.role && curr.isBlocked == prev.isBlocked;
+      }
+
+      match /saved_blogs/{blogId} {
+        allow read, write: if isOwner(uid) && !isBlocked();
+      }
     }
 
     // Curated News

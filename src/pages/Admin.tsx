@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { blogService } from '../lib/blogService';
-import { auth, signInWithGoogle } from '../lib/firebase';
-import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { Plus, LayoutGrid, FileText, Settings, LogOut, Send, Image as ImageIcon, Link as LinkIcon, CheckCircle2, Zap, Trash2, PieChart } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { 
+  Plus, LayoutGrid, FileText, Settings, LogOut, Send, 
+  Image as ImageIcon, Link as LinkIcon, CheckCircle2, 
+  Zap, Trash2, PieChart, Users, Shield, ShieldAlert,
+  Search as SearchIcon, Mail as MailIcon, Clock 
+} from 'lucide-react';
 import { generateSlug, cn } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
+import { useAuth } from '../contexts/AuthContext';
+import { UserProfile } from '../types';
 
 export default function Admin() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
   const [aiLoading, setAiLoading] = useState(false);
-  const [subscribers, setSubscribers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'analytics'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
+  const [userSearch, setUserSearch] = useState('');
   const [stats, setStats] = useState<any>({
     totalBlogs: 0,
     totalSubscribers: 0,
@@ -23,17 +31,8 @@ export default function Admin() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [newsCounts, setNewsCounts] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('detail') === 'true') {
-      setActiveTab('analytics');
-    }
-  }, []);
 
   // Post Form State
   const [title, setTitle] = useState('');
@@ -51,25 +50,24 @@ export default function Admin() {
   const [newsSource, setNewsSource] = useState('');
   const [recentNews, setRecentNews] = useState<any[]>([]);
 
-  const isAdmin = user?.email?.toLowerCase() === 'catikrajauria@gmail.com';
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+    if (user && isGlobalAdmin) {
+      loadData();
+    }
+  }, [user, isGlobalAdmin, activeTab]);
 
-  useEffect(() => {
-    if (user && isAdmin) {
-      loadSubscribers();
-      loadRecentNews();
-      loadBlogs();
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      if (activeTab === 'posts' || activeTab === 'analytics') loadBlogs();
+      if (activeTab === 'news') loadRecentNews();
+      if (activeTab === 'users') loadAllUsers();
       loadStats();
       loadNewsCounts();
+    } finally {
+      setLoading(false);
     }
-  }, [user, isAdmin, activeTab, newsCategory]);
+  };
 
   const loadNewsCounts = async () => {
     try {
@@ -101,7 +99,7 @@ export default function Admin() {
   const loadSubscribers = async () => {
     try {
       const subs = await blogService.getSubscribers();
-      setSubscribers(subs);
+      // No longer using separate subscribers tab, analytics handles it
     } catch (err) {
       console.error('Error loading subs:', err);
     }
@@ -114,6 +112,36 @@ export default function Admin() {
       setRecentNews(n);
     } catch (err) {
       console.error('Error loading news:', err);
+    }
+  };
+
+  const loadAllUsers = async () => {
+    try {
+      const u = await blogService.getAllUsers();
+      setAllUsers(u);
+    } catch (err) {
+      console.error('Error loading users:', err);
+    }
+  };
+
+  const handleToggleBlock = async (u: UserProfile) => {
+    if (!window.confirm(`Are you sure you want to ${u.isBlocked ? 'unblock' : 'block'} ${u.displayName}?`)) return;
+    try {
+      await blogService.updateUserStatus(u.uid, !u.isBlocked);
+      loadAllUsers();
+    } catch (err: any) {
+      alert(`Error updating user: ${err.message}`);
+    }
+  };
+
+  const handleToggleRole = async (u: UserProfile) => {
+    const newRole = u.role === 'admin' ? 'user' : 'admin';
+    if (!window.confirm(`Change ${u.displayName}'s role to ${newRole}?`)) return;
+    try {
+      await blogService.updateUserRole(u.uid, newRole);
+      loadAllUsers();
+    } catch (err: any) {
+      alert(`Error updating role: ${err.message}`);
     }
   };
 
@@ -171,7 +199,7 @@ export default function Admin() {
 
   const handleCreateBlog = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isAdmin) return;
+    if (!isGlobalAdmin) return;
     
     setSubmitting(true);
     try {
@@ -205,7 +233,7 @@ export default function Admin() {
 
   const handleCreateNews = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isAdmin) return;
+    if (!isGlobalAdmin) return;
     
     setSubmitting(true);
     try {
@@ -267,88 +295,27 @@ export default function Admin() {
     }
   };
 
-  const handleSignIn = async () => {
-    setLoginError(null);
-    setLoginLoading(true);
-    try {
-      await signInWithGoogle();
-    } catch (err: any) {
-      console.error('Sign-in Error:', err);
-      if (err.code === 'auth/unauthorized-domain') {
-        setLoginError('Vercel domain not authorized. Please add this URL to "Authorized Domains" in your Firebase console.');
-      } else if (err.code === 'auth/popup-blocked') {
-        setLoginError('Sign-in popup was blocked. Please enable popups for this site.');
-      } else {
-        setLoginError(err.message || 'Failed to sign in. Please try again.');
-      }
-    } finally {
-      setLoginLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div></div>;
+  if (authLoading || loading) {
+    return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
   if (!user) {
-    return (
-      <div className="max-w-md mx-auto py-20 px-4 text-center">
-        <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-orange-100/30">
-          <div className="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-orange-200">
-             <Settings size={40} className="text-orange-600" />
-          </div>
-          <h1 className="text-3xl font-display font-bold mb-4 text-text-primary">Admin Access</h1>
-          <p className="text-text-secondary mb-8 font-serif leading-relaxed">Please sign in with your authorized Google account to manage the blog and newsletter.</p>
-          
-          <AnimatePresence>
-            {loginError && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                exit={{ opacity: 0 }}
-                className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-xs font-bold mb-6 border border-red-100 dark:border-red-900/30 leading-relaxed text-left"
-              >
-                <p className="mb-2">⚠️ {loginError}</p>
-                {loginError.includes('Authorized Domains') && (
-                  <div className="space-y-1 font-serif font-normal opacity-80">
-                    <p>1. Go to Firebase Console &gt; Authentication &gt; Settings.</p>
-                    <p>2. Add this domain to "Authorized domains".</p>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <button 
-            onClick={handleSignIn}
-            disabled={loginLoading}
-            className="w-full py-4 bg-text-primary text-bg-page rounded-2xl font-bold flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl shadow-black/5 active:scale-95 disabled:opacity-50"
-          >
-            {loginLoading ? (
-              <span className="flex items-center gap-2">
-                <LayoutGrid className="animate-spin" size={18} /> Connecting...
-              </span>
-            ) : (
-              'Sign in with Google'
-            )}
-          </button>
-        </div>
-      </div>
-    );
+    window.location.href = '/login?from=/admin';
+    return null;
   }
 
-  if (!isAdmin) {
+  if (!isGlobalAdmin) {
     return (
       <div className="max-w-md mx-auto py-20 px-4 text-center">
-        <div className="bg-red-50 p-8 md:p-12 rounded-[2.5rem] border border-red-100">
-           <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <LogOut size={32} />
+        <div className="bg-red-50 dark:bg-red-950/20 p-8 md:p-12 rounded-[2.5rem] border border-red-100 dark:border-red-900/30">
+           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldAlert size={32} />
            </div>
-           <h2 className="text-2xl font-bold text-red-900 mb-2">Unauthorized</h2>
-           <p className="text-red-700 mb-8">This area is reserved for the blog owner. Your account ({user.email}) does not have admin privileges.</p>
+           <h2 className="text-2xl font-bold text-red-900 dark:text-red-400 mb-2">Unauthorized</h2>
+           <p className="text-red-700 dark:text-red-300 mb-8 font-serif">This area is reserved for the blog owner. Your account ({user.email}) does not have admin privileges.</p>
            <button 
              onClick={() => signOut(auth)}
-             className="px-8 py-3 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition-all"
+             className="px-8 py-3 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200 dark:shadow-none"
            >
              Sign Out
            </button>
@@ -356,6 +323,11 @@ export default function Admin() {
       </div>
     );
   }
+
+  const filteredUsers = allUsers.filter(u => 
+    u.displayName.toLowerCase().includes(userSearch.toLowerCase()) || 
+    u.email.toLowerCase().includes(userSearch.toLowerCase())
+  );
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -378,13 +350,19 @@ export default function Admin() {
               onClick={() => setActiveTab('news')}
               className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'news' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
-              Newsletter News ({Object.values(newsCounts).reduce((a, b) => a + b, 0)})
+              Newsletter ({Object.values(newsCounts).reduce((a, b) => a + b, 0)})
+            </button>
+            <button 
+              onClick={() => setActiveTab('users')}
+              className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'users' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+            >
+              User Management ({allUsers.length})
             </button>
             <button 
               onClick={() => setActiveTab('analytics')}
               className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'analytics' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
-              Detailed Analytics
+              Analytics
             </button>
           </nav>
         </div>
@@ -578,6 +556,99 @@ export default function Admin() {
                     </div>
                   ))}
                   {recentNews.length === 0 && <p className="text-text-secondary italic font-serif py-4">No news items in this category.</p>}
+                </div>
+              </div>
+            </div>
+          ) : activeTab === 'users' ? (
+            <div className="space-y-8">
+              <div className="bg-surface p-10 rounded-xl border border-border">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+                   <h2 className="text-xl font-serif font-bold text-text-primary">
+                      Community Management
+                   </h2>
+                   <div className="relative w-full md:w-64">
+                      <SearchIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" />
+                      <input 
+                        type="text" 
+                        placeholder="Search users..."
+                        value={userSearch}
+                        onChange={(e) => setUserSearch(e.target.value)}
+                        className="w-full bg-bg-page border border-border rounded-xl py-2 pl-10 pr-4 text-xs outline-none focus:border-accent transition-all"
+                      />
+                   </div>
+                </div>
+
+                <div className="space-y-4">
+                  {filteredUsers.map((u) => (
+                    <div key={u.uid} className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-bg-page border border-border rounded-2xl gap-6 hover:border-accent/30 transition-all group">
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                           {u.photoURL ? (
+                             <img src={u.photoURL} alt="" className="w-12 h-12 rounded-full border-2 border-surface" referrerPolicy="no-referrer" />
+                           ) : (
+                             <div className="w-12 h-12 rounded-full bg-accent text-bg-page flex items-center justify-center font-bold text-lg">
+                                {u.displayName.charAt(0)}
+                             </div>
+                           )}
+                           <div className={cn(
+                             "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-bg-page",
+                             u.isBlocked ? "bg-red-500" : "bg-green-500"
+                           )} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                             <p className="font-bold text-text-primary">{u.displayName}</p>
+                             {u.role === 'admin' && (
+                               <span className="bg-accent/10 text-accent text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter flex items-center gap-1">
+                                  <Shield size={10} /> Admin
+                               </span>
+                             )}
+                          </div>
+                          <p className="text-xs text-text-secondary flex items-center gap-1 mt-1 opacity-70">
+                             <MailIcon size={10} /> {u.email}
+                          </p>
+                          <div className="flex items-center gap-4 mt-2">
+                             <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest flex items-center gap-1 opacity-50">
+                                <Clock size={10} /> Joined {new Date(u.createdAt).toLocaleDateString()}
+                             </p>
+                             {u.lastLogin && (
+                               <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest flex items-center gap-1 opacity-50">
+                                  Last Session {new Date(u.lastLogin).toLocaleDateString()}
+                               </p>
+                             )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-border">
+                        <button 
+                          onClick={() => handleToggleRole(u)}
+                          className="flex-1 md:flex-none btn-minimal px-4 py-2 text-[10px] flex items-center justify-center gap-2"
+                        >
+                          {u.role === 'admin' ? <ShieldAlert size={14} /> : <Shield size={14} />}
+                          {u.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
+                        </button>
+                        <button 
+                          onClick={() => handleToggleBlock(u)}
+                          className={cn(
+                            "flex-1 md:flex-none px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest border transition-all flex items-center justify-center gap-2",
+                            u.isBlocked 
+                              ? "bg-green-50 text-green-600 border-green-100 hover:bg-green-100 dark:bg-green-500/10 dark:border-green-500/20"
+                              : "bg-red-50 text-red-600 border-red-100 hover:bg-red-100 dark:bg-red-500/10 dark:border-red-500/20"
+                          )}
+                        >
+                          <LogOut size={14} />
+                          {u.isBlocked ? 'Unblock User' : 'Block User'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {filteredUsers.length === 0 && (
+                    <div className="py-20 text-center border-2 border-dashed border-border rounded-2xl bg-bg-page">
+                       <Users size={48} className="mx-auto text-text-secondary opacity-20 mb-4" />
+                       <p className="text-text-secondary font-serif">No users found matching "{userSearch}"</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

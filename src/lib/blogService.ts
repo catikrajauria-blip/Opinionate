@@ -19,7 +19,7 @@ import {
   getDocFromServer
 } from 'firebase/firestore';
 import { db, auth } from './firebase';
-import { Blog, Comment, Subscriber, ContactMessage, Rating, Like, View } from '../types';
+import { Blog, Comment, Subscriber, ContactMessage, Rating, Like, View, UserProfile } from '../types';
 
 const handleFirestoreError = (error: any, operationType: string, path: string | null = null) => {
   if (error?.code === 'permission-denied') {
@@ -253,6 +253,50 @@ export const blogService = {
 
   async deleteNews(newsId: string) {
     await deleteDoc(doc(db, NEWS_COL, newsId));
+  },
+
+  async toggleSaveBlog(uid: string, blogId: string) {
+    const saveRef = doc(db, 'users', uid, 'saved_blogs', blogId);
+    const saveSnap = await getDoc(saveRef);
+    if (saveSnap.exists()) {
+      await deleteDoc(saveRef);
+      return false; // un-saved
+    } else {
+      await setDoc(saveRef, { blogId, savedAt: serverTimestamp() });
+      return true; // saved
+    }
+  },
+
+  async getSavedBlogIds(uid: string) {
+    const snap = await getDocs(collection(db, 'users', uid, 'saved_blogs'));
+    return snap.docs.map(doc => doc.id);
+  },
+
+  async getSavedBlogs(uid: string) {
+    const ids = await this.getSavedBlogIds(uid);
+    if (ids.length === 0) return [];
+    
+    // Firestore 'in' query limit is 10 (or 30 now, but better handle chunks if many)
+    const blogPromises = ids.map(id => getDoc(doc(db, BLOGS_COL, id)));
+    const snaps = await Promise.all(blogPromises);
+    return snaps.filter(s => s.exists()).map(s => ({ id: s.id, ...s.data() } as Blog));
+  },
+
+  // User management
+  async getAllUsers() {
+    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => doc.data() as UserProfile);
+  },
+
+  async updateUserStatus(uid: string, isBlocked: boolean) {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { isBlocked });
+  },
+
+  async updateUserRole(uid: string, role: 'admin' | 'user') {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { role });
   },
 
   async getNewsCounts() {
