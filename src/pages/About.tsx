@@ -11,7 +11,7 @@ export default function About() {
         className="flex flex-col md:flex-row gap-16 items-start"
       >
         <div className="w-full md:w-1/3 sticky top-24">
-          <div className="rounded-xl overflow-hidden aspect-square border border-border mb-8 grayscale hover:grayscale-0 transition-all duration-500">
+          <div className="rounded-xl overflow-hidden aspect-square border border-border mb-8 hover:scale-[1.02] transition-all duration-500">
             <img 
               src="https://picsum.photos/seed/kartik/600/600" 
               alt="Kartik Rajauria" 

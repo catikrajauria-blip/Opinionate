@@ -7,7 +7,7 @@ import {
   Plus, LayoutGrid, FileText, Settings, LogOut, Send, 
   Image as ImageIcon, Link as LinkIcon, CheckCircle2, 
   Zap, Trash2, PieChart, Users, Shield, ShieldAlert,
-  Search as SearchIcon, Mail as MailIcon, Clock,
+  Search as SearchIcon, Mail as MailIcon, Clock, X,
   MessageSquare, Star, Copy, ExternalLink, User
 } from 'lucide-react';
 import { generateSlug, cn, formatDate } from '../lib/utils';
@@ -220,12 +220,20 @@ export default function Admin() {
   };
 
   const handleAnalyzeBlog = async (blogId: string) => {
+    if (analyzingId) return;
     setAnalyzingId(blogId);
+    setSelectedBlogAnalysis(null);
     try {
       const data = await blogService.getBlogAnalysis(blogId);
       setSelectedBlogAnalysis(data);
+      // Wait for animation frame to ensure state is set before scrolling
+      setTimeout(() => {
+        const target = document.getElementById('analysis-viewport');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (err) {
       console.error('Error analyzing blog:', err);
+      alert('Analysis encountered a retrieval error. Please retry.');
     } finally {
       setAnalyzingId(null);
     }
@@ -364,7 +372,7 @@ export default function Admin() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-text-primary">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div className="flex items-center gap-8">
           <div>
@@ -414,7 +422,7 @@ export default function Admin() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 text-text-primary">
         <div className="lg:col-span-2">
           {activeTab === 'posts' ? (
             <form onSubmit={handleCreateBlog} className="bg-surface p-10 rounded-xl border border-border space-y-8">
@@ -506,7 +514,7 @@ export default function Admin() {
             </form>
           ) : activeTab === 'news' ? (
             <div className="space-y-12">
-              <form onSubmit={handleCreateNews} className="bg-white dark:bg-zinc-900 p-10 rounded-xl border border-border space-y-8">
+              <form onSubmit={handleCreateNews} className="bg-surface p-10 rounded-xl border border-border space-y-8">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-serif font-bold text-text-primary">
                         Add Curated News
@@ -601,7 +609,7 @@ export default function Admin() {
             </div>
           ) : activeTab === 'users' ? (
             <div className="space-y-8">
-              <div className="bg-white dark:bg-zinc-900 border border-border overflow-hidden">
+              <div className="bg-surface border border-border overflow-hidden">
                 <div className="p-8 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
                       <h2 className="text-2xl font-serif font-bold text-text-primary tracking-tighter">
@@ -703,7 +711,7 @@ export default function Admin() {
           ) : activeTab === 'community' ? (
             <div className="space-y-12">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-bg-page dark:bg-zinc-900 border border-border p-8">
+                  <div className="bg-surface border border-border p-8">
                      <h2 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-text-primary">
                         <MessageSquare size={20} className="text-accent" />
                         Global Dialogue
@@ -716,13 +724,13 @@ export default function Admin() {
                                     <div className="w-6 h-6 bg-surface border border-border flex items-center justify-center text-[10px] font-bold">
                                        {comment.name?.charAt(0)}
                                     </div>
-                                    <span className="text-[11px] font-bold uppercase tracking-tight">{comment.name}</span>
+                                    <span className="text-[11px] font-bold uppercase tracking-tight text-text-primary">{comment.name}</span>
                                  </div>
                                  <span className="text-[9px] font-mono text-text-secondary opacity-40">
                                     {formatDate(comment.createdAt)}
                                  </span>
                               </div>
-                              <p className="text-xs text-text-secondary font-serif leading-relaxed line-clamp-2 mb-3 grayscale group-hover:grayscale-0 transition-all">
+                              <p className="text-xs text-text-secondary font-serif leading-relaxed line-clamp-2 mb-3 group-hover:text-text-primary transition-all">
                                  "{comment.content}"
                               </p>
                               <div className="flex items-center gap-2">
@@ -739,7 +747,7 @@ export default function Admin() {
                      </div>
                   </div>
 
-                  <div className="bg-bg-page dark:bg-zinc-900 border border-border p-8">
+                  <div className="bg-surface border border-border p-8">
                      <h2 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-text-primary">
                         <Star size={20} className="text-yellow-500" />
                         Consensus Ledger
@@ -748,11 +756,11 @@ export default function Admin() {
                         {allRatings.map((rating: any) => (
                            <div key={rating.id} className="flex items-center justify-between p-3 bg-surface border border-border">
                               <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-xs font-bold font-mono bg-white">
+                                 <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-xs font-bold font-mono bg-surface text-text-primary">
                                     {rating.score}
                                  </div>
                                  <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-tight">{rating.user?.displayName || 'Anonymous Guest'}</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-tight text-text-primary">{rating.user?.displayName || 'Anonymous Guest'}</p>
                                     <p className="text-[9px] text-text-secondary font-serif italic max-w-[120px] truncate">{rating.blogTitle}</p>
                                  </div>
                               </div>
@@ -766,7 +774,7 @@ export default function Admin() {
                   </div>
                </div>
 
-               <div className="bg-bg-page dark:bg-zinc-900 border border-border p-8">
+               <div className="bg-surface border border-border p-8">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
                      <div>
                         <h2 className="text-xl font-serif font-bold flex items-center gap-3 text-text-primary">
@@ -809,7 +817,7 @@ export default function Admin() {
                </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-zinc-900 border border-border p-10">
+            <div className="bg-bg-page dark:bg-zinc-900 border border-border p-10">
                <div className="mb-12 border-b border-border pb-8">
                   <h2 className="text-3xl font-serif font-bold text-text-primary tracking-tighter">Strategic Intelligence</h2>
                   <p className="text-[10px] text-text-secondary uppercase font-bold tracking-[0.2em] mt-2 opacity-40">Operational Performance Metrics</p>
@@ -833,7 +841,9 @@ export default function Admin() {
                   </div>
                </div>
                
-               <h3 className="text-xl font-serif font-bold mt-16 mb-8 text-text-primary">Engagement Per Entry</h3>
+               <h3 id="analysis-viewport" className="text-xl font-serif font-bold mt-16 mb-8 text-text-primary uppercase tracking-tighter border-l-4 border-accent pl-4">
+                  Entry Performance Audit
+               </h3>
                <div className="divide-y divide-border border border-border">
                   {blogs.map(b => (
                     <div key={b.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-8 hover:bg-surface transition-all group">
@@ -889,9 +899,9 @@ export default function Admin() {
                    >
                       <button 
                         onClick={() => setSelectedBlogAnalysis(null)}
-                        className="absolute top-4 right-4 text-text-secondary hover:text-text-primary"
+                        className="absolute top-4 right-4 text-text-secondary hover:text-text-primary z-10 p-2"
                       >
-                        <LogOut size={20} className="rotate-180" />
+                        <X size={24} />
                       </button>
 
                       <div className="flex items-center gap-4 mb-8">
@@ -899,7 +909,7 @@ export default function Admin() {
                             <PieChart size={24} />
                          </div>
                          <div>
-                            <h3 className="text-xl font-bold">Deep Performance Analysis</h3>
+                            <h3 className="text-xl font-bold text-text-primary">Deep Performance Analysis</h3>
                             <p className="text-xs text-text-secondary">Comprehensive feedback and engagement metrics</p>
                          </div>
                       </div>
@@ -962,7 +972,7 @@ export default function Admin() {
               <h3 className="text-[10px] md:text-[11px] font-bold uppercase tracking-widest mb-6 md:mb-8 flex items-center gap-2 text-bg-page/70 group-hover:text-bg-page">
                  <LayoutGrid size={13} /> Overview (Click for Full Report)
               </h3>
-              <div className="space-y-6 md:space-y-8 font-serif">
+              <div className="space-y-6 md:space-y-8 font-serif text-bg-page">
                  <div className="flex justify-between items-end border-b border-bg-page/10 pb-4">
                     <span className="text-bg-page/60 text-[10px] font-bold uppercase tracking-widest">Reader Count (Total Views)</span>
                     <span className="text-2xl md:text-3xl font-bold">{stats.totalViews}</span>
@@ -1009,7 +1019,7 @@ export default function Admin() {
               <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                  {blogs.map((b, i) => (
                     <div key={i} className="flex gap-4 group">
-                       <div className="w-8 h-8 bg-white border border-border rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                       <div className="w-8 h-8 bg-surface border border-border rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-accent group-hover:text-bg-page transition-colors">
                           <Plus size={14} />
                        </div>
                        <div className="overflow-hidden border-b border-border/50 pb-4 w-full">

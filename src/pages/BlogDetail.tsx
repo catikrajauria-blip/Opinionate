@@ -105,7 +105,7 @@ export default function BlogDetail() {
   };
 
   if (loading) {
-    return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div></div>;
+    return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
   if (!blog) {

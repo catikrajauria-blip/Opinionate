@@ -70,18 +70,18 @@ export default function Contact() {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-3xl p-8 md:p-12 border border-border shadow-sm"
+          className="bg-bg-page dark:bg-surface rounded-3xl p-8 md:p-12 border border-border shadow-sm"
         >
           {status === 'success' ? (
             <div className="text-center py-12">
-               <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+               <div className="w-20 h-20 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                  <CheckCircle2 size={40} />
                </div>
-               <h2 className="text-2xl font-display font-bold mb-4">Message Sent!</h2>
-               <p className="text-gray-500 mb-8">Thanks for reaching out. I'll get back to you as soon as I can.</p>
+               <h2 className="text-2xl font-display font-bold mb-4 text-text-primary">Message Sent!</h2>
+               <p className="text-text-secondary mb-8">Thanks for reaching out. I'll get back to you as soon as I can.</p>
                <button 
                  onClick={() => setStatus('idle')}
-                 className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition-all"
+                 className="px-8 py-3 bg-accent text-bg-page rounded-2xl font-bold hover:opacity-90 transition-all border border-accent"
                >
                  Send another message
                </button>
@@ -90,38 +90,38 @@ export default function Contact() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Full Name</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-50 ml-1">Full Name</label>
                     <input 
                       type="text" 
                       required
                       placeholder="Jane Doe"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium"
+                      className="w-full bg-surface border-border border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-medium text-text-primary"
                     />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Email Address</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-50 ml-1">Email Address</label>
                     <input 
                       type="email" 
                       required
                       placeholder="jane@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium"
+                      className="w-full bg-surface border-border border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-medium text-text-primary"
                     />
                  </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Message</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-50 ml-1">Message</label>
                 <textarea 
                   required
                   rows={6}
                   placeholder="What's on your mind?"
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium resize-none"
+                  className="w-full bg-surface border-border border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-medium resize-none text-text-primary"
                 />
               </div>
 
