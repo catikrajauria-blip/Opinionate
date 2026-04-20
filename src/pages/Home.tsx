@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { blogService } from '../lib/blogService';
 import { Blog } from '../types';
 import BlogCard from '../components/BlogCard';
@@ -9,11 +10,13 @@ import NewsletterBox from '../components/NewsletterBox';
 import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
 import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
+  const { user } = useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId] = useState(() => generateUserId());
+  const [userId] = useState(() => user?.uid || generateUserId());
   const [likingId, setLikingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -84,8 +87,17 @@ export default function Home() {
   return (
     <div className="max-w-6xl mx-auto px-4">
       <header className="mb-16 text-center">
-         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Today's Briefing</h1>
-         <p className="text-text-secondary font-serif italic text-lg">{formatDate(new Date().toISOString().split('T')[0])}</p>
+         {user && (
+           <motion.div 
+             initial={{ opacity: 0 }} 
+             animate={{ opacity: 1 }} 
+             className="mb-4 inline-block px-4 py-1.5 bg-surface border border-border rounded-full text-xs font-bold uppercase tracking-widest text-text-secondary"
+           >
+              Welcome back, <span className="text-accent">{user.displayName || 'Friend'}</span>
+           </motion.div>
+         )}
+         <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 tracking-tighter">Today's Briefing</h1>
+         <p className="text-text-secondary font-serif italic text-lg opacity-60 font-medium">{formatDate(new Date().toISOString().split('T')[0])}</p>
       </header>
 
       <div className="grid grid-cols-1 gap-16 mb-20">
@@ -154,12 +166,12 @@ export default function Home() {
                            <Heart size={14} className={likingId === blog.id ? "animate-pulse" : ""} />
                            <span className="text-[10px] font-bold">{blog.likesCount}</span>
                         </button>
-                        <a 
-                          href={`/blog/${blog.slug}`} 
-                          className="btn-minimal-primary px-6 py-2 text-xs font-bold"
+                        <Link 
+                          to={`/blog/${blog.slug}`} 
+                          className="btn-minimal-primary px-6 py-2 text-xs font-bold font-sans"
                         >
                           Read &rarr;
-                        </a>
+                        </Link>
                      </div>
                   </div>
                 </div>

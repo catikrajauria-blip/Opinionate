@@ -5,18 +5,26 @@ import { MessageSquare, Send, User, ChevronDown, ChevronUp } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CommentSectionProps {
   blogId: string;
 }
 
 export default function CommentSection({ blogId }: CommentSectionProps) {
+  const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyTo, setReplyTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.displayName) {
+      setName(user.displayName);
+    }
+  }, [user]);
 
   useEffect(() => {
     async function loadComments() {
@@ -92,7 +100,11 @@ export default function CommentSection({ blogId }: CommentSectionProps) {
               placeholder="John Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-bg-page border border-border rounded-xl focus:ring-2 focus:ring-text-primary transition-all text-sm outline-none text-text-primary placeholder:text-text-secondary/50"
+              readOnly={!!user}
+              className={cn(
+                "w-full px-4 py-3 bg-bg-page border border-border rounded-xl focus:ring-2 focus:ring-text-primary transition-all text-sm outline-none text-text-primary placeholder:text-text-secondary/50",
+                user && "opacity-60 cursor-not-allowed bg-surface"
+              )}
             />
           </div>
           {replyTo && (

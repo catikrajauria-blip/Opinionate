@@ -314,6 +314,47 @@ export const blogService = {
     return counts;
   },
 
+  async getBlogRatings(blogId: string) {
+    const q = query(collection(db, RATINGS_COL), where('blogId', '==', blogId), orderBy('createdAt', 'desc'));
+    try {
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+    } catch (err) {
+      // Fallback if index missing
+      console.warn('Index missing for ratings query, fetching all and filtering');
+      const snapshot = await getDocs(collection(db, RATINGS_COL));
+      return snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() } as any))
+        .filter(r => r.blogId === blogId)
+        .sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    }
+  },
+
+  async getBlogAnalysis(blogId: string) {
+    const ratings = await this.getBlogRatings(blogId);
+    const highRatings = ratings.filter(r => r.score >= 4);
+    const lowRatings = ratings.filter(r => r.score <= 2);
+    
+    // Fetch users for these ratings to show names if possible
+    const userIds = [...new Set(ratings.map(r => r.userId as string))];
+    const userProfiles: Record<string, any> = {};
+    
+    await Promise.all(userIds.slice(0, 20).map(async (uid: string) => {
+      try {
+        const uSnap = await getDoc(doc(db, 'users', uid));
+        if (uSnap.exists()) userProfiles[uid] = uSnap.data();
+      } catch (e) {}
+    }));
+
+    return {
+      ratings,
+      highRatings: highRatings.map(r => ({ ...r, user: userProfiles[r.userId as string] })),
+      lowRatings: lowRatings.map(r => ({ ...r, user: userProfiles[r.userId as string] })),
+      totalRatings: ratings.length,
+      averageScore: ratings.length > 0 ? ratings.reduce((acc, r) => acc + r.score, 0) / ratings.length : 0
+    };
+  },
+
   async getGlobalRecentComments(limitCount = 5) {
     try {
       const q = query(
@@ -339,8 +380,6 @@ export const blogService = {
       }));
       return results;
     } catch (err: any) {
-      console.warn('CollectionGroup query failed (possibly missing index). Falling back to multi-blog fetch.', err);
-      
       // Fallback: Fetch latest blogs and their comments
       // This is less efficient but works without manual indexing
       const blogsSnapshot = await getDocs(query(collection(db, BLOGS_COL), orderBy('date', 'desc'), limit(10)));
@@ -363,5 +402,38 @@ export const blogService = {
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
         .slice(0, limitCount);
     }
+  },
+
+  async getGlobalRatings(limitCount = 20) {
+    try {
+      const q = query(collectionGroup(db, 'ratings'), orderBy('createdAt', 'desc'), limit(limitCount));
+      const snap = await getDocs(q);
+      const ratings = await Promise.all(snap.docs.map(async d => {
+        const data = d.data();
+        const blogSnap = await getDoc(doc(db, BLOGS_COL, data.blogId));
+        const userSnap = await getDoc(doc(db, 'users', data.userId));
+        return {
+          id: d.id,
+          ...data,
+          blogTitle: blogSnap.data()?.title || 'Unknown',
+          user: userSnap.data()
+        };
+      }));
+      return ratings;
+    } catch (err) {
+      // Fallback
+      const blogs = await this.getLatestBlogs(5);
+      let all: any[] = [];
+      for (const b of blogs) {
+        const rSnap = await getDocs(collection(db, BLOGS_COL, b.id, 'ratings'));
+        rSnap.forEach(rd => all.push({ id: rd.id, ...rd.data(), blogTitle: b.title }));
+      }
+      return all.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).slice(0, limitCount);
+    }
+  },
+
+  async getAllSubscribers() {
+    const snap = await getDocs(collection(db, SUBSCRIBERS_COL));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 };

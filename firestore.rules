@@ -33,11 +33,19 @@ service cloud.firestore {
     }
 
     function isValidId(id) {
-       return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+       return id is string && id.size() >= 1 && id.size() <= 128;
     }
 
     function incoming() { return request.resource.data; }
     function existing() { return resource.data; }
+
+    // Support for CollectionGroup queries (dashboard data)
+    match /{path=**}/comments/{commentId} {
+      allow read: if true;
+    }
+    match /{path=**}/ratings/{ratingId} {
+      allow read: if true;
+    }
 
     // Blogs
     match /blogs/{blogId} {
@@ -48,31 +56,26 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       function isValidBlog(data) {
-        return data.title is string && data.title.size() <= 1000 &&
+        return data.title is string && data.title.size() <= 2000 &&
                data.slug is string && data.slug.size() <= 1000 &&
-               (data.summary is string && data.summary.size() <= 10000) &&
-               (data.content is string && data.content.size() <= 500000);
+               (data.summary is string && data.summary.size() <= 20000) &&
+               (data.content is string && data.content.size() <= 1000000);
       }
 
       function isOnlyStatUpdate() {
-        let allowedPublic = ['viewsCount', 'ratingAverage', 'ratingCount'];
-        let allowedUser = allowedPublic.concat(['likesCount']);
-        
-        return isSignedIn() 
-          ? incoming().diff(existing()).affectedKeys().hasOnly(allowedUser)
-          : incoming().diff(existing()).affectedKeys().hasOnly(allowedPublic);
+        let allowedFields = ['viewsCount', 'ratingAverage', 'ratingCount', 'likesCount'];
+        return incoming().diff(existing()).affectedKeys().hasOnly(allowedFields);
       }
     }
 
     // Comments
     match /blogs/{blogId}/comments/{commentId} {
-      allow read: if true;
       allow create: if isValidComment(incoming());
       allow update, delete: if isAdmin();
 
       function isValidComment(data) {
-        return data.name is string && data.name.size() <= 100 &&
-               data.content is string && data.content.size() <= 5000 &&
+        return data.name is string && data.name.size() <= 200 &&
+               data.content is string && data.content.size() <= 10000 &&
                data.blogId == blogId;
       }
     }
@@ -91,18 +94,18 @@ service cloud.firestore {
 
       function isValidMessage(data) {
         return data.name is string && data.email is string && 
-               data.message is string && data.message.size() <= 10000;
+               data.message is string && data.message.size() <= 20000;
       }
     }
 
     // Interaction Data
     match /ratings/{ratingId} {
       allow read: if true;
-      allow write: if (isAdmin()) || (isSignedIn() && !isBlocked() && incoming().score >= 1 && incoming().score <= 5);
+      allow write: if (isAdmin()) || (!isBlocked() && incoming().score >= 1 && incoming().score <= 5);
     }
     match /likes/{likeId} {
       allow read: if true;
-      allow write: if isSignedIn() && !isBlocked() && incoming().userId == request.auth.uid;
+      allow write: if (isAdmin()) || (!isBlocked() && isValidId(incoming().userId));
     }
     match /views/{viewId} {
       allow read, write: if true;
@@ -145,9 +148,9 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
 
       function isValidNews(data) {
-        return data.title is string && data.title.size() <= 500 &&
+        return data.title is string && data.title.size() <= 1000 &&
                data.url is string && 
-               data.summary is string && data.summary.size() <= 5000 &&
+               data.summary is string && data.summary.size() <= 10000 &&
                data.category is string;
       }
     }
