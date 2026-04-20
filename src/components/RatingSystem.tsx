@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { blogService } from '../lib/blogService';
 import { Blog } from '../types';
@@ -13,10 +13,33 @@ interface RatingSystemProps {
 
 export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps) {
   const [hoverRating, setHoverRating] = useState(0);
-  const [rating, setRating] = useState(0);
+  const [userRating, setUserRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasRated, setHasRated] = useState(false);
+  const [loadingRating, setLoadingRating] = useState(true);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function checkRating() {
+      if (!userId) {
+        setLoadingRating(false);
+        return;
+      }
+      try {
+        const ratings = await blogService.getBlogRatings(blog.id);
+        const existing = ratings.find((r: any) => r.userId === userId);
+        if (existing) {
+          setUserRating(existing.score);
+          setHasRated(true);
+        }
+      } catch (err) {
+        console.warn('Could not check individual rating:', err);
+      } finally {
+        setLoadingRating(false);
+      }
+    }
+    checkRating();
+  }, [blog.id, userId]);
 
   const handleRate = async (score: number) => {
     if (isSubmitting || hasRated) return;
@@ -26,7 +49,7 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
 
     try {
       await blogService.addRating(blog.id, userId, score);
-      setRating(score);
+      setUserRating(score);
       setHasRated(true);
 
       const newCount = blog.ratingCount + 1;
@@ -44,53 +67,67 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
 
   const getTip = (score: number) => {
     switch (score) {
-      case 1: return 'Poor';
-      case 2: return 'Average';
-      case 3: return 'Good';
-      case 4: return 'Very Good';
-      case 5: return 'Excellent';
+      case 1: return 'Inadequate';
+      case 2: return 'Moderate';
+      case 3: return 'Compelling';
+      case 4: return 'Profound';
+      case 5: return 'Exceptional';
       default: return '';
     }
   };
 
+  if (loadingRating) {
+    return <div className="animate-pulse flex space-x-1"><div className="w-6 h-6 bg-surface rounded-full"></div></div>;
+  }
+
   return (
-    <div className="flex flex-col items-center md:items-start gap-2">
-      <div className="flex items-center gap-1 relative">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onMouseEnter={() => !hasRated && setHoverRating(star)}
-            onMouseLeave={() => !hasRated && setHoverRating(0)}
-            onClick={() => handleRate(star)}
-            disabled={hasRated || isSubmitting}
-            className="p-1 focus:outline-none focus:scale-110 transition-transform relative group"
-          >
-            <Star
-              size={24}
+    <div className="flex flex-col items-center md:items-start gap-4">
+      <div className="flex flex-col gap-1">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary opacity-50">
+          {hasRated ? 'Your contribution recognized' : 'Cast your evaluation'}
+        </p>
+        <div className="flex items-center gap-1 relative">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              onMouseEnter={() => !hasRated && setHoverRating(star)}
+              onMouseLeave={() => !hasRated && setHoverRating(0)}
+              onClick={() => handleRate(star)}
+              disabled={hasRated || isSubmitting}
               className={cn(
-                "transition-all",
-                (hoverRating || rating || blog.ratingAverage) >= star
-                  ? "text-orange-500 fill-orange-500 scale-110"
-                  : "text-text-secondary/20"
+                "p-1 focus:outline-none transition-all relative group",
+                !hasRated && "hover:scale-110"
               )}
-            />
-            {!hasRated && hoverRating === star && (
-               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-text-primary text-bg-page text-[10px] font-bold rounded pointer-events-none whitespace-nowrap">
-                  {getTip(star)}
-               </div>
-            )}
-          </button>
-        ))}
+            >
+              <Star
+                size={28}
+                className={cn(
+                  "transition-all duration-300",
+                  (hoverRating || userRating) >= star
+                    ? "text-orange-500 fill-orange-500"
+                    : "text-text-secondary/20"
+                )}
+              />
+              {!hasRated && hoverRating === star && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-text-primary text-bg-page text-[10px] font-bold rounded pointer-events-none whitespace-nowrap z-10">
+                    {getTip(star)}
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 text-xs font-bold">
+      <div className="flex items-center gap-2 text-xs font-bold font-mono">
          <span className={cn(
-           "px-2 py-0.5 rounded",
-           hasRated ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"
+            "px-3 py-1 rounded-lg border",
+            hasRated 
+              ? "bg-green-500/5 text-green-600 border-green-500/20" 
+              : "bg-surface text-text-secondary border-border"
          )}>
-            {blog.ratingAverage.toFixed(1)} / 5
+            {blog.ratingAverage.toFixed(1)} <span className="opacity-40">/ 5.0</span>
          </span>
-         <span className="text-text-secondary">({blog.ratingCount} Ratings)</span>
+         <span className="text-text-secondary opacity-50 uppercase tracking-tighter">Based on {blog.ratingCount} evaluations</span>
       </div>
 
       <AnimatePresence>

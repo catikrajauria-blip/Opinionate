@@ -255,6 +255,59 @@ export const blogService = {
     await deleteDoc(doc(db, NEWS_COL, newsId));
   },
 
+  async likeNews(newsId: string, userId: string) {
+    const interactionRef = doc(db, NEWS_COL, newsId, 'interactions', userId);
+    const newsRef = doc(db, NEWS_COL, newsId);
+    
+    await runTransaction(db, async (transaction) => {
+      const interSnap = await transaction.get(interactionRef);
+      const newsSnap = await transaction.get(newsRef);
+      if (!newsSnap.exists()) throw new Error('News not found');
+      
+      const currentInter = interSnap.data() as { type: 'like' | 'dislike' } | undefined;
+      
+      if (currentInter?.type === 'like') return; // Already liked
+      
+      const updates: any = { likesCount: increment(1) };
+      if (currentInter?.type === 'dislike') {
+        updates.dislikesCount = increment(-1);
+      }
+      
+      transaction.set(interactionRef, { type: 'like', updatedAt: serverTimestamp() });
+      transaction.update(newsRef, updates);
+    });
+  },
+
+  async dislikeNews(newsId: string, userId: string) {
+    const interactionRef = doc(db, NEWS_COL, newsId, 'interactions', userId);
+    const newsRef = doc(db, NEWS_COL, newsId);
+    
+    await runTransaction(db, async (transaction) => {
+      const interSnap = await transaction.get(interactionRef);
+      const newsSnap = await transaction.get(newsRef);
+      if (!newsSnap.exists()) throw new Error('News not found');
+      
+      const currentInter = interSnap.data() as { type: 'like' | 'dislike' } | undefined;
+      
+      if (currentInter?.type === 'dislike') return; // Already disliked
+      
+      const updates: any = { dislikesCount: increment(1) };
+      if (currentInter?.type === 'like') {
+        updates.likesCount = increment(-1);
+      }
+      
+      transaction.set(interactionRef, { type: 'dislike', updatedAt: serverTimestamp() });
+      transaction.update(newsRef, updates);
+    });
+  },
+
+  async getNewsInteraction(newsId: string, userId: string) {
+    if (!userId) return null;
+    const interactionRef = doc(db, NEWS_COL, newsId, 'interactions', userId);
+    const snap = await getDoc(interactionRef);
+    return snap.exists() ? snap.data()?.type : null;
+  },
+
   async toggleSaveBlog(uid: string, blogId: string) {
     const saveRef = doc(db, 'users', uid, 'saved_blogs', blogId);
     const saveSnap = await getDoc(saveRef);

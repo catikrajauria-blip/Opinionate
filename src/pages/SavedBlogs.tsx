@@ -106,7 +106,7 @@ export default function SavedBlogs() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              <BlogCard blog={blog} />
+              <BlogCard blog={blog} isGrid={true} />
             </motion.div>
           ))}
         </AnimatePresence>
