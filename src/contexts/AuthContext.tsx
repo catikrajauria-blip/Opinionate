@@ -26,65 +26,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       setUser(firebaseUser);
       
       if (firebaseUser) {
-        // Force re-login once a week check
-        const lastLoginStr = localStorage.getItem('last_login_verified');
-        const now = Date.now();
-        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        try {
+          // Force re-login once a week check
+          const lastLoginStr = localStorage.getItem('last_login_verified');
+          const now = Date.now();
+          const oneWeek = 7 * 24 * 60 * 60 * 1000;
 
-        if (lastLoginStr) {
-          const lastLogin = parseInt(lastLoginStr, 10);
-          if (now - lastLogin > oneWeek) {
-            localStorage.removeItem('last_login_verified');
-            await firebaseSignOut(auth);
-            setUser(null);
-            setLoading(false);
-            return;
+          if (lastLoginStr) {
+            const lastLogin = parseInt(lastLoginStr, 10);
+            if (now - lastLogin > oneWeek) {
+              console.log('Session expired, signing out for fresh auth');
+              localStorage.removeItem('last_login_verified');
+              await firebaseSignOut(auth);
+              setUser(null);
+              setProfile(null);
+              setLoading(false);
+              return;
+            }
+          } else {
+            localStorage.setItem('last_login_verified', now.toString());
           }
-        } else {
-          localStorage.setItem('last_login_verified', now.toString());
-        }
 
-        // Sync user profile with Firestore
-        const userRef = doc(db, 'users', firebaseUser.uid);
-        const userSnap = await getDoc(userRef);
-        
-        if (!userSnap.exists()) {
-          const newProfile: UserProfile = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            displayName: firebaseUser.displayName || '',
-            photoURL: firebaseUser.photoURL || '',
-            role: firebaseUser.email === 'catikrajauria@gmail.com' ? 'admin' : 'user',
-            isBlocked: false,
-            createdAt: new Date().toISOString()
-          };
-          await setDoc(userRef, {
-            ...newProfile,
-            createdAt: serverTimestamp(),
-            lastLogin: serverTimestamp()
-          });
-          setProfile(newProfile);
-        } else {
-          const profileData = userSnap.data() as any;
+          // Sync user profile with Firestore
+          const userRef = doc(db, 'users', firebaseUser.uid);
+          const userSnap = await getDoc(userRef);
           
-          // Force re-login logic if needed (user requested "once a week")
-          // Firebase Auth persists indefinitely by default. 
-          // We can check local storage for a "last_prompted_login" or similar
-          // but usually users just want an "Active" session.
-          // For now we just update lastLogin.
-          await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
-          
-          setProfile({
-            ...profileData,
-            createdAt: profileData.createdAt?.toDate?.()?.toISOString() || profileData.createdAt,
-            lastLogin: profileData.lastLogin?.toDate?.()?.toISOString() || profileData.lastLogin
-          } as UserProfile);
+          if (!userSnap.exists()) {
+            console.log('Creating new user profile...');
+            const newProfile: UserProfile = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              displayName: firebaseUser.displayName || '',
+              photoURL: firebaseUser.photoURL || '',
+              role: firebaseUser.email === 'catikrajauria@gmail.com' ? 'admin' : 'user',
+              isBlocked: false,
+              createdAt: new Date().toISOString()
+            };
+            await setDoc(userRef, {
+              ...newProfile,
+              createdAt: serverTimestamp(),
+              lastLogin: serverTimestamp()
+            });
+            setProfile(newProfile);
+          } else {
+            const profileData = userSnap.data() as any;
+            
+            // Only update lastLogin to avoid unnecessary writes
+            await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
+            
+            setProfile({
+              ...profileData,
+              createdAt: profileData.createdAt?.toDate?.()?.toISOString() || profileData.createdAt,
+              lastLogin: profileData.lastLogin?.toDate?.()?.toISOString() || profileData.lastLogin
+            } as UserProfile);
+          }
+        } catch (error) {
+          console.error('Auth context sync error:', error);
+          // Don't crash the app if Firestore profile fails, just set profile to null
+          // This allows users to still see the public site even if profile creation hits a rule error
+          setProfile(null);
         }
       } else {
         setProfile(null);
+        localStorage.removeItem('last_login_verified');
       }
       setLoading(false);
     });

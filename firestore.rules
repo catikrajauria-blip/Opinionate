@@ -10,61 +10,69 @@ service cloud.firestore {
     function isSignedIn() {
       return request.auth != null;
     }
+    
+    // Global admin check (using email as primary, DB as secondary)
     function isAdmin() {
-      return isSignedIn() && 
-             ((request.auth.token.keys().hasAll(['email']) && request.auth.token.email.lower() == 'catikrajauria@gmail.com') ||
-              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      return isSignedIn() && (
+        (request.auth.token.keys().hasAll(['email']) && 
+         request.auth.token.email.lower() == 'catikrajauria@gmail.com') ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
     }
+
+    // Generic blocked check - for non-user-document paths
     function isBlocked() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == true;
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBlocked == true;
     }
+
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
+
     function isValidId(id) {
-       return id is string && id.size() <= 256;
+       return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
-    function incoming() {
-      return request.resource.data;
-    }
-    function existing() {
-      return resource.data;
-    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
 
     // Blogs
     match /blogs/{blogId} {
       allow read: if true; 
       allow create: if isAdmin() && isValidBlog(incoming());
-      allow update: if (isAdmin() && isValidBlog(incoming())) || (isSignedIn() && !isBlocked() && isOnlyStatUpdate());
+      allow update: if (isAdmin() && isValidBlog(incoming())) || 
+                      (isOnlyStatUpdate() && (!isSignedIn() || !isBlocked()));
       allow delete: if isAdmin();
 
       function isValidBlog(data) {
-        return data.title is string && data.title.size() <= 800 &&
-               data.slug is string && data.slug.size() <= 800 &&
-               data.summary is string && data.summary.size() <= 8000 &&
-               data.content is string && data.content.size() <= 300000;
+        return data.title is string && data.title.size() <= 1000 &&
+               data.slug is string && data.slug.size() <= 1000 &&
+               (data.summary is string && data.summary.size() <= 10000) &&
+               (data.content is string && data.content.size() <= 500000);
       }
 
       function isOnlyStatUpdate() {
-        // Allows public (and admins) to update only these specific numeric stats
-        return incoming().diff(existing()).affectedKeys().hasOnly(['likesCount', 'viewsCount', 'ratingAverage', 'ratingCount']);
+        let allowedPublic = ['viewsCount', 'ratingAverage', 'ratingCount'];
+        let allowedUser = allowedPublic.concat(['likesCount']);
+        
+        return isSignedIn() 
+          ? incoming().diff(existing()).affectedKeys().hasOnly(allowedUser)
+          : incoming().diff(existing()).affectedKeys().hasOnly(allowedPublic);
       }
     }
 
-    // Comments (including collection groups)
-    match /{path=**}/comments/{commentId} {
-      allow read: if true;
-    }
-
+    // Comments
     match /blogs/{blogId}/comments/{commentId} {
       allow read: if true;
       allow create: if isValidComment(incoming());
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow update, delete: if isAdmin();
 
       function isValidComment(data) {
-        return data.name is string && data.name.size() <= 60 &&
-               data.content is string && data.content.size() <= 2000 &&
+        return data.name is string && data.name.size() <= 100 &&
+               data.content is string && data.content.size() <= 5000 &&
                data.blogId == blogId;
       }
     }
@@ -82,55 +90,60 @@ service cloud.firestore {
       allow create: if isValidMessage(incoming());
 
       function isValidMessage(data) {
-        return data.name is string && data.email is string && data.message is string && data.message.size() <= 5000;
+        return data.name is string && data.email is string && 
+               data.message is string && data.message.size() <= 10000;
       }
     }
 
-    // Ratings/Likes/Views
+    // Interaction Data
     match /ratings/{ratingId} {
       allow read: if true;
-      allow write: if (isSignedIn() && !isBlocked() && (incoming().score >= 1 && incoming().score <= 5)) || isAdmin();
+      allow write: if (isAdmin()) || (isSignedIn() && !isBlocked() && incoming().score >= 1 && incoming().score <= 5);
     }
     match /likes/{likeId} {
       allow read: if true;
-      allow write: if isSignedIn() && !isBlocked();
+      allow write: if isSignedIn() && !isBlocked() && incoming().userId == request.auth.uid;
     }
     match /views/{viewId} {
-      allow read: if true;
-      allow write: if true; // Views can stay public for now as they use specific ID logic
+      allow read, write: if true;
     }
 
-    // Users & Activity
+    // Users & Personal Data
     match /users/{uid} {
-      allow read: if isSignedIn();
+      // Use resource.data for self-checks to avoid recursive get()
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      
       allow create: if isOwner(uid) && isValidUser(incoming());
-      allow update: if (isOwner(uid) && isValidUserUpdate(incoming(), existing()) && !isBlocked()) || isAdmin();
+      allow update: if isAdmin() || (
+        isOwner(uid) && 
+        isValidUserUpdate(incoming(), existing()) && 
+        existing().isBlocked == false
+      );
       allow delete: if isAdmin();
 
       function isValidUser(data) {
         return data.uid == uid && data.role == 'user' && data.isBlocked == false;
       }
       function isValidUserUpdate(curr, prev) {
-         // User cannot change their own role or blocked status
+         // User cannot change their role or block status
          return curr.role == prev.role && curr.isBlocked == prev.isBlocked;
       }
 
       match /saved_blogs/{blogId} {
-        allow read, write: if isOwner(uid) && !isBlocked();
+        allow read, write: if isOwner(uid) && (isAdmin() || get(/databases/$(database)/documents/users/$(uid)).data.isBlocked == false);
       }
     }
 
     // Curated News
     match /news/{newsId} {
       allow read: if true;
-      allow create: if isAdmin() && isValidNews(incoming());
-      allow update: if isAdmin() && isValidNews(incoming());
-      allow delete: if isAdmin();
+      allow create, update, delete: if isAdmin();
 
       function isValidNews(data) {
-        return data.title is string && data.title.size() <= 300 &&
+        return data.title is string && data.title.size() <= 500 &&
                data.url is string && 
-               data.summary is string && data.summary.size() <= 3000 &&
+               data.summary is string && data.summary.size() <= 5000 &&
                data.category is string;
       }
     }
