@@ -103,14 +103,15 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           </p>
 
           <div className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-70">
-             <div className="flex items-center gap-1">
-                <span>👁️ {blog.viewsCount} Views</span>
+             <div className="flex items-center gap-1.5">
+                <Eye size={14} className="opacity-40" />
+                <span>{blog.viewsCount} <span className="hidden sm:inline">Views</span></span>
              </div>
              <button 
                 onClick={handleLike}
                 disabled={isLiking}
                 className={cn(
-                  "flex items-center gap-1 transition-colors disabled:opacity-50",
+                  "flex items-center gap-1.5 transition-colors disabled:opacity-50",
                   hasLiked ? "text-red-500" : "hover:text-red-500"
                 )}
              >
@@ -120,12 +121,14 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
                 )} />
                 <span>{blog.likesCount} <span className="hidden sm:inline">Likes</span></span>
              </button>
-             <div className="flex items-center gap-1">
-                <span className="text-yellow-600">★</span>
-                <span>{blog.ratingAverage.toFixed(1)}</span>
-             </div>
+             {blog.ratingCount > 0 && (
+               <div className="flex items-center gap-1.5">
+                  <Star size={14} className="text-yellow-600 fill-yellow-600 opacity-60" />
+                  <span>{blog.ratingAverage.toFixed(1)} <span className="hidden sm:inline">Grade</span></span>
+               </div>
+             )}
              <Link to={`/blog/${blog.slug}`} className="ml-auto flex items-center gap-1 hover:text-text-primary transition-colors">
-                Read More &rarr;
+                Investigate &rarr;
              </Link>
           </div>
         </div>

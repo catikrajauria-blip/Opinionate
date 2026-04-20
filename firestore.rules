@@ -145,13 +145,24 @@ service cloud.firestore {
     // Curated News
     match /news/{newsId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (isSignedIn() && !isBlocked() && isOnlyNewsStatUpdate());
 
       function isValidNews(data) {
         return data.title is string && data.title.size() <= 1000 &&
                data.url is string && 
                data.summary is string && data.summary.size() <= 10000 &&
                data.category is string;
+      }
+
+      function isOnlyNewsStatUpdate() {
+        let allowedFields = ['likesCount', 'dislikesCount'];
+        return incoming().diff(existing()).affectedKeys().hasOnly(allowedFields);
+      }
+
+      match /interactions/{userId} {
+        allow read: if true;
+        allow write: if isOwner(userId) && !isBlocked();
       }
     }
   }

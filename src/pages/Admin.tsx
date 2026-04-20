@@ -10,7 +10,7 @@ import {
   Search as SearchIcon, Mail as MailIcon, Clock,
   MessageSquare, Star, Copy, ExternalLink, User
 } from 'lucide-react';
-import { generateSlug, cn } from '../lib/utils';
+import { generateSlug, cn, formatDate } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
 import { useAuth } from '../contexts/AuthContext';
 import { UserProfile } from '../types';
@@ -81,7 +81,7 @@ export default function Admin() {
       const [comments, ratings, subs] = await Promise.all([
         blogService.getGlobalRecentComments(50),
         blogService.getGlobalRatings(50),
-        blogService.getAllSubscribers()
+        blogService.getSubscribers()
       ]);
       setAllComments(comments);
       setAllRatings(ratings);
@@ -666,10 +666,10 @@ export default function Admin() {
                              <td className="px-8 py-6">
                                 <div className="space-y-1">
                                    <p className="text-[9px] font-mono text-text-secondary flex items-center gap-2">
-                                      <span className="opacity-40 uppercase">Reg:</span> {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
+                                      <span className="opacity-40 uppercase">Reg:</span> {formatDate(u.createdAt)}
                                    </p>
                                    <p className="text-[9px] font-mono text-text-secondary flex items-center gap-2">
-                                      <span className="opacity-40 uppercase">Act:</span> {u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Active Session'}
+                                      <span className="opacity-40 uppercase">Act:</span> {formatDate(u.lastLogin)}
                                    </p>
                                 </div>
                              </td>
@@ -703,8 +703,8 @@ export default function Admin() {
           ) : activeTab === 'community' ? (
             <div className="space-y-12">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-white dark:bg-zinc-900 border border-border p-8">
-                     <h2 className="text-xl font-serif font-bold mb-8 flex items-center gap-3">
+                  <div className="bg-bg-page dark:bg-zinc-900 border border-border p-8">
+                     <h2 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-text-primary">
                         <MessageSquare size={20} className="text-accent" />
                         Global Dialogue
                      </h2>
@@ -719,7 +719,7 @@ export default function Admin() {
                                     <span className="text-[11px] font-bold uppercase tracking-tight">{comment.name}</span>
                                  </div>
                                  <span className="text-[9px] font-mono text-text-secondary opacity-40">
-                                    {comment.createdAt ? new Date(comment.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}
+                                    {formatDate(comment.createdAt)}
                                  </span>
                               </div>
                               <p className="text-xs text-text-secondary font-serif leading-relaxed line-clamp-2 mb-3 grayscale group-hover:grayscale-0 transition-all">
@@ -739,8 +739,8 @@ export default function Admin() {
                      </div>
                   </div>
 
-                  <div className="bg-white dark:bg-zinc-900 border border-border p-8">
-                     <h2 className="text-xl font-serif font-bold mb-8 flex items-center gap-3">
+                  <div className="bg-bg-page dark:bg-zinc-900 border border-border p-8">
+                     <h2 className="text-xl font-serif font-bold mb-8 flex items-center gap-3 text-text-primary">
                         <Star size={20} className="text-yellow-500" />
                         Consensus Ledger
                      </h2>
@@ -757,7 +757,7 @@ export default function Admin() {
                                  </div>
                               </div>
                               <span className="text-[9px] font-mono text-text-secondary opacity-40">
-                                 {rating.createdAt ? new Date(rating.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                                 {formatDate(rating.createdAt)}
                               </span>
                            </div>
                         ))}
@@ -766,10 +766,10 @@ export default function Admin() {
                   </div>
                </div>
 
-               <div className="bg-white dark:bg-zinc-900 border border-border p-8">
+               <div className="bg-bg-page dark:bg-zinc-900 border border-border p-8">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
                      <div>
-                        <h2 className="text-xl font-serif font-bold flex items-center gap-3">
+                        <h2 className="text-xl font-serif font-bold flex items-center gap-3 text-text-primary">
                            <MailIcon size={20} className="text-accent" />
                            Intellectual Audience
                         </h2>
@@ -800,7 +800,7 @@ export default function Admin() {
                         <div key={sub.id} className="p-4 border border-border bg-surface group hover:border-accent transition-all">
                            <p className="text-xs font-bold text-text-primary truncate">{sub.email || sub.id}</p>
                            <p className="text-[9px] text-text-secondary font-mono mt-1 opacity-50 uppercase">
-                              {sub.status || 'Active'} &bull; {sub.subscribedAt ? new Date(sub.subscribedAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                              {sub.status || 'Active'} &bull; {formatDate(sub.subscribedAt)}
                            </p>
                         </div>
                      ))}

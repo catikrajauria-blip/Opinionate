@@ -125,9 +125,11 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
               ? "bg-green-500/5 text-green-600 border-green-500/20" 
               : "bg-surface text-text-secondary border-border"
          )}>
-            {blog.ratingAverage.toFixed(1)} <span className="opacity-40">/ 5.0</span>
+            {blog.ratingAverage > 0 ? blog.ratingAverage.toFixed(1) : 'PENDING'} <span className="opacity-40">/ 5.0</span>
          </span>
-         <span className="text-text-secondary opacity-50 uppercase tracking-tighter">Based on {blog.ratingCount} evaluations</span>
+         <span className="text-text-secondary opacity-50 uppercase tracking-tighter">
+           {blog.ratingCount > 0 ? `Based on ${blog.ratingCount} evaluations` : 'Awaiting peer review'}
+         </span>
       </div>
 
       <AnimatePresence>

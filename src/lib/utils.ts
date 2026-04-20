@@ -20,10 +20,26 @@ export function generateSlug(title: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-export function formatDate(dateStr: string): string {
-  if (!dateStr) return '';
-  const [year, month, day] = dateStr.split('-');
-  return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString('en-US', {
+export function formatDate(date: any): string {
+  if (!date) return 'N/A';
+  
+  let d: Date;
+  if (typeof date === 'string') {
+    if (date.includes('-')) {
+        const [year, month, day] = date.split('-');
+        d = new Date(Number(year), Number(month) - 1, Number(day));
+    } else {
+        d = new Date(date);
+    }
+  } else if (date.seconds) {
+    d = new Date(date.seconds * 1000);
+  } else {
+    d = new Date(date);
+  }
+
+  if (isNaN(d.getTime())) return 'N/A';
+
+  return d.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

@@ -247,6 +247,8 @@ export const blogService = {
   async addNews(newsItem: any) {
     return await addDoc(collection(db, NEWS_COL), {
       ...newsItem,
+      likesCount: 0,
+      dislikesCount: 0,
       createdAt: serverTimestamp()
     });
   },
@@ -392,8 +394,10 @@ export const blogService = {
     const userIds = [...new Set(ratings.map(r => r.userId as string))];
     const userProfiles: Record<string, any> = {};
     
-    await Promise.all(userIds.slice(0, 20).map(async (uid: string) => {
+    // Batch fetching user profiles to be more efficient
+    await Promise.all(userIds.slice(0, 50).map(async (uid: string) => {
       try {
+        if (!uid) return;
         const uSnap = await getDoc(doc(db, 'users', uid));
         if (uSnap.exists()) userProfiles[uid] = uSnap.data();
       } catch (e) {}
@@ -408,7 +412,7 @@ export const blogService = {
     };
   },
 
-  async getGlobalRecentComments(limitCount = 5) {
+  async getGlobalRecentComments(limitCount = 10) {
     try {
       const q = query(
         collectionGroup(db, COMMENTS_COL),
@@ -433,13 +437,11 @@ export const blogService = {
       }));
       return results;
     } catch (err: any) {
-      // Fallback: Fetch latest blogs and their comments
-      // This is less efficient but works without manual indexing
       const blogsSnapshot = await getDocs(query(collection(db, BLOGS_COL), orderBy('date', 'desc'), limit(10)));
       const allComments: any[] = [];
       
       await Promise.all(blogsSnapshot.docs.map(async (blogDoc) => {
-        const commentsSnap = await getDocs(query(collection(db, BLOGS_COL, blogDoc.id, COMMENTS_COL), orderBy('createdAt', 'desc'), limit(3)));
+        const commentsSnap = await getDocs(query(collection(db, BLOGS_COL, blogDoc.id, COMMENTS_COL), orderBy('createdAt', 'desc'), limit(10)));
         commentsSnap.forEach(cDoc => {
           allComments.push({
             id: cDoc.id,
@@ -450,7 +452,6 @@ export const blogService = {
         });
       }));
       
-      // Sort and take top few
       return allComments
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
         .slice(0, limitCount);
@@ -474,19 +475,13 @@ export const blogService = {
       }));
       return ratings;
     } catch (err) {
-      // Fallback
-      const blogs = await this.getLatestBlogs(5);
+      const blogs = await this.getLatestBlogs(10);
       let all: any[] = [];
-      for (const b of blogs) {
+      await Promise.all(blogs.map(async (b) => {
         const rSnap = await getDocs(collection(db, BLOGS_COL, b.id, 'ratings'));
         rSnap.forEach(rd => all.push({ id: rd.id, ...rd.data(), blogTitle: b.title }));
-      }
+      }));
       return all.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).slice(0, limitCount);
     }
-  },
-
-  async getAllSubscribers() {
-    const snap = await getDocs(collection(db, SUBSCRIBERS_COL));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 };
