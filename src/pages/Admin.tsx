@@ -101,7 +101,9 @@ export default function Admin() {
     e.preventDefault();
     if ((!newspaperPdf && !externalPdfUrl) || !isGlobalAdmin) return;
     
-    setExtractingPdf(true);
+    if (newspaperPdf) {
+      setExtractingPdf(true);
+    }
     setSubmitting(true);
     setUploadProgress(0);
     setError(null); // Reset error state
@@ -113,13 +115,11 @@ export default function Admin() {
       // 1. If a file is provided, extract content and upload it
       if (newspaperPdf) {
         content = await newspaperService.extractContentFromPDF(newspaperPdf);
-        setExtractingPdf(false);
+        setExtractingPdf(false); // Done extracting, now starting upload
         
         pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, (progress) => {
           setUploadProgress(progress);
         }).catch(err => {
-          // If storage fails (like the billing issue), don't treat it as a fatal error 
-          // if we can at least save the entries, but inform the user.
           console.warn("Storage upload failed - possibly due to billing. Proceeding without PDF hosting if intended.");
           throw new Error(`Upload failed: ${err.message || 'Storage error'}. Ensure Firebase Storage is properly set up or use an external PDF link.`);
         });

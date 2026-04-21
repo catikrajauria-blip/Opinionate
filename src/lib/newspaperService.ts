@@ -131,29 +131,20 @@ export const newspaperService = {
       });
 
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
       
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                mimeType: "application/pdf",
-                data: base64Data,
-              },
-            },
-            {
-              text: "Extract the content of this newspaper PDF and format it into a beautifully structured Markdown article. Use headers and sections. If the PDF is mostly images or layout-heavy, provide a high-level summary of the main stories. Maintain professional tone.",
-            },
-          ],
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: "application/pdf",
+            data: base64Data,
+          },
         },
-      });
-
-      if (!response.text) {
-        return "Synthesis was unable to extract text content, but the original PDF is available for reading.";
-      }
-
-      return response.text;
+        "Extract the content of this newspaper PDF and format it into a beautifully structured Markdown article. Use headers and sections. If the PDF is mostly images or layout-heavy, provide a high-level summary of the main stories. Maintain professional tone.",
+      ]);
+      
+      const text = result.response.text();
+      return text || "Synthesis was unable to extract text content, but the original PDF is available for reading.";
     } catch (error) {
       console.error('AI Extraction failed:', error);
       return "Transcription service is currently unavailable. Please view the original PDF edition.";
