@@ -11,7 +11,7 @@ import {
   deleteDoc,
   where
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject, uploadBytesResumable, UploadTaskSnapshot } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { GoogleGenAI } from "@google/genai";
 
@@ -59,10 +59,31 @@ export const newspaperService = {
     });
   },
 
-  async uploadNewspaperPDF(file: File): Promise<string> {
+  async uploadNewspaperPDF(file: File, onProgress?: (progress: number) => void): Promise<string> {
     const storageRef = ref(storage, `newspapers/${Date.now()}_${file.name}`);
-    const snapshot = await uploadBytes(storageRef, file);
-    return await getDownloadURL(snapshot.ref);
+    
+    if (onProgress) {
+      return new Promise((resolve, reject) => {
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        
+        uploadTask.on('state_changed', 
+          (snapshot: UploadTaskSnapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            onProgress(progress);
+          }, 
+          (error) => {
+            reject(error);
+          }, 
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          }
+        );
+      });
+    } else {
+      const snapshot = await uploadBytes(storageRef, file);
+      return await getDownloadURL(snapshot.ref);
+    }
   },
 
   async deleteNewspaper(id: string, pdfUrl?: string) {
@@ -78,11 +99,11 @@ export const newspaperService = {
   },
 
   async extractContentFromPDF(file: File): Promise<string> {
-    // If file is too large, AI extraction via inlineData will likely fail or hang
-    // 15MB is a safe buffer below the 20MB request limit
+    // Gemini API has a 20MB limit for inlineData. 
+    // We skip for files > 15MB to be safe and avoid browser memory issues with base64 strings.
     if (file.size > 15 * 1024 * 1024) {
-      console.warn('PDF too large for AI synthesis. Skipping transcription.');
-      return "Transcription omitted due to large file size. Please refer to the original PDF document.";
+      console.warn('PDF too large for AI synthesis (>15MB). Skipping transcription.');
+      return "Transcription omitted due to large file size (15MB+). The original document is available for direct reading.";
     }
 
     try {

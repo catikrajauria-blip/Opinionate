@@ -64,6 +64,7 @@ export default function Admin() {
   const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
   const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
   const [extractingPdf, setExtractingPdf] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (user && isGlobalAdmin) {
@@ -101,12 +102,18 @@ export default function Admin() {
     
     setExtractingPdf(true);
     setSubmitting(true);
+    setUploadProgress(0);
     try {
       // 1. Extract content for searchability/summary
       const content = await newspaperService.extractContentFromPDF(newspaperPdf);
       
-      // 2. Upload actual PDF for direct "as-is" reading
-      const pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf);
+      // Flip state: Extraction done, starting upload
+      setExtractingPdf(false);
+      
+      // 2. Upload actual PDF for direct "as-is" reading with progress tracking
+      const pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, (progress) => {
+        setUploadProgress(progress);
+      });
       
       // 3. Save to Firestore with PDF link
       await newspaperService.createNewspaper({
@@ -932,11 +939,11 @@ export default function Admin() {
                        <FileText size={32} className="text-text-secondary opacity-30" />
                         <div className="text-center">
                            <p className="font-bold text-xs text-text-primary">
-                             {newspaperPdf ? `${newspaperPdf.name} (${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB)` : 'Select PDF to process'}
+                             {newspaperPdf ? `${newspaperPdf.name} (${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB)` : 'Select PDF (Max 100MB)'}
                            </p>
                            <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
                               {newspaperPdf && newspaperPdf.size > 15 * 1024 * 1024 
-                                ? "File exceeds 15MB: Digital text synthesis will be skipped" 
+                                ? "File exceeds AI synthesis limit (15MB): Direct PDF hosting only" 
                                 : "Reading format will be generated via Gemini AI"}
                            </p>
                         </div>
@@ -952,7 +959,24 @@ export default function Admin() {
                       <div className="w-5 h-5 border-2 border-bg-page border-t-transparent rounded-full animate-spin" />
                       Synthesizing Reading Format...
                     </>
-                  ) : submitting ? 'Uploading...' : 'Upload & Process Newspaper'}
+                  ) : submitting ? (
+                    <div className="flex flex-col items-center gap-2 w-full">
+                       <div className="flex items-center justify-center gap-3">
+                          <div className="w-5 h-5 border-2 border-bg-page border-t-transparent rounded-full animate-spin" />
+                          <span>{newspaperPdf && newspaperPdf.size > 20 * 1024 * 1024 ? 'Uploading Large Document...' : 'Uploading...'}</span>
+                       </div>
+                       <div className="w-full max-w-md bg-white/20 h-1.5 rounded-full overflow-hidden mt-1">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${uploadProgress}%` }}
+                            className="h-full bg-bg-page"
+                          />
+                       </div>
+                       <p className="text-[10px] font-bold uppercase tracking-widest text-bg-page/70">
+                          {Math.round(uploadProgress)}% &bull; {newspaperPdf ? `${((uploadProgress / 100) * (newspaperPdf.size / 1024 / 1024)).toFixed(1)}MB of ${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB` : ''}
+                       </p>
+                    </div>
+                  ) : 'Upload & Process Newspaper'}
                 </button>
               </form>
 
