@@ -121,14 +121,26 @@ export default function Admin() {
 
   const handleUploadNewspaper = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newspaperContent && !newspaperPdf) return;
-    if (!isGlobalAdmin) return;
+    
+    // Debug: Confirming button click
+    console.log("Publish button clicked");
+    
+    if (!newspaperContent && !newspaperPdf) {
+      alert("Please provide content: Paste text or upload a PDF.");
+      setError("Please provide either a PDF edition or text content for the digital reader.");
+      return;
+    }
     
     setSubmitting(true);
     setError(null);
 
     try {
+      if (!isGlobalAdmin) {
+        throw new Error("Unauthorized: You do not have administrative privileges.");
+      }
+
       await newspaperService.validateConnection();
+      console.log("Connection validated, starting upload...");
 
       let pdfUrl = undefined;
       if (newspaperPdf) {
@@ -1027,7 +1039,7 @@ export default function Admin() {
                 </div>
 
                 <button 
-                  disabled={submitting || !newspaperContent}
+                  disabled={submitting || (!newspaperContent && !newspaperPdf)}
                   className="btn-minimal-primary w-full py-5 text-lg flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all"
                 >
                   {submitting ? (
