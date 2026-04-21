@@ -119,6 +119,7 @@ export default function Admin() {
       setSuccess(true);
       setNewspaperTitle('');
       setNewspaperPdf(null);
+      setNewspaperDate(new Date().toISOString().split('T')[0]);
       loadNewspapers();
     } catch (err: any) {
       console.error('Error uploading newspaper:', err);
@@ -929,10 +930,16 @@ export default function Admin() {
                          className="absolute inset-0 opacity-0 cursor-pointer"
                        />
                        <FileText size={32} className="text-text-secondary opacity-30" />
-                       <div className="text-center">
-                          <p className="font-bold text-xs text-text-primary">{newspaperPdf ? newspaperPdf.name : 'Select PDF to process'}</p>
-                          <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">Reading format will be generated via Gemini AI</p>
-                       </div>
+                        <div className="text-center">
+                           <p className="font-bold text-xs text-text-primary">
+                             {newspaperPdf ? `${newspaperPdf.name} (${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB)` : 'Select PDF to process'}
+                           </p>
+                           <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
+                              {newspaperPdf && newspaperPdf.size > 15 * 1024 * 1024 
+                                ? "File exceeds 15MB: Digital text synthesis will be skipped" 
+                                : "Reading format will be generated via Gemini AI"}
+                           </p>
+                        </div>
                     </div>
                 </div>
 

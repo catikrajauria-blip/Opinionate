@@ -78,39 +78,53 @@ export const newspaperService = {
   },
 
   async extractContentFromPDF(file: File): Promise<string> {
-    const base64Data = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = (reader.result as string).split(',')[1];
-        resolve(base64);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    
-    // Using gemini-3-flash-preview as recommended for text extraction tasks
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: {
-        parts: [
-          {
-            inlineData: {
-              mimeType: "application/pdf",
-              data: base64Data,
-            },
-          },
-          {
-            text: "Extract the content of this newspaper PDF and format it into a beautifully structured Markdown article, suitable for high-quality reading on a website. Use headers, bullet points, and sections for different news stories. Ensure clear separation between major headlines. Maintain a professional journalistic tone. Do not include page numbers or footer artifacts.",
-          },
-        ],
-      },
-    });
-
-    if (!response.text) {
-      throw new Error("Gemini failed to extract content from the PDF.");
+    // If file is too large, AI extraction via inlineData will likely fail or hang
+    // 15MB is a safe buffer below the 20MB request limit
+    if (file.size > 15 * 1024 * 1024) {
+      console.warn('PDF too large for AI synthesis. Skipping transcription.');
+      return "Transcription omitted due to large file size. Please refer to the original PDF document.";
     }
 
-    return response.text;
+    try {
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          if (!result) return reject(new Error("Failed to read file"));
+          const base64 = result.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = () => reject(new Error("File reading error"));
+        reader.readAsDataURL(file);
+      });
+
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: {
+          parts: [
+            {
+              inlineData: {
+                mimeType: "application/pdf",
+                data: base64Data,
+              },
+            },
+            {
+              text: "Extract the content of this newspaper PDF and format it into a beautifully structured Markdown article. Use headers and sections. If the PDF is mostly images or layout-heavy, provide a high-level summary of the main stories. Maintain professional tone.",
+            },
+          ],
+        },
+      });
+
+      if (!response.text) {
+        return "Synthesis was unable to extract text content, but the original PDF is available for reading.";
+      }
+
+      return response.text;
+    } catch (error) {
+      console.error('AI Extraction failed:', error);
+      return "Transcription service is currently unavailable. Please view the original PDF edition.";
+    }
   }
 };
