@@ -9,13 +9,34 @@ import {
   limit, 
   serverTimestamp,
   deleteDoc,
-  where
+  where,
+  getDocFromServer
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject, uploadBytesResumable, UploadTaskSnapshot } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { GoogleGenAI } from "@google/genai";
 
 const NEWSPAPERS_COL = 'newspapers';
+
+/**
+ * Helper to wrap a promise with a timeout
+ */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
+  let timeoutId: any;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(errorMessage));
+    }, timeoutMs);
+  });
+
+  return Promise.race([
+    promise.then((result) => {
+      clearTimeout(timeoutId);
+      return result;
+    }),
+    timeoutPromise
+  ]);
+}
 
 export interface Newspaper {
   id: string;
@@ -28,6 +49,27 @@ export interface Newspaper {
 }
 
 export const newspaperService = {
+  /**
+   * Tests the connection to Firestore. Throws if disabled or uninitialized.
+   */
+  async validateConnection() {
+    try {
+      // Try to fetch a non-existent doc from server with a short timeout
+      const docRef = doc(db, 'system', 'connection_test');
+      await withTimeout(
+        getDocFromServer(docRef),
+        8000, 
+        "Database is not responding. Ensure Firestore Database is ENABLED and your project is properly configured."
+      ).catch(err => {
+        if (err.code === 'permission-denied') return; 
+        throw err;
+      });
+    } catch (error: any) {
+      console.error("Firestore Connection Validation Failed:", error);
+      throw new Error(`Database connection failed: ${error.message || error.code}. Make sure you have enabled "Firestore Database" in the Firebase Console.`);
+    }
+  },
+
   async getLatestNewspapers(limitCount = 10) {
     const q = query(
       collection(db, NEWSPAPERS_COL), 
@@ -54,11 +96,17 @@ export const newspaperService = {
   },
 
   async createNewspaper(data: Omit<Newspaper, 'id' | 'createdAt'>) {
-    return await addDoc(collection(db, NEWSPAPERS_COL), {
+    const savePromise = addDoc(collection(db, NEWSPAPERS_COL), {
       ...data,
       isExternalPdf: data.pdfUrl ? (!data.pdfUrl.includes('firebasestorage.googleapis.com') && !data.pdfUrl.includes('firebasestorage.app')) : false,
       createdAt: serverTimestamp()
     });
+
+    return await withTimeout(
+      savePromise,
+      15000,
+      "Saving failed due to database timeout. Check your internet connection or Firestore status."
+    );
   },
 
   async uploadNewspaperPDF(file: File, onProgress?: (progress: number) => void): Promise<string> {

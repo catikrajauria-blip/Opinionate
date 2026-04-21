@@ -109,6 +109,9 @@ export default function Admin() {
     setError(null); // Reset error state
 
     try {
+      // 0. Quick check if Firestore is even reachable
+      await newspaperService.validateConnection();
+
       let content = '';
       let pdfUrl = externalPdfUrl;
 
@@ -136,15 +139,20 @@ export default function Admin() {
       setSuccess(true);
       setNewspaperTitle('');
       setNewspaperPdf(null);
+      setExternalPdfUrl('');
       setNewspaperDate(new Date().toISOString().split('T')[0]);
       loadNewspapers();
     } catch (err: any) {
       console.error('Error uploading newspaper:', err);
+      setError(`Failed to upload newspaper: ${err.message || 'Unknown error'}`);
       alert(`Failed to upload newspaper: ${err.message}`);
     } finally {
       setExtractingPdf(false);
       setSubmitting(false);
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => {
+        setSuccess(false);
+        setError(null);
+      }, 5000);
     }
   };
 
