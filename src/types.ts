@@ -74,3 +74,12 @@ export interface SavedBlog {
   blogId: string;
   savedAt: Timestamp;
 }
+
+export interface Newspaper {
+  id: string;
+  title: string;
+  date: string;
+  content: string;
+  pdfUrl?: string;
+  createdAt: Timestamp;
+}

@@ -129,6 +129,19 @@
         "savedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["blogId", "savedAt"]
+    },
+    "Newspaper": {
+      "title": "Newspaper",
+      "description": "Daily newspaper editions extracted from PDF",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "content": { "type": "string" },
+        "pdfUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "date", "content", "createdAt"]
     }
   },
   "firestore": {
@@ -171,6 +184,10 @@
     "/users/{uid}/saved_blogs/{blogId}": {
       "schema": "SavedBlog",
       "description": "Blogs saved by a specific user"
+    },
+    "/newspapers/{newspaperId}": {
+      "schema": "Newspaper",
+      "description": "Daily newspaper archives"
     }
   }
 }

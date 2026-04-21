@@ -2,28 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { blogService } from '../lib/blogService';
+import { Newspaper, newspaperService } from '../lib/newspaperService';
 import { Blog } from '../types';
 import BlogCard from '../components/BlogCard';
 import RatingSystem from '../components/RatingSystem';
 import CommentSection from '../components/CommentSection';
 import NewsletterBox from '../components/NewsletterBox';
 import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
-import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap, ExternalLink } from 'lucide-react';
+import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap, ExternalLink, Newspaper as NewspaperIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
   const { user } = useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [latestNewspaper, setLatestNewspaper] = useState<Newspaper | null>(null);
   const [loading, setLoading] = useState(true);
   const [userId] = useState(() => user?.uid || generateUserId());
   const [likingId, setLikingId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadTodayBlogs() {
+    async function loadTodayData() {
       try {
-        const todayBlogs = await blogService.getTodayBlogs();
+        const [todayBlogs, newspapers] = await Promise.all([
+          blogService.getTodayBlogs(),
+          newspaperService.getLatestNewspapers(1)
+        ]);
+        
         setBlogs(todayBlogs);
+        if (newspapers.length > 0) {
+          setLatestNewspaper(newspapers[0]);
+        }
         
         // Track views for the first one if it exists
         if (todayBlogs.length > 0) {
@@ -34,12 +43,12 @@ export default function Home() {
            }
         }
       } catch (error) {
-        console.error('Error loading today blogs:', error);
+        console.error('Error loading today data:', error);
       } finally {
         setLoading(false);
       }
     }
-    loadTodayBlogs();
+    loadTodayData();
   }, [userId]);
 
   const handleLike = async (e: React.MouseEvent, blogId: string, idx: number) => {
@@ -98,6 +107,34 @@ export default function Home() {
          )}
          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 tracking-tighter">Today's Briefing</h1>
          <p className="text-text-secondary font-serif italic text-lg opacity-60 font-medium">{formatDate(new Date().toISOString().split('T')[0])}</p>
+
+         {latestNewspaper && (
+           <motion.div 
+             initial={{ opacity: 0, y: 10 }}
+             animate={{ opacity: 1, y: 0 }}
+             className="mt-10"
+           >
+             <Link 
+               to={`/newspaper/${latestNewspaper.id}`}
+               className="group inline-flex items-center gap-6 p-4 md:p-6 bg-accent/5 border border-accent/20 rounded-[2rem] hover:border-accent transition-all duration-500"
+             >
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-accent rounded-2xl flex items-center justify-center text-bg-page flex-shrink-0 group-hover:rotate-6 transition-transform">
+                   <NewspaperIcon size={32} className="md:w-10 md:h-10" />
+                </div>
+                <div className="text-left">
+                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-1">Today's Morning Edition</p>
+                   <h3 className="text-xl md:text-2xl font-serif font-bold text-text-primary group-hover:text-accent transition-colors">
+                      {latestNewspaper.title}
+                   </h3>
+                   <div className="flex items-center gap-4 mt-2 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
+                      <span>{latestNewspaper.date}</span>
+                      <span className="w-1 h-1 bg-border rounded-full" />
+                      <span className="flex items-center gap-1">Read Digital Copy &rarr;</span>
+                   </div>
+                </div>
+             </Link>
+           </motion.div>
+         )}
       </header>
 
       <div className="grid grid-cols-1 gap-16 mb-20">

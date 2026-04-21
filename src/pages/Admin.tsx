@@ -15,11 +15,14 @@ import { GoogleGenAI } from "@google/genai";
 import { useAuth } from '../contexts/AuthContext';
 import { UserProfile } from '../types';
 
+import { newspaperService } from '../lib/newspaperService';
+
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
   const [aiLoading, setAiLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'newspapers'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
+  const [allNewspapers, setAllNewspapers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [allComments, setAllComments] = useState<any[]>([]);
   const [allRatings, setAllRatings] = useState<any[]>([]);
@@ -56,6 +59,12 @@ export default function Admin() {
   const [newsSource, setNewsSource] = useState('');
   const [recentNews, setRecentNews] = useState<any[]>([]);
 
+  // Newspaper Form State
+  const [newspaperTitle, setNewspaperTitle] = useState('');
+  const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
+  const [extractingPdf, setExtractingPdf] = useState(false);
+
   useEffect(() => {
     if (user && isGlobalAdmin) {
       loadData();
@@ -69,10 +78,63 @@ export default function Admin() {
       if (activeTab === 'news') loadRecentNews();
       if (activeTab === 'users') loadAllUsers();
       if (activeTab === 'community') loadCommunityData();
+      if (activeTab === 'newspapers') loadNewspapers();
       loadStats();
       loadNewsCounts();
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadNewspapers = async () => {
+    try {
+      const n = await newspaperService.getLatestNewspapers(20);
+      setAllNewspapers(n);
+    } catch (err) {
+      console.error('Error loading newspapers:', err);
+    }
+  };
+
+  const handleUploadNewspaper = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newspaperPdf || !isGlobalAdmin) return;
+    
+    setExtractingPdf(true);
+    setSubmitting(true);
+    try {
+      // 1. Extract content using Gemini
+      const content = await newspaperService.extractContentFromPDF(newspaperPdf);
+      
+      // 2. Save to Firestore
+      await newspaperService.createNewspaper({
+        title: newspaperTitle || `Newspaper Edition - ${newspaperDate}`,
+        date: newspaperDate,
+        content: content,
+      });
+
+      setSuccess(true);
+      setNewspaperTitle('');
+      setNewspaperPdf(null);
+      // Reset file input manually if needed, but react state should handle most
+      loadNewspapers();
+    } catch (err: any) {
+      console.error('Error uploading newspaper:', err);
+      alert(`Failed to upload newspaper: ${err.message}`);
+    } finally {
+      setExtractingPdf(false);
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  const handleDeleteNewspaper = async (id: string) => {
+    if (!window.confirm('Delete this newspaper archive?')) return;
+    try {
+      await newspaperService.deleteNewspaper(id);
+      loadNewspapers();
+    } catch (err: any) {
+      console.error('Error deleting newspaper:', err);
+      alert(`Failed to delete newspaper: ${err.message}`);
     }
   };
 
@@ -407,6 +469,12 @@ export default function Admin() {
               Audience ({allSubscribers.length})
             </button>
             <button 
+              onClick={() => setActiveTab('newspapers')}
+              className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'newspapers' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
+            >
+              Newspapers ({allNewspapers.length})
+            </button>
+            <button 
               onClick={() => setActiveTab('analytics')}
               className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'analytics' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
             >
@@ -467,39 +535,39 @@ export default function Admin() {
               </div>
 
               <div className="space-y-2">
-                 <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Summary (2-3 lines)</label>
+                 <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Summary (2-3 lines)</label>
                  <textarea 
                     required value={summary} onChange={(e) => setSummary(e.target.value)} rows={3}
-                    className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium resize-none"
+                    className="w-full bg-bg-page border border-border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/10 transition-all font-medium resize-none text-text-primary placeholder:text-text-secondary/30"
                     placeholder="Short summary for archive cards..."
                  />
               </div>
 
               <div className="space-y-2">
                  <div className="flex justify-between items-center ml-1">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Main Content (Markdown supported)</label>
-                    <span className="text-[10px] text-orange-500 font-bold">Use # for headings, * for lists</span>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary">Main Content (Markdown supported)</label>
+                    <span className="text-[10px] text-accent font-bold">Use # for headings, * for lists</span>
                  </div>
                  <textarea 
                     required value={content} onChange={(e) => setContent(e.target.value)} rows={12}
-                    className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium resize-none font-mono text-sm"
+                    className="w-full bg-bg-page border border-border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/10 transition-all font-medium resize-none font-mono text-sm text-text-primary placeholder:text-text-secondary/30"
                     placeholder="Write your long-form opinion here..."
                  />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-gray-50">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-border">
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Author Name</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Author Name</label>
                     <input 
                        type="text" required value={author} onChange={(e) => setAuthor(e.target.value)}
-                       className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium"
+                       className="w-full bg-bg-page border border-border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/10 transition-all font-medium text-text-primary"
                     />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1 flex items-center gap-1.5"><ImageIcon size={12} /> Featured Image URL (Optional)</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1 flex items-center gap-1.5"><ImageIcon size={12} /> Featured Image URL (Optional)</label>
                     <input 
                        type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-                       className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-4 focus:ring-orange-100 focus:bg-white transition-all font-medium"
+                       className="w-full bg-bg-page border border-border rounded-2xl p-4 outline-none focus:ring-4 focus:ring-accent/10 transition-all font-medium text-text-primary"
                        placeholder="https://images.unsplash.com/..."
                     />
                  </div>
@@ -531,7 +599,7 @@ export default function Admin() {
                       <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Headline</label>
                       <input 
                         type="text" required value={newsTitle} onChange={(e) => setNewsTitle(e.target.value)}
-                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary placeholder:text-text-secondary/30"
                         placeholder="Major shift in Market dynamics..."
                       />
                   </div>
@@ -539,7 +607,7 @@ export default function Admin() {
                       <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">News Category</label>
                       <select 
                         value={newsCategory} onChange={(e) => setNewsCategory(e.target.value)}
-                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary"
                       >
                         <option value="finance">Finance & Markets ({newsCounts.finance || 0})</option>
                         <option value="politics">Indian Politics ({newsCounts.politics || 0})</option>
@@ -554,7 +622,7 @@ export default function Admin() {
                       <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1 flex items-center gap-2"><LinkIcon size={12} /> News URL</label>
                       <input 
                         type="url" required value={newsUrl} onChange={(e) => setNewsUrl(e.target.value)}
-                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary placeholder:text-text-secondary/30"
                         placeholder="https://..."
                       />
                   </div>
@@ -562,7 +630,7 @@ export default function Admin() {
                       <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">News Source</label>
                       <input 
                         type="text" required value={newsSource} onChange={(e) => setNewsSource(e.target.value)}
-                        className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium text-text-primary"
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary placeholder:text-text-secondary/30"
                         placeholder="Financial Times / Mint..."
                       />
                   </div>
@@ -572,7 +640,7 @@ export default function Admin() {
                     <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Analytical Summary</label>
                     <textarea 
                       required value={newsSummary} onChange={(e) => setNewsSummary(e.target.value)} rows={4}
-                      className="w-full bg-surface border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all font-medium resize-none text-text-primary"
+                      className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium resize-none text-text-primary placeholder:text-text-secondary/30"
                       placeholder="Brief summary for subscribers..."
                     />
                 </div>
@@ -646,7 +714,7 @@ export default function Admin() {
                                 <div className="flex items-center gap-4">
                                    <div className="relative flex-shrink-0">
                                       {u.photoURL ? (
-                                        <img src={u.photoURL} alt="" className="w-10 h-10 border border-border grayscale hover:grayscale-0 transition-all" referrerPolicy="no-referrer" />
+                                        <img src={u.photoURL} alt="" className="w-10 h-10 border border-border transition-all" referrerPolicy="no-referrer" />
                                       ) : (
                                         <div className="w-10 h-10 bg-accent text-bg-page flex items-center justify-center font-bold text-sm">
                                            {u.displayName.charAt(0)}
@@ -816,6 +884,99 @@ export default function Admin() {
                   </div>
                </div>
             </div>
+          ) : activeTab === 'newspapers' ? (
+            <div className="space-y-12">
+              <form onSubmit={handleUploadNewspaper} className="bg-surface p-10 rounded-xl border border-border space-y-8">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-serif font-bold text-text-primary">
+                        Upload Daily Newspaper
+                    </h2>
+                    {success && activeTab === 'newspapers' && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-green-600 font-bold text-xs flex items-center gap-2">
+                           <CheckCircle2 size={14} /> Newspaper Ready.
+                        </motion.div>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Edition Title (Optional)</label>
+                      <input 
+                        type="text" value={newspaperTitle} onChange={(e) => setNewspaperTitle(e.target.value)}
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary"
+                        placeholder="Daily Outlook - Morning Edition..."
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Edition Date</label>
+                      <input 
+                        type="date" required value={newspaperDate} onChange={(e) => setNewspaperDate(e.target.value)}
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary"
+                      />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Newspaper PDF File</label>
+                    <div className="border-2 border-dashed border-border rounded-2xl p-8 flex flex-col items-center justify-center gap-4 hover:border-accent transition-all cursor-pointer relative overflow-hidden">
+                       <input 
+                         type="file" 
+                         accept="application/pdf"
+                         onChange={(e) => setNewspaperPdf(e.target.files?.[0] || null)}
+                         className="absolute inset-0 opacity-0 cursor-pointer"
+                       />
+                       <FileText size={32} className="text-text-secondary opacity-30" />
+                       <div className="text-center">
+                          <p className="font-bold text-xs text-text-primary">{newspaperPdf ? newspaperPdf.name : 'Select PDF to process'}</p>
+                          <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">Reading format will be generated via Gemini AI</p>
+                       </div>
+                    </div>
+                </div>
+
+                <button 
+                  disabled={submitting || !newspaperPdf}
+                  className="btn-minimal-primary w-full py-5 text-lg flex items-center justify-center gap-3"
+                >
+                  {extractingPdf ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-bg-page border-t-transparent rounded-full animate-spin" />
+                      Synthesizing Reading Format...
+                    </>
+                  ) : submitting ? 'Uploading...' : 'Upload & Process Newspaper'}
+                </button>
+              </form>
+
+              <div className="bg-surface p-10 rounded-xl border border-border">
+                <h2 className="text-xl font-serif font-bold text-text-primary mb-8">Newspaper Archive</h2>
+                <div className="space-y-4">
+                  {allNewspapers.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between p-4 border border-border rounded-lg group bg-bg-page hover:border-text-primary transition-all">
+                      <div>
+                        <p className="font-bold text-sm text-text-primary">{item.title}</p>
+                        <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">{item.date}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => window.open(`/newspaper/${item.id}`, '_blank')}
+                          className="flex items-center gap-1.5 text-accent hover:text-accent/80 transition-colors bg-accent/5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest border border-accent/20"
+                        >
+                          <ExternalLink size={13} />
+                          <span>Read</span>
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteNewspaper(item.id)}
+                          className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 dark:bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest border border-red-100 dark:border-red-500/20"
+                        >
+                          <Trash2 size={13} />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {allNewspapers.length === 0 && <p className="text-text-secondary italic font-serif py-4">No newspapers in the archive.</p>}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="bg-bg-page dark:bg-zinc-900 border border-border p-10">
                <div className="mb-12 border-b border-border pb-8">
@@ -825,17 +986,17 @@ export default function Admin() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border border-border">
                   <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mb-4 opacity-50">Impact Index</p>
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Impact Index</p>
                      <p className="text-5xl font-bold text-text-primary tracking-tighter">94<span className="text-xl text-accent font-sans">%</span></p>
                      <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Retention Metric</p>
                   </div>
                   <div className="p-10 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mb-4 opacity-50">Total Outreach</p>
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Total Outreach</p>
                      <p className="text-5xl font-bold text-text-primary tracking-tighter">{stats.totalViews}</p>
                      <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Verified Views</p>
                   </div>
                   <div className="p-10 hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mb-4 opacity-50">Consensus Grade</p>
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Consensus Grade</p>
                      <p className="text-5xl font-bold text-text-primary tracking-tighter">{stats.avgRating.toFixed(1)}<span className="text-xl text-yellow-500 font-sans">/5</span></p>
                      <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Average Satisfaction</p>
                   </div>
