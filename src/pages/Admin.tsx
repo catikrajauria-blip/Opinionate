@@ -64,6 +64,7 @@ export default function Admin() {
   const [newspaperTitle, setNewspaperTitle] = useState('');
   const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
   const [newspaperContent, setNewspaperContent] = useState('');
+  const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
   const [extractingPdf, setExtractingPdf] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -120,7 +121,8 @@ export default function Admin() {
 
   const handleUploadNewspaper = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newspaperContent || !isGlobalAdmin) return;
+    if (!newspaperContent && !newspaperPdf) return;
+    if (!isGlobalAdmin) return;
     
     setSubmitting(true);
     setError(null);
@@ -128,16 +130,22 @@ export default function Admin() {
     try {
       await newspaperService.validateConnection();
 
+      let pdfUrl = undefined;
+      if (newspaperPdf) {
+        pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf);
+      }
+
       await newspaperService.createNewspaper({
         title: newspaperTitle || `Newspaper Edition - ${newspaperDate}`,
         date: newspaperDate,
-        content: newspaperContent,
-        pdfUrl: undefined
+        content: newspaperContent || 'Digital edition content available. See reading mode.',
+        pdfUrl: pdfUrl
       });
 
       setSuccess(true);
       setNewspaperTitle('');
       setNewspaperContent('');
+      setNewspaperPdf(null);
       setNewspaperDate(new Date().toISOString().split('T')[0]);
       loadNewspapers();
     } catch (err: any) {
@@ -940,15 +948,54 @@ export default function Admin() {
                 </div>
 
                 <div className="space-y-6">
+                  {/* PDF Upload Zone */}
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Original PDF Edition (Optional - Hosted on Supabase)</label>
+                      <div className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center gap-4 hover:border-accent transition-all cursor-pointer relative overflow-hidden ${newspaperPdf ? 'border-accent bg-accent/5' : 'border-border bg-surface'}`}>
+                         <input 
+                           type="file" 
+                           accept="application/pdf"
+                           onChange={(e) => {
+                             const file = e.target.files?.[0] || null;
+                             setNewspaperPdf(file);
+                           }}
+                           className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                         />
+                         <ImageIcon size={40} className={newspaperPdf ? 'text-accent' : 'text-text-secondary opacity-30'} />
+                         <div className="text-center">
+                            <p className="font-bold text-sm text-text-primary">
+                              {newspaperPdf ? newspaperPdf.name : 'Drag & Drop Print Edition PDF or Click'}
+                            </p>
+                            <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
+                               {newspaperPdf ? `${(newspaperPdf.size / 1024 / 1024).toFixed(2)} MB` : 'Max 50MB (Supabase Free Tier)'}
+                            </p>
+                         </div>
+                         {newspaperPdf && (
+                           <button 
+                             type="button"
+                             onClick={(e) => { e.stopPropagation(); setNewspaperPdf(null); }}
+                             className="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:underline relative z-20"
+                           >
+                             Remove File
+                           </button>
+                         )}
+                      </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="flex-1 h-px bg-border"></div>
+                    <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">AND / OR</span>
+                    <div className="flex-1 h-px bg-border"></div>
+                  </div>
+
                   <div className="p-6 bg-surface border border-border rounded-2xl space-y-6">
                     <div className="space-y-4">
-                        <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary">Edition Content (Paste Text or Markdown)</label>
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary">Digital Reading Mode Content (Markdown)</label>
                         <textarea 
-                          required
-                          placeholder="Paste your newspaper text here. If you have the PDF, copy-paste the text content into this box. You can use Markdown for formatting (# for headers, etc.)"
+                          placeholder="Paste your newspaper text here for the mobile-friendly reading mode. You can use the AI Polish button below to format raw text."
                           value={newspaperContent}
                           onChange={(e) => setNewspaperContent(e.target.value)}
-                          className="w-full bg-bg-page border border-border rounded-xl p-6 outline-none focus:ring-2 focus:ring-text-primary transition-all font-serif text-lg min-h-[400px] resize-none"
+                          className="w-full bg-bg-page border border-border rounded-xl p-6 outline-none focus:ring-2 focus:ring-text-primary transition-all font-serif text-lg min-h-[300px] resize-none"
                         />
                         <div className="flex justify-between items-center bg-bg-page p-4 rounded-xl border border-border">
                           <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">
@@ -965,19 +1012,9 @@ export default function Admin() {
                             ) : (
                               <Zap size={14} />
                             )}
-                            Polish with Gemini AI
+                            Optimize Layout with AI
                           </button>
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Edition Title (Optional)</label>
-                        <input 
-                          type="text" placeholder="e.g. Standard Edition" value={newspaperTitle} onChange={(e) => setNewspaperTitle(e.target.value)}
-                          className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary"
-                        />
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -985,7 +1022,7 @@ export default function Admin() {
                 <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl mb-4">
                     <p className="text-xs text-amber-600 font-medium flex items-center gap-2">
                       <ShieldAlert size={14} />
-                      Important: If publishing hangs, ensure you have clicked "Create Database" in your Firebase console.
+                      Notice: PDFs are stored for free on Supabase. Markdown is stored on Firestore.
                     </p>
                 </div>
 

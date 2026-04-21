@@ -13,6 +13,7 @@ import {
   getDocFromServer
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { supabase } from './supabase';
 import { GoogleGenAI } from "@google/genai";
 
 const NEWSPAPERS_COL = 'newspapers';
@@ -27,6 +28,31 @@ export interface Newspaper {
 }
 
 export const newspaperService = {
+  /**
+   * Uploads a PDF to Supabase Storage (Free Tier).
+   */
+  async uploadNewspaperPDF(file: File): Promise<string> {
+    const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    const { data, error } = await supabase.storage
+      .from('newspapers')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) {
+      console.error("Supabase Upload Error:", error);
+      throw new Error(`PDF Upload Failed: ${error.message}`);
+    }
+
+    // Get Public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('newspapers')
+      .getPublicUrl(fileName);
+
+    return publicUrl;
+  },
+
   /**
    * Tests the connection to Firestore. Throws if disabled or uninitialized.
    */
