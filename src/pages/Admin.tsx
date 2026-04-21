@@ -39,6 +39,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [newsCounts, setNewsCounts] = useState<Record<string, number>>({});
   const [selectedBlogAnalysis, setSelectedBlogAnalysis] = useState<any>(null);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
@@ -62,8 +63,7 @@ export default function Admin() {
   // Newspaper Form State
   const [newspaperTitle, setNewspaperTitle] = useState('');
   const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
-  const [externalPdfUrl, setExternalPdfUrl] = useState('');
+  const [newspaperContent, setNewspaperContent] = useState('');
   const [extractingPdf, setExtractingPdf] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -97,62 +97,56 @@ export default function Admin() {
     }
   };
 
+  const handleAIPolish = async () => {
+    if (!newspaperContent || aiLoading) return;
+    setAiLoading(true);
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const prompt = `Format the following raw newspaper text into a beautiful, professional digital newspaper edition using Markdown. Use headers, sections, bullet points, and highlight key stories. Do not change the meaning of the news. Content: ${newspaperContent}`;
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt
+      });
+      if (response.text) {
+        setNewspaperContent(response.text);
+      }
+    } catch (error) {
+      console.error("AI Polish failed:", error);
+      alert("Failed to polish with AI. Please check your connection.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const handleUploadNewspaper = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!newspaperPdf && !externalPdfUrl) || !isGlobalAdmin) return;
+    if (!newspaperContent || !isGlobalAdmin) return;
     
-    if (newspaperPdf) {
-      setExtractingPdf(true);
-    }
     setSubmitting(true);
-    setUploadProgress(0);
-    setError(null); // Reset error state
+    setError(null);
 
     try {
-      // 0. Quick check if Firestore is even reachable
       await newspaperService.validateConnection();
 
-      let content = '';
-      let pdfUrl = externalPdfUrl;
-
-      // 1. If a file is provided, extract content and upload it
-      if (newspaperPdf) {
-        content = await newspaperService.extractContentFromPDF(newspaperPdf);
-        setExtractingPdf(false); // Done extracting, now starting upload
-        
-        pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, (progress) => {
-          setUploadProgress(progress);
-        }).catch(err => {
-          console.warn("Storage upload failed - possibly due to billing. Proceeding without PDF hosting if intended.");
-          throw new Error(`Upload failed: ${err.message || 'Storage error'}. Ensure Firebase Storage is properly set up or use an external PDF link.`);
-        });
-      }
-      
-      // 2. Save to Firestore
       await newspaperService.createNewspaper({
         title: newspaperTitle || `Newspaper Edition - ${newspaperDate}`,
         date: newspaperDate,
-        content: content,
-        pdfUrl: pdfUrl
+        content: newspaperContent,
+        pdfUrl: undefined
       });
 
       setSuccess(true);
       setNewspaperTitle('');
-      setNewspaperPdf(null);
-      setExternalPdfUrl('');
+      setNewspaperContent('');
       setNewspaperDate(new Date().toISOString().split('T')[0]);
       loadNewspapers();
     } catch (err: any) {
-      console.error('Error uploading newspaper:', err);
-      setError(`Failed to upload newspaper: ${err.message || 'Unknown error'}`);
-      alert(`Failed to upload newspaper: ${err.message}`);
+      console.error('Error publishing newspaper:', err);
+      setError(`Failed to publish: ${err.message || 'Check Firestore status'}`);
+      alert(`Error: ${err.message}`);
     } finally {
-      setExtractingPdf(false);
       setSubmitting(false);
-      setTimeout(() => {
-        setSuccess(false);
-        setError(null);
-      }, 5000);
+      setTimeout(() => setSuccess(false), 3000);
     }
   };
 
@@ -945,84 +939,71 @@ export default function Admin() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Newspaper PDF File (Upload)</label>
-                      <div className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 hover:border-accent transition-all cursor-pointer relative overflow-hidden ${newspaperPdf ? 'border-text-primary bg-surface/50' : 'border-border'}`}>
-                         <input 
-                           type="file" 
-                           accept="application/pdf"
-                           onChange={(e) => {
-                             setNewspaperPdf(e.target.files?.[0] || null);
-                             if (e.target.files?.[0]) setExternalPdfUrl(''); // Clear link if file selected
-                           }}
-                           className="absolute inset-0 opacity-0 cursor-pointer"
-                           disabled={!!externalPdfUrl}
-                         />
-                         <FileText size={32} className={`transition-opacity ${newspaperPdf ? 'text-text-primary opacity-100' : 'text-text-secondary opacity-30'}`} />
-                          <div className="text-center">
-                             <p className="font-bold text-xs text-text-primary">
-                               {newspaperPdf ? `${newspaperPdf.name} (${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB)` : 'Drag & Drop PDF or Click'}
-                             </p>
-                             <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
-                                Max 100MB
-                             </p>
-                          </div>
+                <div className="space-y-6">
+                  <div className="p-6 bg-surface border border-border rounded-2xl space-y-6">
+                    <div className="space-y-4">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary">Edition Content (Paste Text or Markdown)</label>
+                        <textarea 
+                          required
+                          placeholder="Paste your newspaper text here. If you have the PDF, copy-paste the text content into this box. You can use Markdown for formatting (# for headers, etc.)"
+                          value={newspaperContent}
+                          onChange={(e) => setNewspaperContent(e.target.value)}
+                          className="w-full bg-bg-page border border-border rounded-xl p-6 outline-none focus:ring-2 focus:ring-text-primary transition-all font-serif text-lg min-h-[400px] resize-none"
+                        />
+                        <div className="flex justify-between items-center bg-bg-page p-4 rounded-xl border border-border">
+                          <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">
+                            Length: {newspaperContent.length} characters
+                          </p>
+                          <button 
+                            type="button"
+                            onClick={handleAIPolish}
+                            disabled={!newspaperContent || aiLoading}
+                            className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-accent hover:opacity-80 disabled:opacity-50 transition-all font-sans"
+                          >
+                            {aiLoading ? (
+                              <div className="w-3 h-3 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Zap size={14} />
+                            )}
+                            Polish with Gemini AI
+                          </button>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Edition Title (Optional)</label>
+                        <input 
+                          type="text" placeholder="e.g. Standard Edition" value={newspaperTitle} onChange={(e) => setNewspaperTitle(e.target.value)}
+                          className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary"
+                        />
                       </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 py-2">
-                    <div className="flex-1 h-px bg-border"></div>
-                    <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Or Use Link (Bypasses Billing)</span>
-                    <div className="flex-1 h-px bg-border"></div>
-                  </div>
-
-                  <div className="space-y-2">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Direct PDF Link (Drive, Dropbox, etc.)</label>
-                      <input 
-                        type="url" 
-                        placeholder="https://example.com/newspaper.pdf"
-                        value={externalPdfUrl}
-                        onChange={(e) => {
-                          setExternalPdfUrl(e.target.value);
-                          if (e.target.value) setNewspaperPdf(null); // Clear file if link entered
-                        }}
-                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary h-14"
-                        disabled={!!newspaperPdf}
-                      />
-                      <p className="text-[10px] text-text-secondary italic ml-1">
-                        * Use this if your Firebase Storage asks for billing.
-                      </p>
+                    </div>
                   </div>
                 </div>
 
+                <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl mb-4">
+                    <p className="text-xs text-amber-600 font-medium flex items-center gap-2">
+                      <ShieldAlert size={14} />
+                      Important: If publishing hangs, ensure you have clicked "Create Database" in your Firebase console.
+                    </p>
+                </div>
+
                 <button 
-                  disabled={submitting || (!newspaperPdf && !externalPdfUrl)}
-                  className="btn-minimal-primary w-full py-5 text-lg flex items-center justify-center gap-3"
+                  disabled={submitting || !newspaperContent}
+                  className="btn-minimal-primary w-full py-5 text-lg flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all"
                 >
-                  {extractingPdf ? (
+                  {submitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-bg-page border-t-transparent rounded-full animate-spin" />
-                      Synthesizing Reading Format...
+                      Publishing Archive...
                     </>
-                  ) : submitting ? (
-                    <div className="flex flex-col items-center gap-2 w-full">
-                       <div className="flex items-center justify-center gap-3">
-                          <div className="w-5 h-5 border-2 border-bg-page border-t-transparent rounded-full animate-spin" />
-                          <span>{newspaperPdf && newspaperPdf.size > 20 * 1024 * 1024 ? 'Uploading Large Document...' : 'Uploading...'}</span>
-                       </div>
-                       <div className="w-full max-w-md bg-white/20 h-1.5 rounded-full overflow-hidden mt-1">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${uploadProgress}%` }}
-                            className="h-full bg-bg-page"
-                          />
-                       </div>
-                       <p className="text-[10px] font-bold uppercase tracking-widest text-bg-page/70">
-                          {Math.round(uploadProgress)}% &bull; {newspaperPdf ? `${((uploadProgress / 100) * (newspaperPdf.size / 1024 / 1024)).toFixed(1)}MB of ${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB` : ''}
-                       </p>
-                    </div>
-                  ) : 'Upload & Process Newspaper'}
+                  ) : (
+                    <>
+                      <CheckCircle2 size={24} />
+                      Publish Digital Edition
+                    </>
+                  )}
                 </button>
               </form>
 
