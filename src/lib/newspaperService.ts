@@ -23,6 +23,7 @@ export interface Newspaper {
   date: string;
   content: string;
   pdfUrl?: string; // Optional if we just store the content
+  isExternalPdf?: boolean; // Flag to indicate PDF is hosted outside of Firebase
   createdAt: any;
 }
 
@@ -55,30 +56,40 @@ export const newspaperService = {
   async createNewspaper(data: Omit<Newspaper, 'id' | 'createdAt'>) {
     return await addDoc(collection(db, NEWSPAPERS_COL), {
       ...data,
+      isExternalPdf: data.pdfUrl ? (!data.pdfUrl.includes('firebasestorage.googleapis.com') && !data.pdfUrl.includes('firebasestorage.app')) : false,
       createdAt: serverTimestamp()
     });
   },
 
   async uploadNewspaperPDF(file: File, onProgress?: (progress: number) => void): Promise<string> {
     const storageRef = ref(storage, `newspapers/${Date.now()}_${file.name}`);
+    console.log(`Starting upload to: ${storageRef.fullPath}`);
     
     if (onProgress) {
       return new Promise((resolve, reject) => {
-        const uploadTask = uploadBytesResumable(storageRef, file);
-        
-        uploadTask.on('state_changed', 
-          (snapshot: UploadTaskSnapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            onProgress(progress);
-          }, 
-          (error) => {
-            reject(error);
-          }, 
-          async () => {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            resolve(downloadURL);
-          }
-        );
+        try {
+          const uploadTask = uploadBytesResumable(storageRef, file);
+          
+          uploadTask.on('state_changed', 
+            (snapshot: UploadTaskSnapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log(`Upload progress: ${progress.toFixed(2)}%`);
+              onProgress(progress);
+            }, 
+            (error) => {
+              console.error("Firebase Storage Upload Error:", error);
+              reject(error);
+            }, 
+            async () => {
+              console.log("Upload complete, getting download URL...");
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve(downloadURL);
+            }
+          );
+        } catch (err) {
+          console.error("Failed to initialize upload task:", err);
+          reject(err);
+        }
       });
     } else {
       const snapshot = await uploadBytes(storageRef, file);

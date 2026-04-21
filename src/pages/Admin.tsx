@@ -63,6 +63,7 @@ export default function Admin() {
   const [newspaperTitle, setNewspaperTitle] = useState('');
   const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
   const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
+  const [externalPdfUrl, setExternalPdfUrl] = useState('');
   const [extractingPdf, setExtractingPdf] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -98,24 +99,33 @@ export default function Admin() {
 
   const handleUploadNewspaper = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newspaperPdf || !isGlobalAdmin) return;
+    if ((!newspaperPdf && !externalPdfUrl) || !isGlobalAdmin) return;
     
     setExtractingPdf(true);
     setSubmitting(true);
     setUploadProgress(0);
+    setError(null); // Reset error state
+
     try {
-      // 1. Extract content for searchability/summary
-      const content = await newspaperService.extractContentFromPDF(newspaperPdf);
+      let content = '';
+      let pdfUrl = externalPdfUrl;
+
+      // 1. If a file is provided, extract content and upload it
+      if (newspaperPdf) {
+        content = await newspaperService.extractContentFromPDF(newspaperPdf);
+        setExtractingPdf(false);
+        
+        pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, (progress) => {
+          setUploadProgress(progress);
+        }).catch(err => {
+          // If storage fails (like the billing issue), don't treat it as a fatal error 
+          // if we can at least save the entries, but inform the user.
+          console.warn("Storage upload failed - possibly due to billing. Proceeding without PDF hosting if intended.");
+          throw new Error(`Upload failed: ${err.message || 'Storage error'}. Ensure Firebase Storage is properly set up or use an external PDF link.`);
+        });
+      }
       
-      // Flip state: Extraction done, starting upload
-      setExtractingPdf(false);
-      
-      // 2. Upload actual PDF for direct "as-is" reading with progress tracking
-      const pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, (progress) => {
-        setUploadProgress(progress);
-      });
-      
-      // 3. Save to Firestore with PDF link
+      // 2. Save to Firestore
       await newspaperService.createNewspaper({
         title: newspaperTitle || `Newspaper Edition - ${newspaperDate}`,
         date: newspaperDate,
@@ -927,31 +937,59 @@ export default function Admin() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Newspaper PDF File</label>
-                    <div className="border-2 border-dashed border-border rounded-2xl p-8 flex flex-col items-center justify-center gap-4 hover:border-accent transition-all cursor-pointer relative overflow-hidden">
-                       <input 
-                         type="file" 
-                         accept="application/pdf"
-                         onChange={(e) => setNewspaperPdf(e.target.files?.[0] || null)}
-                         className="absolute inset-0 opacity-0 cursor-pointer"
-                       />
-                       <FileText size={32} className="text-text-secondary opacity-30" />
-                        <div className="text-center">
-                           <p className="font-bold text-xs text-text-primary">
-                             {newspaperPdf ? `${newspaperPdf.name} (${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB)` : 'Select PDF (Max 100MB)'}
-                           </p>
-                           <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
-                              {newspaperPdf && newspaperPdf.size > 15 * 1024 * 1024 
-                                ? "File exceeds AI synthesis limit (15MB): Direct PDF hosting only" 
-                                : "Reading format will be generated via Gemini AI"}
-                           </p>
-                        </div>
-                    </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Newspaper PDF File (Upload)</label>
+                      <div className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 hover:border-accent transition-all cursor-pointer relative overflow-hidden ${newspaperPdf ? 'border-text-primary bg-surface/50' : 'border-border'}`}>
+                         <input 
+                           type="file" 
+                           accept="application/pdf"
+                           onChange={(e) => {
+                             setNewspaperPdf(e.target.files?.[0] || null);
+                             if (e.target.files?.[0]) setExternalPdfUrl(''); // Clear link if file selected
+                           }}
+                           className="absolute inset-0 opacity-0 cursor-pointer"
+                           disabled={!!externalPdfUrl}
+                         />
+                         <FileText size={32} className={`transition-opacity ${newspaperPdf ? 'text-text-primary opacity-100' : 'text-text-secondary opacity-30'}`} />
+                          <div className="text-center">
+                             <p className="font-bold text-xs text-text-primary">
+                               {newspaperPdf ? `${newspaperPdf.name} (${(newspaperPdf.size / 1024 / 1024).toFixed(1)}MB)` : 'Drag & Drop PDF or Click'}
+                             </p>
+                             <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
+                                Max 100MB
+                             </p>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="flex-1 h-px bg-border"></div>
+                    <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Or Use Link (Bypasses Billing)</span>
+                    <div className="flex-1 h-px bg-border"></div>
+                  </div>
+
+                  <div className="space-y-2">
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Direct PDF Link (Drive, Dropbox, etc.)</label>
+                      <input 
+                        type="url" 
+                        placeholder="https://example.com/newspaper.pdf"
+                        value={externalPdfUrl}
+                        onChange={(e) => {
+                          setExternalPdfUrl(e.target.value);
+                          if (e.target.value) setNewspaperPdf(null); // Clear file if link entered
+                        }}
+                        className="w-full bg-bg-page border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-text-primary transition-all font-medium text-text-primary h-14"
+                        disabled={!!newspaperPdf}
+                      />
+                      <p className="text-[10px] text-text-secondary italic ml-1">
+                        * Use this if your Firebase Storage asks for billing.
+                      </p>
+                  </div>
                 </div>
 
                 <button 
-                  disabled={submitting || !newspaperPdf}
+                  disabled={submitting || (!newspaperPdf && !externalPdfUrl)}
                   className="btn-minimal-primary w-full py-5 text-lg flex items-center justify-center gap-3"
                 >
                   {extractingPdf ? (
