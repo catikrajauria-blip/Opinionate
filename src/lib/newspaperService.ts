@@ -11,7 +11,8 @@ import {
   deleteDoc,
   where
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { db, storage } from './firebase';
 import { GoogleGenAI } from "@google/genai";
 
 const NEWSPAPERS_COL = 'newspapers';
@@ -58,8 +59,22 @@ export const newspaperService = {
     });
   },
 
-  async deleteNewspaper(id: string) {
+  async uploadNewspaperPDF(file: File): Promise<string> {
+    const storageRef = ref(storage, `newspapers/${Date.now()}_${file.name}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    return await getDownloadURL(snapshot.ref);
+  },
+
+  async deleteNewspaper(id: string, pdfUrl?: string) {
     await deleteDoc(doc(db, NEWSPAPERS_COL, id));
+    if (pdfUrl) {
+      try {
+        const fileRef = ref(storage, pdfUrl);
+        await deleteObject(fileRef);
+      } catch (err) {
+        console.warn('Could not delete PDF file from storage:', err);
+      }
+    }
   },
 
   async extractContentFromPDF(file: File): Promise<string> {

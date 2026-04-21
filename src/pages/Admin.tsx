@@ -102,20 +102,23 @@ export default function Admin() {
     setExtractingPdf(true);
     setSubmitting(true);
     try {
-      // 1. Extract content using Gemini
+      // 1. Extract content for searchability/summary
       const content = await newspaperService.extractContentFromPDF(newspaperPdf);
       
-      // 2. Save to Firestore
+      // 2. Upload actual PDF for direct "as-is" reading
+      const pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf);
+      
+      // 3. Save to Firestore with PDF link
       await newspaperService.createNewspaper({
         title: newspaperTitle || `Newspaper Edition - ${newspaperDate}`,
         date: newspaperDate,
         content: content,
+        pdfUrl: pdfUrl
       });
 
       setSuccess(true);
       setNewspaperTitle('');
       setNewspaperPdf(null);
-      // Reset file input manually if needed, but react state should handle most
       loadNewspapers();
     } catch (err: any) {
       console.error('Error uploading newspaper:', err);
@@ -127,10 +130,10 @@ export default function Admin() {
     }
   };
 
-  const handleDeleteNewspaper = async (id: string) => {
+  const handleDeleteNewspaper = async (id: string, pdfUrl?: string) => {
     if (!window.confirm('Delete this newspaper archive?')) return;
     try {
-      await newspaperService.deleteNewspaper(id);
+      await newspaperService.deleteNewspaper(id, pdfUrl);
       loadNewspapers();
     } catch (err: any) {
       console.error('Error deleting newspaper:', err);
@@ -964,7 +967,7 @@ export default function Admin() {
                           <span>Read</span>
                         </button>
                         <button 
-                          onClick={() => handleDeleteNewspaper(item.id)}
+                          onClick={() => handleDeleteNewspaper(item.id, item.pdfUrl)}
                           className="flex items-center gap-1.5 text-red-500 hover:text-red-700 transition-colors bg-red-50 dark:bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold tracking-widest border border-red-100 dark:border-red-500/20"
                         >
                           <Trash2 size={13} />
