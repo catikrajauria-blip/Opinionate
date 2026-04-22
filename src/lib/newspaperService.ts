@@ -29,12 +29,12 @@ export interface Newspaper {
 
 export const newspaperService = {
   /**
-   * Uploads a PDF to Supabase Storage (Free Tier).
+   * Uploads a PDF to Supabase Storage.
    */
-  async uploadNewspaperPDF(file: File): Promise<string> {
+  async uploadNewspaperPDF(file: File, bucket: string = 'newspapers'): Promise<string> {
     const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
     const { data, error } = await supabase.storage
-      .from('newspapers')
+      .from(bucket)
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false

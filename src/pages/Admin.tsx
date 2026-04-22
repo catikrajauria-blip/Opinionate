@@ -65,6 +65,7 @@ export default function Admin() {
   const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
   const [newspaperContent, setNewspaperContent] = useState('');
   const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
+  const [newspaperBucket, setNewspaperBucket] = useState('newspapers');
   const [extractingPdf, setExtractingPdf] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -122,11 +123,7 @@ export default function Admin() {
   const handleUploadNewspaper = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Debug: Confirming button click
-    console.log("Publish button clicked");
-    
     if (!newspaperContent && !newspaperPdf) {
-      alert("Please provide content: Paste text or upload a PDF.");
       setError("Please provide either a PDF edition or text content for the digital reader.");
       return;
     }
@@ -140,11 +137,10 @@ export default function Admin() {
       }
 
       await newspaperService.validateConnection();
-      console.log("Connection validated, starting upload...");
 
       let pdfUrl = undefined;
       if (newspaperPdf) {
-        pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf);
+        pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, newspaperBucket);
       }
 
       await newspaperService.createNewspaper({
@@ -162,8 +158,16 @@ export default function Admin() {
       loadNewspapers();
     } catch (err: any) {
       console.error('Error publishing newspaper:', err);
-      setError(`Failed to publish: ${err.message || 'Check Firestore status'}`);
-      alert(`Error: ${err.message}`);
+      let errorMsg = err.message || 'Check Firestore status';
+      
+      if (errorMsg.includes('Bucket not found')) {
+        errorMsg = `Critical: Supabase Storage bucket named '${newspaperBucket}' was not found. Please create a bucket named '${newspaperBucket}' in your Supabase dashboard and set it to PUBLIC.`;
+      } else if (errorMsg.includes('row-level security policy')) {
+        errorMsg = "Supabase Permission Error: RLS (Row-Level Security) is blocking the upload. In your Supabase Storage dashboard, go to 'Policies' for the 'newspapers' bucket and add a policy to 'Allow INSERT for all users' (or for Authenticated users).";
+      }
+      
+      setError(`Failed to publish: ${errorMsg}`);
+      alert(`Error! ${errorMsg}`);
     } finally {
       setSubmitting(false);
       setTimeout(() => setSuccess(false), 3000);
@@ -961,8 +965,21 @@ export default function Admin() {
 
                 <div className="space-y-6">
                   {/* PDF Upload Zone */}
-                  <div className="space-y-2">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Original PDF Edition (Optional - Hosted on Supabase)</label>
+                  <div className="space-y-4">
+                      <div className="flex justify-between items-end">
+                        <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Original PDF Edition (Optional)</label>
+                        <div className="flex items-center gap-2">
+                           <span className="text-[10px] font-bold text-text-secondary uppercase">Bucket:</span>
+                           <input 
+                             type="text" 
+                             value={newspaperBucket}
+                             onChange={(e) => setNewspaperBucket(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+                             className="bg-bg-page border border-border rounded px-2 py-0.5 text-[10px] font-mono text-accent w-24 outline-none focus:border-accent"
+                             placeholder="newspapers"
+                           />
+                        </div>
+                      </div>
+                      
                       <div className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center gap-4 hover:border-accent transition-all cursor-pointer relative overflow-hidden ${newspaperPdf ? 'border-accent bg-accent/5' : 'border-border bg-surface'}`}>
                          <input 
                            type="file" 
@@ -979,7 +996,7 @@ export default function Admin() {
                               {newspaperPdf ? newspaperPdf.name : 'Drag & Drop Print Edition PDF or Click'}
                             </p>
                             <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest mt-1">
-                               {newspaperPdf ? `${(newspaperPdf.size / 1024 / 1024).toFixed(2)} MB` : 'Max 50MB (Supabase Free Tier)'}
+                               {newspaperPdf ? `${(newspaperPdf.size / 1024 / 1024).toFixed(2)} MB` : 'Recommended: 200MB Max (Adjust in Supabase)'}
                             </p>
                          </div>
                          {newspaperPdf && (
