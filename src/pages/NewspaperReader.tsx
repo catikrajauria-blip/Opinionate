@@ -72,6 +72,8 @@ export default function NewspaperReader() {
         if (!data.pdfUrl) {
           setViewMode('transcription');
         }
+        // Track the read
+        newspaperService.incrementReadCount(id!).catch(e => console.error("Track read error:", e));
       } else {
         setError('Newspaper edition not found.');
       }
@@ -80,6 +82,28 @@ export default function NewspaperReader() {
       setError('An error occurred while loading the newspaper.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!newspaper?.pdfUrl) return;
+    
+    try {
+      // Track the download
+      await newspaperService.incrementDownloadCount(id!);
+      
+      // Trigger actual download
+      const link = document.createElement('a');
+      link.href = newspaper.pdfUrl;
+      link.download = `${newspaper.title}.pdf`;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      console.error("Download error:", e);
+      // Fallback to simple link opening if tracking fails
+      window.open(newspaper.pdfUrl, '_blank');
     }
   };
 
@@ -181,11 +205,11 @@ export default function NewspaperReader() {
               <Share2 size={16} />
             </button>
             <button 
-              onClick={() => window.open(newspaper.pdfUrl, '_blank')}
+              onClick={handleDownload}
               className="p-2 rounded-lg bg-accent text-bg-page hover:opacity-90 transition-all sm:hidden"
-              title="Open Fullscreen"
+              title="Download PDF"
             >
-              <Maximize2 size={16} />
+              <Download size={16} />
             </button>
           </div>
         </div>
@@ -228,10 +252,10 @@ export default function NewspaperReader() {
                 <div className="w-px h-6 bg-border mx-2 hidden sm:block" />
 
                 <button 
-                   onClick={() => window.open(newspaper.pdfUrl, '_blank')}
+                   onClick={handleDownload}
                    className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-bg-page rounded-xl text-[10px] font-bold uppercase tracking-widest text-text-secondary transition-all"
                 >
-                   <Maximize size={16} /> Fullscreen
+                   <Download size={16} /> Download
                 </button>
              </div>
 

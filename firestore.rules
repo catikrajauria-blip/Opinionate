@@ -169,12 +169,24 @@ service cloud.firestore {
     // Newspapers
     match /newspapers/{newspaperId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (isOnlyNewspaperStatUpdate() && (!isSignedIn() || !isBlocked()));
 
       function isValidNewspaper(data) {
         return data.title is string && data.title.size() <= 1000 &&
                data.content is string && data.content.size() <= 2000000;
       }
+
+      function isOnlyNewspaperStatUpdate() {
+        let allowedFields = ['readCount', 'downloadCount'];
+        return incoming().diff(existing()).affectedKeys().hasOnly(allowedFields);
+      }
+    }
+
+    // System Stats
+    match /system_stats/{docId} {
+      allow read: if true;
+      allow write: if true; // Allow incrementing swipes for all users
     }
   }
 }

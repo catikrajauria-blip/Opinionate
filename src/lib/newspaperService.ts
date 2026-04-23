@@ -10,7 +10,9 @@ import {
   serverTimestamp,
   deleteDoc,
   where,
-  getDocFromServer
+  getDocFromServer,
+  updateDoc,
+  increment
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { supabase } from './supabase';
@@ -24,6 +26,8 @@ export interface Newspaper {
   date: string;
   content: string;
   pdfUrl?: string;
+  readCount?: number;
+  downloadCount?: number;
   createdAt?: any;
 }
 
@@ -121,8 +125,43 @@ export const newspaperService = {
   }) {
     return await addDoc(collection(db, NEWSPAPERS_COL), {
       ...data,
+      readCount: 0,
+      downloadCount: 0,
       createdAt: serverTimestamp()
     });
+  },
+
+  async incrementReadCount(id: string) {
+    const docRef = doc(db, NEWSPAPERS_COL, id);
+    await updateDoc(docRef, {
+      readCount: increment(1)
+    });
+  },
+
+  async incrementDownloadCount(id: string) {
+    const docRef = doc(db, NEWSPAPERS_COL, id);
+    await updateDoc(docRef, {
+      downloadCount: increment(1)
+    });
+  },
+
+  async getNewspaperStats() {
+    const q = query(collection(db, NEWSPAPERS_COL));
+    const snapshot = await getDocs(q);
+    let totalReads = 0;
+    let totalDownloads = 0;
+    
+    snapshot.docs.forEach(doc => {
+      const data = doc.data();
+      totalReads += (data.readCount || 0);
+      totalDownloads += (data.downloadCount || 0);
+    });
+    
+    return {
+      totalReads,
+      totalDownloads,
+      count: snapshot.size
+    };
   },
 
   async deleteNewspaper(id: string, _pdfUrl?: string) {

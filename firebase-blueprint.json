@@ -139,9 +139,21 @@
         "date": { "type": "string" },
         "content": { "type": "string" },
         "pdfUrl": { "type": "string" },
+        "readCount": { "type": "number" },
+        "downloadCount": { "type": "number" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "date", "content", "createdAt"]
+    },
+    "SystemStats": {
+      "title": "SystemStats",
+      "description": "Global application metrics and engagement data",
+      "type": "object",
+      "properties": {
+        "swipesCount": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["swipesCount", "updatedAt"]
     }
   },
   "firestore": {
@@ -188,6 +200,10 @@
     "/newspapers/{newspaperId}": {
       "schema": "Newspaper",
       "description": "Daily newspaper archives"
+    },
+    "/system_stats/engagement": {
+      "schema": "SystemStats",
+      "description": "Global engagement metrics like total swipes"
     }
   }
 }

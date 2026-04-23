@@ -8,7 +8,7 @@ import {
   Image as ImageIcon, Link as LinkIcon, CheckCircle2, 
   Zap, Trash2, PieChart, Users, Shield, ShieldAlert,
   Search as SearchIcon, Mail as MailIcon, Clock, X,
-  MessageSquare, Star, Copy, ExternalLink, User
+  MessageSquare, Star, Copy, ExternalLink, User, Eye, Download
 } from 'lucide-react';
 import { generateSlug, cn, formatDate } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
@@ -16,6 +16,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { UserProfile } from '../types';
 
 import { newspaperService } from '../lib/newspaperService';
+import { statsService } from '../lib/statsService';
+import { MousePointer2 } from 'lucide-react';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
@@ -33,7 +35,10 @@ export default function Admin() {
     totalSubscribers: 0,
     totalViews: 0,
     totalLikes: 0,
-    avgRating: 0
+    avgRating: 0,
+    newspaperReads: 0,
+    newspaperDownloads: 0,
+    totalSwipes: 0
   });
 
   const [loading, setLoading] = useState(true);
@@ -220,8 +225,17 @@ export default function Admin() {
 
   const loadStats = async () => {
     try {
-      const s = await blogService.getAdminStats();
-      setStats(s);
+      const [s, nStats, sysStats] = await Promise.all([
+        blogService.getAdminStats(),
+        newspaperService.getNewspaperStats(),
+        statsService.getSystemStats()
+      ]);
+      setStats({
+        ...s,
+        newspaperReads: nStats.totalReads,
+        newspaperDownloads: nStats.totalDownloads,
+        totalSwipes: sysStats.swipesCount
+      });
     } catch (err) {
       console.error('Error loading stats:', err);
     }
@@ -1078,9 +1092,19 @@ export default function Admin() {
                 <div className="space-y-4">
                   {allNewspapers.map((item) => (
                     <div key={item.id} className="flex items-center justify-between p-4 border border-border rounded-lg group bg-bg-page hover:border-text-primary transition-all">
-                      <div>
+                      <div className="flex-grow">
                         <p className="font-bold text-sm text-text-primary">{item.title}</p>
-                        <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">{item.date}</p>
+                        <div className="flex items-center gap-4 mt-1">
+                          <p className="text-[10px] text-text-secondary uppercase font-bold tracking-widest">{item.date}</p>
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-text-secondary">
+                              <Eye size={10} className="text-accent" /> {item.readCount || 0}
+                            </span>
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-text-secondary">
+                              <Download size={10} className="text-accent" /> {item.downloadCount || 0}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <button 
@@ -1111,21 +1135,42 @@ export default function Admin() {
                   <p className="text-[10px] text-text-secondary uppercase font-bold tracking-[0.2em] mt-2 opacity-40">Operational Performance Metrics</p>
                </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border border-border">
-                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Impact Index</p>
-                     <p className="text-5xl font-bold text-text-primary tracking-tighter">94<span className="text-xl text-accent font-sans">%</span></p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Retention Metric</p>
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-border">
+                  <div className="p-8 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Portal Entrances</p>
+                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.totalSwipes}</p>
+                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Total Swipes</p>
                   </div>
-                  <div className="p-10 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Total Outreach</p>
-                     <p className="text-5xl font-bold text-text-primary tracking-tighter">{stats.totalViews}</p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Verified Views</p>
+                  <div className="p-8 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Blog Engagement</p>
+                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.totalViews}</p>
+                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Total Blog Reads</p>
+                  </div>
+                  <div className="p-8 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Edition Access</p>
+                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.newspaperReads}</p>
+                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Newspaper Reads</p>
+                  </div>
+                  <div className="p-8 hover:bg-surface transition-all">
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Network Growth</p>
+                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.totalSubscribers}</p>
+                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Newsletter Subs</p>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-x border-b border-border">
+                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Consensus Grade</p>
+                     <div className="flex items-baseline gap-2">
+                        <p className="text-5xl font-bold text-text-primary tracking-tighter">{stats.avgRating.toFixed(1)}</p>
+                        <span className="text-xl text-yellow-500 font-sans font-bold">/5</span>
+                     </div>
+                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Average Satisfaction</p>
                   </div>
                   <div className="p-10 hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Consensus Grade</p>
-                     <p className="text-5xl font-bold text-text-primary tracking-tighter">{stats.avgRating.toFixed(1)}<span className="text-xl text-yellow-500 font-sans">/5</span></p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Average Satisfaction</p>
+                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Asset Acquisition</p>
+                     <p className="text-5xl font-bold text-text-primary tracking-tighter">{stats.newspaperDownloads}</p>
+                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Newspaper Downloads</p>
                   </div>
                </div>
                

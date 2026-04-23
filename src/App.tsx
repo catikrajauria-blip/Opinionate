@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import { AuthProvider } from './contexts/AuthContext';
@@ -13,11 +13,28 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import NewspaperReader from './pages/NewspaperReader';
 import Newspapers from './pages/Newspapers';
+import SplashScreen from './components/SplashScreen';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Check if session has already entered
+    const entered = sessionStorage.getItem('opinionate_entered');
+    if (entered) {
+      setShowSplash(false);
+    }
+  }, []);
+
+  const handleEnter = () => {
+    setShowSplash(false);
+    sessionStorage.setItem('opinionate_entered', 'true');
+  };
+
   return (
     <BrowserRouter>
       <AuthProvider>
+        {showSplash && <SplashScreen onEnter={handleEnter} />}
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
