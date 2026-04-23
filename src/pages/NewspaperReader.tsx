@@ -1,10 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { Newspaper, newspaperService } from '../lib/newspaperService';
 import { formatDate, cn } from '../lib/utils';
-import { Calendar, ChevronLeft, Share2, Printer, Newspaper as NewspaperIcon, Clock, ShieldCheck, Download } from 'lucide-react';
+import { 
+  Calendar, 
+  ChevronLeft, 
+  Share2, 
+  Newspaper as NewspaperIcon, 
+  Clock, 
+  ShieldCheck, 
+  Download,
+  ZoomIn,
+  ZoomOut,
+  Maximize,
+  ChevronRight,
+  Maximize2
+} from 'lucide-react';
+
+// Setup PDF worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 
 export default function NewspaperReader() {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +32,13 @@ export default function NewspaperReader() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'pdf' | 'transcription'>('pdf');
+  
+  // PDF State
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.0);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -19,13 +46,29 @@ export default function NewspaperReader() {
     }
   }, [id]);
 
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        setContainerWidth(width);
+        // Auto-scale for mobile on first load
+        if (width < 768 && scale === 1.0) {
+          setScale(0.7);
+        }
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, [viewMode]);
+
   const loadNewspaper = async () => {
     setLoading(true);
     try {
       const data = await newspaperService.getNewspaperById(id!);
       if (data) {
         setNewspaper(data);
-        // Default to transcription if no PDF exists
         if (!data.pdfUrl) {
           setViewMode('transcription');
         }
@@ -39,6 +82,15 @@ export default function NewspaperReader() {
       setLoading(false);
     }
   };
+
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+    setPageNumber(1);
+  };
+
+  const handleZoomIn = () => setScale(prev => Math.min(prev + 0.2, 3.0));
+  const handleZoomOut = () => setScale(prev => Math.max(prev - 0.2, 0.5));
+  const handleResetZoom = () => setScale(1.0);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -84,17 +136,17 @@ export default function NewspaperReader() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-page text-text-primary flex flex-col">
+    <div className="min-h-screen bg-bg-page text-text-primary flex flex-col overflow-hidden">
       {/* Newspaper Header */}
-      <header className="sticky top-0 z-50 bg-bg-page/80 backdrop-blur-md border-b border-border py-4">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-bg-page/80 backdrop-blur-md border-b border-border py-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             <Link to="/newspapers" className="p-2 hover:bg-surface rounded-full transition-colors text-text-secondary hover:text-text-primary flex-shrink-0">
               <ChevronLeft size={20} />
             </Link>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent hidden sm:block">Digital Newspaper Archive</p>
-              <h2 className="text-sm font-bold truncate">{newspaper.title}</h2>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent hidden sm:block">Digital Newspaper Archive</p>
+              <h2 className="text-xs md:text-sm font-bold truncate">{newspaper.title}</h2>
             </div>
           </div>
           
@@ -123,97 +175,164 @@ export default function NewspaperReader() {
             )}
             <button 
               onClick={handleShare}
-              className="p-2.5 rounded-xl border border-border hover:bg-surface transition-all text-text-secondary hover:text-accent"
+              className="p-2 rounded-lg border border-border hover:bg-surface transition-all text-text-secondary hover:text-accent"
               title="Share Edition"
             >
-              <Share2 size={18} />
+              <Share2 size={16} />
+            </button>
+            <button 
+              onClick={() => window.open(newspaper.pdfUrl, '_blank')}
+              className="p-2 rounded-lg bg-accent text-bg-page hover:opacity-90 transition-all sm:hidden"
+              title="Open Fullscreen"
+            >
+              <Maximize2 size={16} />
             </button>
           </div>
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col">
+      {/* Main Reader View */}
+      <main className="flex-grow pt-[72px] flex flex-col relative h-full overflow-hidden">
         {viewMode === 'pdf' && newspaper.pdfUrl ? (
-          <div className="flex-grow bg-[#525659] dark:bg-bg-page relative flex flex-col items-center">
-             {/* Anti-Download Overlay for Desktop (optional, mostly psychological) */}
-             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-md rounded-full text-[9px] font-bold uppercase tracking-widest text-white/70 border border-white/10 pointer-events-none">
-                <ShieldCheck size={12} className="text-accent" /> Protected Viewing Mode
-             </div>
-             
-             {/* PDF Viewer Iframe */}
-             <div className="w-full h-[calc(100vh-76px)] relative overflow-hidden">
-                <iframe 
-                  src={`${newspaper.pdfUrl}#toolbar=0&navpanes=0&scrollbar=1`}
-                  className="w-full h-full border-none"
-                  title={newspaper.title}
-                  style={{ userSelect: 'none' }}
-                />
+          <div className="flex-grow bg-[#1a1a1a] relative flex flex-col overflow-hidden h-[calc(100vh-72px)]">
+             {/* PDF Controls Floating Panel */}
+             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 bg-surface/90 backdrop-blur-xl border border-border p-2 rounded-2xl shadow-2xl flex items-center gap-1 md:gap-4">
+                <div className="flex items-center gap-1">
+                  <button onClick={handleZoomOut} className="p-2 hover:bg-bg-page rounded-xl text-text-secondary transition-colors"><ZoomOut size={16} /></button>
+                  <span className="text-[10px] font-extrabold w-12 text-center text-text-primary">{Math.round(scale * 100)}%</span>
+                  <button onClick={handleZoomIn} className="p-2 hover:bg-bg-page rounded-xl text-text-secondary transition-colors"><ZoomIn size={16} /></button>
+                </div>
                 
-                {/* Visual Guard: Transparent div over the area where download buttons usually appear in some browsers */}
-                <div className="absolute top-0 right-0 w-48 h-16 pointer-events-auto bg-transparent z-30" onContextMenu={(e) => e.preventDefault()} />
+                <div className="w-px h-6 bg-border mx-2 hidden sm:block" />
+                
+                <div className="flex items-center gap-1">
+                   <button 
+                     disabled={pageNumber <= 1}
+                     onClick={() => setPageNumber(prev => prev - 1)} 
+                     className="p-2 disabled:opacity-30 hover:bg-bg-page rounded-xl text-text-secondary"
+                   >
+                     <ChevronLeft size={16} />
+                   </button>
+                   <span className="text-[10px] font-extrabold px-2 text-text-primary">
+                     {pageNumber} <span className="opacity-30">/</span> {numPages || '...'}
+                   </span>
+                   <button 
+                     disabled={pageNumber >= numPages}
+                     onClick={() => setPageNumber(prev => prev + 1)} 
+                     className="p-2 disabled:opacity-30 hover:bg-bg-page rounded-xl text-text-secondary"
+                   >
+                     <ChevronRight size={16} />
+                   </button>
+                </div>
+
+                <div className="w-px h-6 bg-border mx-2 hidden sm:block" />
+
+                <button 
+                   onClick={() => window.open(newspaper.pdfUrl, '_blank')}
+                   className="hidden sm:flex items-center gap-2 px-4 py-2 hover:bg-bg-page rounded-xl text-[10px] font-bold uppercase tracking-widest text-text-secondary transition-all"
+                >
+                   <Maximize size={16} /> Fullscreen
+                </button>
              </div>
 
-             {/* Reader Notice */}
-             <div className="w-full py-4 bg-bg-page border-t border-border flex justify-center items-center gap-6 px-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary flex items-center gap-2">
-                   <Calendar size={14} className="text-accent" /> {newspaper.date}
-                </p>
-                <div className="h-4 w-px bg-border" />
+             {/* Rendering Area */}
+             <div 
+               ref={containerRef}
+               className="flex-grow overflow-auto flex justify-center bg-[#1a1a1a] p-4 md:p-8 custom-scrollbar scroll-smooth"
+             >
+                <div className="relative shadow-2xl origin-top transition-transform duration-200">
+                  <Document
+                    file={newspaper.pdfUrl}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    className="flex flex-col items-center"
+                    loading={
+                      <div className="flex flex-col items-center gap-4 py-20">
+                        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">Rendering Page...</p>
+                      </div>
+                    }
+                  >
+                    <Page 
+                      pageNumber={pageNumber} 
+                      scale={scale}
+                      width={containerWidth ? Math.min(containerWidth - 64, 1200) : undefined}
+                      className="rounded-lg overflow-hidden"
+                      renderAnnotationLayer={false}
+                      renderTextLayer={true}
+                    />
+                  </Document>
+                </div>
+             </div>
+             
+             {/* Bottom Mobile View Toggle */}
+             <div className="bg-bg-page border-t border-border py-4 px-6 md:hidden flex justify-between items-center z-30">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                   Edition ID: <span className="text-text-primary">{newspaper.id.slice(0, 8)}</span>
+                  Original Print View
                 </p>
+                <button 
+                  onClick={() => setViewMode('transcription')}
+                  className="text-[10px] font-bold uppercase tracking-widest text-accent hover:underline"
+                >
+                  Switch to Reading Mode
+                </button>
              </div>
           </div>
         ) : (
-          <div className="max-w-3xl mx-auto px-4 py-8 md:py-16 w-full">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-12"
-            >
-              {/* Metadata */}
-              <div className="text-center space-y-6 pb-12 border-b border-border/50">
-                <div className="flex items-center justify-center gap-4 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-text-secondary">
-                   <span className="flex items-center gap-1.5"><Calendar size={14} className="text-accent" /> {newspaper.date}</span>
-                   <span className="w-1 h-1 bg-border rounded-full" />
-                   <span className="flex items-center gap-1.5"><Clock size={14} className="text-accent" /> Digital Text Mode</span>
+          <div className="flex-grow overflow-auto px-4 py-8 md:py-16">
+            <div className="max-w-3xl mx-auto w-full">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-12"
+              >
+                {/* Metadata */}
+                <div className="text-center space-y-6 pb-12 border-b border-border/50">
+                  <div className="flex items-center justify-center gap-4 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-text-secondary">
+                     <span className="flex items-center gap-1.5"><Calendar size={14} className="text-accent" /> {newspaper.date}</span>
+                     <span className="w-1 h-1 bg-border rounded-full" />
+                     <span className="flex items-center gap-1.5"><Clock size={14} className="text-accent" /> Digital Reading Mode</span>
+                  </div>
+                  <h1 className="text-3xl md:text-6xl font-serif font-bold tracking-tighter leading-tight">
+                    {newspaper.title}
+                  </h1>
+                  {newspaper.pdfUrl && (
+                    <button 
+                      onClick={() => setViewMode('pdf')}
+                      className="text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-2 mx-auto hover:gap-4 transition-all"
+                    >
+                      View Original PDF Edition <ChevronRight size={14} />
+                    </button>
+                  )}
                 </div>
-                <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-tighter leading-tight">
-                  {newspaper.title}
-                </h1>
-              </div>
 
-              {/* Content */}
-              <div className="prose prose-sm md:prose-base !max-w-none dark:prose-invert NewspaperReader_Markdown">
-                <ReactMarkdown>{newspaper.content}</ReactMarkdown>
-              </div>
-            </motion.div>
+                {/* Content */}
+                <div className="prose prose-lg !max-w-none dark:prose-invert NewspaperReader_Markdown">
+                  <ReactMarkdown>{newspaper.content}</ReactMarkdown>
+                </div>
+
+                {/* Footer Invite */}
+                <div className="p-12 bg-surface border border-border rounded-[3rem] text-center space-y-6 mt-20">
+                   <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto text-bg-page mb-6 shadow-xl shadow-accent/20">
+                      <NewspaperIcon size={32} />
+                   </div>
+                   <h3 className="text-2xl font-serif font-bold tracking-tight">Access the Archives</h3>
+                   <p className="text-text-secondary font-serif max-w-sm mx-auto leading-relaxed">
+                      Stay informed with our deep archives of analytical commentary, now available in both print and digital layouts.
+                   </p>
+                   <Link 
+                     to="/newspapers"
+                     className="inline-block px-10 py-4 bg-text-primary text-bg-page rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-accent transition-all duration-500 shadow-xl"
+                   >
+                     Explore All Editions
+                   </Link>
+                </div>
+              </motion.div>
+            </div>
           </div>
         )}
       </main>
 
-      {/* Footer Card - only show if not in full PDF mode */}
-      {viewMode === 'transcription' && (
-        <div className="max-w-3xl mx-auto px-4 pb-20 w-full">
-          <div className="p-10 bg-surface border border-border rounded-[3rem] text-center space-y-6">
-             <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto text-bg-page mb-6">
-                <NewspaperIcon size={32} />
-             </div>
-             <h3 className="text-2xl font-serif font-bold">Stay Opinionated</h3>
-             <p className="text-text-secondary font-serif max-w-sm mx-auto">
-                Join our community of deep thinkers and receive daily analytical commentary directly in your dashboard.
-             </p>
-             <Link 
-               to="/login"
-               className="inline-block px-10 py-4 bg-text-primary text-bg-page rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-accent transition-all duration-500"
-             >
-               Join the Discourse
-             </Link>
-          </div>
-        </div>
-      )}
-
-      {/* Custom Styles for Newspaper Layout */}
+      {/* Global Style Overrides */}
       <style>{`
         .NewspaperReader_Markdown h1 {
           font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -240,22 +359,17 @@ export default function NewspaperReader() {
           margin-bottom: 1.5rem;
           font-size: 1.125rem;
         }
-        /* Mobile PDF iframe adjustment */
-        @media (max-width: 768px) {
-           iframe {
-              height: calc(100vh - 120px) !important;
-           }
+        .react-pdf__Page {
+           margin-bottom: 2rem;
+           box-shadow: 0 30px 60px -12px rgba(0,0,0,0.5);
+           background-color: white !important;
+        }
+        .react-pdf__Page__canvas {
+           margin: 0 auto;
         }
         @media print {
-          header, .mt-20, .z-20 {
+          header, .bottom-10 {
             display: none !important;
-          }
-          main {
-            padding: 0 !important;
-          }
-          .bg-bg-page {
-             background: white !important;
-             color: black !important;
           }
         }
       `}</style>
