@@ -47,7 +47,7 @@ export const newspaperService = {
 
     // Get Public URL
     const { data: { publicUrl } } = supabase.storage
-      .from('newspapers')
+      .from(bucket)
       .getPublicUrl(fileName);
 
     return publicUrl;
