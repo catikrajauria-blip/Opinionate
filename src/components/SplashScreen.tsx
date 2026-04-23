@@ -14,29 +14,33 @@ export default function SplashScreen({ onEnter }: SplashScreenProps) {
   const handleDragEnd = async (_: any, info: any) => {
     // If swiped up more than 100px
     if (info.offset.y < -100) {
-      setSwiped(true);
-      await statsService.incrementSwipes();
-      setTimeout(onEnter, 800);
+      await enterApp();
     }
+  };
+
+  const enterApp = async () => {
+    setSwiped(true);
+    await statsService.incrementSwipes();
+    setTimeout(onEnter, 800);
   };
 
   return (
     <AnimatePresence>
       {!swiped && (
         <motion.div
-          className="fixed inset-0 z-[1000] bg-bg-page flex flex-col items-center justify-center overflow-hidden select-none"
+          className="fixed inset-0 z-[1000] bg-bg-page flex flex-col items-center justify-center overflow-hidden select-none touch-none"
           exit={{ y: '-100%', transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }}
         >
           {/* Logo Section */}
-          <div className="relative flex flex-col items-center">
+          <div className="relative flex flex-col items-center px-6 w-full max-w-4xl">
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="relative"
+              className="relative w-full text-center"
             >
-              <div className="text-8xl md:text-9xl font-serif font-black tracking-tighter text-text-primary relative z-10">
-                O<span className="text-accent underline decoration-4 underline-offset-8">P</span>INIO<span className="text-blue-500">N</span>ATE
+              <div className="text-[12vw] sm:text-[10vw] md:text-8xl lg:text-9xl font-serif font-black tracking-tighter text-text-primary relative z-10 leading-none break-all sm:break-normal">
+                O<span className="text-accent underline decoration-2 sm:decoration-4 underline-offset-4 sm:underline-offset-8">P</span>INIO<span className="text-blue-500">N</span>ATE
               </div>
               
               {/* Decorative Funky Elements */}
@@ -46,7 +50,7 @@ export default function SplashScreen({ onEnter }: SplashScreenProps) {
                   scale: [1, 1.05, 0.95, 1]
                 }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-10 -right-10 w-20 h-20 border-2 border-accent rounded-full opacity-20"
+                className="absolute -top-6 -right-6 sm:-top-10 sm:-right-10 w-12 h-12 sm:w-20 sm:h-20 border-2 border-accent rounded-full opacity-20"
               />
               <motion.div
                 animate={{ 
@@ -81,8 +85,10 @@ export default function SplashScreen({ onEnter }: SplashScreenProps) {
               dragElastic={0.2}
               dragControls={dragControls}
               onDragEnd={handleDragEnd}
+              onClick={enterApp}
               whileDrag={{ scale: 1.1 }}
-              className="w-16 h-16 bg-surface border-2 border-border rounded-full flex items-center justify-center shadow-xl hover:border-accent transition-colors"
+              whileTap={{ scale: 0.95 }}
+              className="w-16 h-16 md:w-20 md:h-20 bg-surface border-2 border-border rounded-full flex items-center justify-center shadow-xl hover:border-accent transition-colors"
             >
               <motion.div
                 animate={{ y: [0, -5, 0] }}

@@ -495,16 +495,16 @@ export default function Admin() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-text-primary">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-        <div className="flex items-center gap-8">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 text-text-primary">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 mb-12 border-b border-border pb-8">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8 w-full xl:w-auto">
           <div>
-            <h1 className="text-3xl font-serif font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-text-secondary flex items-center gap-2 text-sm font-serif">
-              Logged in as <span className="text-text-primary font-bold">{user.email}</span>
+            <h1 className="text-2xl md:text-3xl font-serif font-bold mb-1 md:mb-2">Admin Dashboard</h1>
+            <p className="text-text-secondary flex items-center gap-2 text-[10px] md:text-sm font-serif">
+              Logged in as <span className="text-text-primary font-bold truncate">{user.email}</span>
             </p>
           </div>
-          <nav className="flex flex-wrap gap-4 border-l border-border pl-4 md:pl-8">
+          <nav className="flex flex-wrap gap-x-4 gap-y-2 border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-8">
             <button 
               onClick={() => setActiveTab('posts')}
               className={cn("text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all", activeTab === 'posts' ? "text-text-primary" : "text-text-secondary hover:text-text-primary")}
@@ -1136,25 +1136,25 @@ export default function Admin() {
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-border">
-                  <div className="p-8 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Portal Entrances</p>
-                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.totalSwipes}</p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Total Swipes</p>
+                  <div className="p-6 md:p-8 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent mb-3">Portal Entrances</p>
+                     <p className="text-3xl md:text-4xl font-bold text-text-primary tracking-tighter">{stats.totalSwipes}</p>
+                     <p className="text-[8px] font-bold uppercase text-text-secondary mt-2 opacity-50">Total Swipes</p>
                   </div>
-                  <div className="p-8 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Blog Engagement</p>
-                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.totalViews}</p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Total Blog Reads</p>
+                  <div className="p-6 md:p-8 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent mb-3">Blog Engagement</p>
+                     <p className="text-3xl md:text-4xl font-bold text-text-primary tracking-tighter">{stats.totalViews}</p>
+                     <p className="text-[8px] font-bold uppercase text-text-secondary mt-2 opacity-50">Total Blog Reads</p>
                   </div>
-                  <div className="p-8 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Edition Access</p>
-                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.newspaperReads}</p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Newspaper Reads</p>
+                  <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all">
+                     <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent mb-3">Edition Access</p>
+                     <p className="text-3xl md:text-4xl font-bold text-text-primary tracking-tighter">{stats.newspaperReads}</p>
+                     <p className="text-[8px] font-bold uppercase text-text-secondary mt-2 opacity-50">Newspaper Reads</p>
                   </div>
-                  <div className="p-8 hover:bg-surface transition-all">
-                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Network Growth</p>
-                     <p className="text-4xl font-bold text-text-primary tracking-tighter">{stats.totalSubscribers}</p>
-                     <p className="text-[9px] font-bold uppercase text-text-secondary mt-2">Newsletter Subs</p>
+                  <div className="p-6 md:p-8 hover:bg-surface transition-all">
+                     <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent mb-3">Network Growth</p>
+                     <p className="text-3xl md:text-4xl font-bold text-text-primary tracking-tighter">{stats.totalSubscribers}</p>
+                     <p className="text-[8px] font-bold uppercase text-text-secondary mt-2 opacity-50">Newsletter Subs</p>
                   </div>
                </div>
 

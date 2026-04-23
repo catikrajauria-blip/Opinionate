@@ -23,7 +23,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <aside className="hidden lg:flex flex-col gap-10 bg-surface p-10 border-l border-border min-h-screen">
+    <aside className="flex flex-col gap-10 bg-surface p-6 md:p-10 border-t lg:border-t-0 lg:border-l border-border min-h-fit lg:min-h-screen">
       <div className="sidebar-section">
         <h4 className="text-[12px] uppercase tracking-widest text-text-secondary font-bold mb-6">
           Recent Comments

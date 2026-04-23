@@ -262,9 +262,9 @@ export default function NewspaperReader() {
              {/* Rendering Area */}
              <div 
                ref={containerRef}
-               className="flex-grow overflow-auto flex justify-center bg-[#1a1a1a] p-4 md:p-8 custom-scrollbar scroll-smooth"
+               className="flex-grow overflow-auto flex justify-center bg-[#1a1a1a] p-2 sm:p-4 md:p-8 custom-scrollbar scroll-smooth relative"
              >
-                <div className="relative shadow-2xl origin-top transition-transform duration-200">
+                <div className="relative shadow-2xl origin-top transition-all duration-200">
                   <Document
                     file={newspaper.pdfUrl}
                     onLoadSuccess={onDocumentLoadSuccess}
@@ -279,7 +279,7 @@ export default function NewspaperReader() {
                     <Page 
                       pageNumber={pageNumber} 
                       scale={scale}
-                      width={containerWidth ? Math.min(containerWidth - 64, 1200) : undefined}
+                      width={containerWidth ? Math.min(containerWidth - (window.innerWidth < 640 ? 16 : 64), 1200) : undefined}
                       className="rounded-lg overflow-hidden"
                       renderAnnotationLayer={false}
                       renderTextLayer={true}
