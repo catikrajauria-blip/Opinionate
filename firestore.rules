@@ -185,8 +185,7 @@ service cloud.firestore {
 
     // System Stats
     match /system_stats/{docId} {
-      allow read: if true;
-      allow write: if true; // Allow incrementing swipes for all users
+      allow read, write: if true;
     }
   }
 }

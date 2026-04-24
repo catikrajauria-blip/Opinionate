@@ -31,95 +31,105 @@ export default function Newspapers() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <header className="mb-16">
-        <div className="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-accent bg-accent/5 px-4 py-2 rounded-full border border-accent/10 mb-6">
-           <NewspaperIcon size={12} /> Digital Newspaper Archives
+    <div className="max-w-7xl mx-auto px-4 md:px-6">
+      <header className="mb-20">
+        <div className="flex items-center gap-4 mb-10">
+          <span className="w-12 h-px bg-accent" />
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent">PUBLIC_RECORD_OFFICIAL</span>
         </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight">The Daily Ledger</h1>
-        <p className="text-text-secondary max-w-2xl mb-10 font-serif text-lg leading-relaxed">
-          Access the analyzed and structured digital editions of our daily newspaper archives. Professional summaries generated via Gemini AI.
+        
+        <h1 className="text-6xl md:text-8xl font-display font-black mb-10 tracking-tighter uppercase leading-[0.8]">
+          The Daily Ledger
+        </h1>
+        <p className="text-text-secondary max-w-2xl mb-16 font-display font-bold text-xl md:text-2xl leading-tight uppercase tracking-tight">
+          ACCESS SYSTEMATICALLY ANALYZED DIGITAL EDITIONS OF THE DAILY ARCHIVE. COMPILED AND VERIFIED VIA GEMINI AI CORE.
         </p>
 
-        <div className="flex flex-col lg:flex-row gap-6 items-center justify-between border-y border-border py-8">
-          <div className="relative w-full lg:max-w-md">
-            <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-0 border border-border">
+          <div className="md:col-span-8 p-6 md:p-10 border-b md:border-b-0 md:border-r border-border relative group">
+            <Search className="absolute right-10 top-1/2 -translate-y-1/2 text-accent opacity-20 group-focus-within:opacity-100 transition-opacity" size={24} />
             <input 
               type="text" 
-              placeholder="Search editions by title or date..."
+              placeholder="SEARCH_EDITIONS..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-none py-3 pl-8 pr-4 outline-none text-lg font-serif placeholder:font-serif italic"
+              className="w-full bg-transparent border-none outline-none text-2xl md:text-4xl font-display font-black placeholder:text-border placeholder:font-display uppercase tracking-tighter"
             />
+            <div className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 opacity-50 tracking-widest">QUERY FIELD [TITLE_DATE]</div>
           </div>
 
-          <div className="flex border border-border rounded-lg p-1 gap-1">
+          <div className="md:col-span-4 p-8 flex items-center justify-center gap-6">
+            <span className="text-[10px] font-mono font-bold uppercase text-text-secondary tracking-widest mr-auto md:hidden">VIEW_MODE</span>
             <button 
               onClick={() => setViewMode('grid')}
               className={cn(
-                "p-2 rounded-md transition-all",
-                viewMode === 'grid' ? "bg-text-primary text-bg-page" : "text-text-secondary hover:text-text-primary"
+                "p-4 border transition-all",
+                viewMode === 'grid' ? "bg-accent border-accent text-bg-page" : "border-border text-text-secondary hover:border-accent"
               )}
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={20} />
             </button>
             <button 
               onClick={() => setViewMode('list')}
               className={cn(
-                "p-2 rounded-md transition-all",
-                viewMode === 'list' ? "bg-text-primary text-bg-page" : "text-text-secondary hover:text-text-primary"
+                "p-4 border transition-all",
+                viewMode === 'list' ? "bg-accent border-accent text-bg-page" : "border-border text-text-secondary hover:border-accent"
               )}
             >
-              <ListIcon size={16} />
+              <ListIcon size={20} />
             </button>
           </div>
         </div>
       </header>
 
       {loading ? (
-        <div className="py-24 flex flex-col items-center justify-center text-text-secondary">
-           <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
-           <p className="font-serif italic">Accessing digital vaults...</p>
+        <div className="py-32 flex flex-col items-center gap-6">
+          <div className="w-16 h-1 w-16 bg-border overflow-hidden">
+             <motion.div 
+               animate={{ x: [-64, 64] }} 
+               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+               className="w-16 h-full bg-accent"
+             />
+          </div>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-text-secondary">VAULT_ACCESSING...</span>
         </div>
       ) : filteredNewspapers.length > 0 ? (
         <div className={cn(
-          "grid gap-8 pb-20",
+          "grid gap-px bg-border border border-border pb-20",
           viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}>
           {filteredNewspapers.map((item, idx) => (
             viewMode === 'grid' ? (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
-                className="group bg-surface border border-border rounded-[2rem] p-8 hover:border-accent transition-all shadow-sm hover:shadow-xl relative overflow-hidden"
+                className="group bg-bg-page p-10 hover:bg-surface transition-all relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                
-                <div className="flex items-center gap-3 mb-6 relative">
-                   <div className="w-10 h-10 bg-bg-page rounded-xl border border-border flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-bg-page transition-colors">
-                      <Calendar size={18} />
+                <div className="flex items-center justify-between mb-8">
+                   <div className="w-12 h-12 border border-border flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-bg-page transition-colors">
+                      <Calendar size={20} />
                    </div>
-                   <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">{item.date}</p>
-                      <p className="text-[9px] font-bold uppercase tracking-tighter text-accent">Daily Edition</p>
-                   </div>
+                   <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">#{idx + 100}</span>
                 </div>
 
-                <h3 className="text-2xl font-serif font-bold mb-4 group-hover:text-accent transition-colors leading-tight relative">
-                  {item.title}
-                </h3>
+                <div className="mb-4">
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent mb-2">EDITION_DATE: {item.date}</p>
+                  <h3 className="text-3xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter">
+                    {item.title}
+                  </h3>
+                </div>
                 
-                <p className="text-text-secondary text-sm font-serif line-clamp-3 mb-8 relative">
+                <p className="text-text-secondary font-display font-bold text-sm line-clamp-3 mb-10 opacity-60 uppercase tracking-tight">
                    {item.content.substring(0, 150)}...
                 </p>
 
                 <Link 
                   to={`/newspaper/${item.id}`}
-                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-text-primary border-b-2 border-text-primary pb-1 group/link hover:gap-4 transition-all relative"
+                  className="btn-minimal w-full justify-between group/link font-mono"
                 >
-                  Read Edition <ChevronRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+                  ACCESS_EDITION <ChevronRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
             ) : (
@@ -128,35 +138,35 @@ export default function Newspapers() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="flex items-center justify-between p-6 bg-surface border border-border rounded-2xl hover:border-accent transition-all group"
+                className="flex items-center justify-between p-8 bg-bg-page hover:bg-surface transition-all group border-b border-border last:border-b-0"
               >
-                <div className="flex items-center gap-6">
-                   <div className="w-12 h-12 bg-bg-page rounded-xl border border-border flex items-center justify-center text-text-secondary group-hover:bg-accent group-hover:text-bg-page transition-colors">
-                      <NewspaperIcon size={20} />
+                <div className="flex items-center gap-10">
+                   <div className="text-2xl font-mono font-bold text-border group-hover:text-accent transition-colors">
+                      {String(idx + 1).padStart(2, '0')}
                    </div>
                    <div>
-                      <h3 className="font-serif font-bold text-xl group-hover:text-accent transition-colors">{item.title}</h3>
-                      <div className="flex items-center gap-4 mt-1 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                         <span className="flex items-center gap-1"><Calendar size={12} /> {item.date}</span>
-                         <span className="flex items-center gap-1"><Clock size={12} /> Digital Archive</span>
+                      <h3 className="font-display font-black text-3xl group-hover:text-accent transition-colors uppercase tracking-tighter">{item.title}</h3>
+                      <div className="flex items-center gap-6 mt-2">
+                         <span className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary"><Calendar size={12} className="text-accent" /> {item.date}</span>
+                         <span className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary"><Clock size={12} /> VERIFIED_ARCHIVE</span>
                       </div>
                    </div>
                 </div>
                 <Link 
                   to={`/newspaper/${item.id}`}
-                  className="p-3 bg-bg-page border border-border rounded-xl text-text-secondary hover:text-accent hover:border-accent transition-all"
+                  className="btn-minimal p-4 border-accent text-accent hover:bg-accent hover:text-bg-page"
                 >
-                   <ExternalLink size={18} />
+                   <ExternalLink size={20} />
                 </Link>
               </motion.div>
             )
           ))}
         </div>
       ) : (
-        <div className="py-32 text-center bg-surface rounded-[3rem] border border-border border-dashed">
-           <NewspaperIcon size={48} className="mx-auto text-text-secondary/20 mb-6" />
-           <h3 className="text-2xl font-serif font-bold text-text-secondary italic">Vault Empty</h3>
-           <p className="text-text-secondary font-serif max-w-sm mx-auto mt-2">No newspaper editions found matching your search criteria.</p>
+        <div className="py-32 text-center border-2 border-dashed border-border">
+           <NewspaperIcon size={64} className="mx-auto text-border mb-8" />
+           <h3 className="text-3xl font-display font-black uppercase tracking-tighter mb-4">VAULT_EMPTY</h3>
+           <p className="text-text-secondary font-mono text-xs uppercase tracking-widest opacity-50">NO NEWSPAPER EDITIONS MATCHING THE REQUESTED PARAMETERS WERE FOUND IN THE ARCHIVE.</p>
         </div>
       )}
     </div>

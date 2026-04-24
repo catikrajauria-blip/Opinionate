@@ -7,6 +7,8 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { handleFirestoreError } from './firestoreErrorHandler';
+import firebaseConfig from '../../firebase-applet-config.json';
 
 const STATS_COL = 'system_stats';
 const ENGAGEMENT_DOC = 'engagement';
@@ -14,8 +16,16 @@ const ENGAGEMENT_DOC = 'engagement';
 export const statsService = {
   async incrementSwipes() {
     const statsRef = doc(db, STATS_COL, ENGAGEMENT_DOC);
+    console.log(`Incrementing swipes at path: ${statsRef.path} in DB: ${firebaseConfig.firestoreDatabaseId}`);
+    let snap;
+    
     try {
-      const snap = await getDoc(statsRef);
+      snap = await getDoc(statsRef);
+    } catch (err: any) {
+      handleFirestoreError(err, 'get', `${STATS_COL}/${ENGAGEMENT_DOC}`);
+    }
+
+    try {
       if (!snap.exists()) {
         await setDoc(statsRef, {
           swipesCount: 1,
@@ -27,8 +37,8 @@ export const statsService = {
           updatedAt: serverTimestamp()
         });
       }
-    } catch (err) {
-      console.error('Error incrementing swipes:', err);
+    } catch (err: any) {
+      handleFirestoreError(err, snap.exists() ? 'update' : 'create', `${STATS_COL}/${ENGAGEMENT_DOC}`);
     }
   },
 

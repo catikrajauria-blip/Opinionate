@@ -57,78 +57,86 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.03 }}
       className={cn(
-        "group border-border last:border-0",
-        isGrid ? "pb-6" : "pb-10 border-b"
+        "group h-full bg-bg-page transition-all duration-500",
+        isGrid ? "flex flex-col border border-border hover:border-accent" : "pb-16 mb-16 border-b border-border last:border-b-0"
       )}
     >
       <div className={cn(
-        "flex gap-6",
-        isGrid ? "flex-col" : "flex-col md:flex-row md:gap-8"
+        "flex",
+        isGrid ? "flex-col h-full" : "flex-col md:flex-row md:gap-12"
       )}>
         {blog.image && (
           <Link 
             to={`/blog/${blog.slug}`} 
             className={cn(
-               "rounded-lg overflow-hidden flex-shrink-0 border border-border bg-surface",
-               isGrid ? "w-full aspect-[16/10] mb-2" : "w-full md:w-48 h-32"
+               "overflow-hidden flex-shrink-0 bg-surface grayscale hover:grayscale-0 transition-all duration-700",
+               isGrid ? "w-full aspect-[16/10] border-b border-border" : "w-full md:w-96 aspect-video border border-border"
             )}
           >
             <img 
               src={blog.image} 
               alt={blog.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
               referrerPolicy="no-referrer"
             />
           </Link>
         )}
-        <div className="flex-grow min-w-0">
-          <div className="badge-minimal mb-3">
-            {formatDate(blog.date)}
+        <div className={cn(
+          "flex flex-col",
+          isGrid ? "p-8 flex-grow" : "flex-grow pt-8 md:pt-0"
+        )}>
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">ANALYSIS &bull; {formatDate(blog.date)}</span>
+            <span className="h-px flex-grow bg-border opacity-30" />
           </div>
           
-          <Link to={`/blog/${blog.slug}`}>
+          <Link to={`/blog/${blog.slug}`} className="mb-4">
             <h3 className={cn(
-               "font-serif font-bold mb-3 group-hover:text-text-secondary transition-colors leading-tight",
-               isGrid ? "text-xl" : "text-2xl"
+               "font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter",
+               isGrid ? "text-2xl md:text-3xl" : "text-4xl md:text-6xl"
             )}>
               {blog.title}
             </h3>
           </Link>
           
-          <p className="font-serif text-[15px] text-text-secondary mb-4 line-clamp-2 leading-relaxed">
+          <p className={cn(
+            "font-display font-medium text-text-secondary leading-tight uppercase tracking-tight opacity-60 mb-8",
+            isGrid ? "text-[13px] line-clamp-3" : "text-lg max-w-2xl"
+          )}>
             {blog.summary}
           </p>
 
-          <div className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-70">
-             <div className="flex items-center gap-1.5">
-                <Eye size={14} className="opacity-40" />
-                <span>{blog.viewsCount} <span className="hidden sm:inline">Views</span></span>
+          <div className="mt-auto pt-8 border-t border-border/50 flex flex-wrap items-center gap-x-8 gap-y-4 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
+             <div className="flex items-center gap-2">
+                <span className="opacity-40">METRIC:</span>
+                <span className="text-text-primary">{blog.viewsCount}_VIEWS</span>
              </div>
              <button 
                 onClick={handleLike}
                 disabled={isLiking}
                 className={cn(
-                  "flex items-center gap-1.5 transition-colors disabled:opacity-50",
+                  "flex items-center gap-2 transition-colors disabled:opacity-50",
                   hasLiked ? "text-red-500" : "hover:text-red-500"
                 )}
              >
-                <Heart size={14} className={cn(
+                <Heart size={12} className={cn(
                   isLiking ? "animate-pulse" : "",
                   hasLiked && "fill-red-500"
                 )} />
-                <span>{blog.likesCount} <span className="hidden sm:inline">Likes</span></span>
+                <span className={cn(hasLiked ? "text-red-500" : "text-text-primary")}>{blog.likesCount}_ENDORS</span>
              </button>
              {blog.ratingCount > 0 && (
-               <div className="flex items-center gap-1.5">
-                  <Star size={14} className="text-yellow-600 fill-yellow-600 opacity-60" />
-                  <span>{blog.ratingAverage.toFixed(1)} <span className="hidden sm:inline">Grade</span></span>
+               <div className="flex items-center gap-2">
+                  <span className="opacity-40">GRADE:</span>
+                  <span className="text-text-primary">{blog.ratingAverage.toFixed(1)}/5.0</span>
                </div>
              )}
-             <Link to={`/blog/${blog.slug}`} className="ml-auto flex items-center gap-1 hover:text-text-primary transition-colors">
-                Investigate &rarr;
+             <Link to={`/blog/${blog.slug}`} className="ml-auto flex items-center gap-2 text-accent hover:translate-x-1 transition-transform">
+                LOAD_DATA &rarr;
              </Link>
           </div>
         </div>

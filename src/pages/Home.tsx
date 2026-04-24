@@ -94,151 +94,148 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4">
-      <header className="mb-16 text-center">
+    <div className="max-w-7xl mx-auto px-4 md:px-0">
+      <header className="py-20 md:py-32 border-b border-border mb-0 text-center relative overflow-hidden">
+         <motion.div
+           initial={{ opacity: 0, scale: 0.9 }}
+           animate={{ opacity: 0.03, scale: 1 }}
+           transition={{ duration: 2 }}
+           className="absolute inset-0 flex items-center justify-center font-display font-black text-[30vw] pointer-events-none select-none uppercase tracking-tighter"
+         >
+           Opinio
+         </motion.div>
+
          {user && (
            <motion.div 
-             initial={{ opacity: 0 }} 
-             animate={{ opacity: 1 }} 
-             className="mb-4 inline-block px-4 py-1.5 bg-surface border border-border rounded-full text-xs font-bold uppercase tracking-widest text-text-secondary"
+             initial={{ opacity: 0, y: -10 }} 
+             animate={{ opacity: 1, y: 0 }} 
+             className="badge-minimal mb-6"
            >
-              Welcome back, <span className="text-accent">{user.displayName || 'Friend'}</span>
+              AUTHENTICATED AS: <span className="text-accent">{user.displayName || user.email}</span>
            </motion.div>
          )}
-         <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-4 tracking-tighter">Today's Briefing</h1>
-         <p className="text-text-secondary font-serif italic text-lg opacity-60 font-medium">{formatDate(new Date().toISOString().split('T')[0])}</p>
-
-         {latestNewspaper && (
-           <motion.div 
-             initial={{ opacity: 0, y: 10 }}
-             animate={{ opacity: 1, y: 0 }}
-             className="mt-10"
-           >
-             <Link 
-               to={`/newspaper/${latestNewspaper.id}`}
-               className="group inline-flex items-center gap-6 p-4 md:p-6 bg-accent/5 border border-accent/20 rounded-[2rem] hover:border-accent transition-all duration-500"
-             >
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-accent rounded-2xl flex items-center justify-center text-bg-page flex-shrink-0 group-hover:rotate-6 transition-transform">
-                   <NewspaperIcon size={32} className="md:w-10 md:h-10" />
-                </div>
-                <div className="text-left">
-                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-1">Today's Morning Edition</p>
-                   <h3 className="text-xl md:text-2xl font-serif font-bold text-text-primary group-hover:text-accent transition-colors">
-                      {latestNewspaper.title}
-                   </h3>
-                   <div className="flex items-center gap-4 mt-2 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                      <span>{latestNewspaper.date}</span>
-                      <span className="w-1 h-1 bg-border rounded-full" />
-                      <span className="flex items-center gap-1">Read Digital Copy &rarr;</span>
-                   </div>
-                </div>
-             </Link>
-           </motion.div>
-         )}
+         
+         <motion.h1 
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="text-[12vw] md:text-8xl lg:text-[10rem] font-display font-black mb-4 tracking-tighter leading-[0.85] uppercase"
+         >
+           The Briefing.
+         </motion.h1>
+         <motion.p 
+           initial={{ opacity: 0 }}
+           animate={{ opacity: 0.6 }}
+           transition={{ delay: 0.4 }}
+           className="text-text-secondary font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] mt-8"
+         >
+           EDITION: {formatDate(new Date().toISOString().split('T')[0])} — VOL 04
+         </motion.p>
       </header>
 
-      <div className="grid grid-cols-1 gap-16 mb-20">
+      {/* Latest Edition Bar */}
+      {latestNewspaper && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="border-b border-border bg-surface py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-4">
+             <div className="w-10 h-10 bg-accent text-bg-page flex items-center justify-center font-bold text-xs uppercase tracking-tighter">
+                New
+             </div>
+             <div>
+                <p className="text-[9px] font-mono font-bold uppercase tracking-widest text-text-secondary">Official Publication</p>
+                <h3 className="text-sm font-display font-bold uppercase tracking-tight">{latestNewspaper.title}</h3>
+             </div>
+          </div>
+          <Link 
+            to={`/newspaper/${latestNewspaper.id}`}
+            className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] flex items-center gap-2 hover:text-accent group"
+          >
+            Access Digital Press <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+          </Link>
+        </motion.div>
+      )}
+
+      {/* Featured Section */}
+      <div className="grid grid-cols-1 md:grid-cols-12 border-x border-border">
         {blogs.map((blog, idx) => (
-          <motion.section 
+          <motion.div 
             key={blog.id}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
-            className="group"
+            className={cn(
+              "border-b border-border",
+              idx === 0 ? "md:col-span-12" : "md:col-span-6 lg:col-span-4"
+            )}
           >
-            <div className="bg-surface rounded-[2.5rem] overflow-hidden border border-border shadow-xl hover:shadow-2xl transition-all duration-500">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="relative aspect-video lg:aspect-auto overflow-hidden">
+            <Link to={`/blog/${blog.slug}`} className="group block h-full">
+              <article className={cn(
+                "flex flex-col h-full",
+                idx === 0 ? "lg:flex-row bg-surface/30" : ""
+              )}>
+                <div className={cn(
+                  "relative overflow-hidden bg-surface",
+                  idx === 0 ? "lg:w-3/5 aspect-video md:aspect-auto" : "aspect-video"
+                )}>
                   {blog.image ? (
                     <img 
                       src={blog.image} 
                       alt={blog.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100" 
                       referrerPolicy="no-referrer" 
                     />
                   ) : (
                     <div className="w-full h-full bg-accent flex items-center justify-center">
-                       <Zap size={60} className="text-bg-page opacity-20" />
+                       <Zap size={60} className="text-bg-page opacity-10" />
                     </div>
                   )}
+                  <div className="absolute top-6 left-6">
+                    <span className="badge-minimal m-0 !bg-accent !text-bg-page !border-accent">OPINION {idx + 1}</span>
+                  </div>
                 </div>
-                
-                <div className="p-8 md:p-12 flex flex-col justify-center">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="bg-text-primary/5 text-text-primary px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest border border-text-primary/10">
-                       Opinion {idx + 1}
-                    </span>
-                    <span className="text-text-secondary text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
-                       <Clock size={12} /> {calculateReadingTime(blog.content)} Min
-                    </span>
+
+                <div className={cn(
+                  "p-8 md:p-12 flex flex-col justify-center",
+                  idx === 0 ? "lg:w-2/5" : ""
+                )}>
+                  <div className="flex items-center gap-4 mb-4 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
+                    <span>{blog.author}</span>
+                    <span className="w-1 h-1 bg-border rounded-full" />
+                    <span>{calculateReadingTime(blog.content)} MIN</span>
                   </div>
 
-                  <h2 className="text-2xl md:text-3xl font-serif font-bold text-text-primary leading-tight mb-6">
-                     {blog.title}
+                  <h2 className={cn(
+                    "font-display font-black text-text-primary leading-none mb-6 tracking-tighter uppercase group-hover:text-accent transition-colors",
+                    idx === 0 ? "text-4xl md:text-6xl lg:text-7xl" : "text-3xl"
+                  )}>
+                    {blog.title}
                   </h2>
 
-                  <p className="text-lg text-text-secondary font-serif leading-relaxed mb-8 italic line-clamp-3">
-                     "{blog.summary}"
+                  <p className="text-sm md:text-base text-text-secondary font-display leading-relaxed mb-8 italic line-clamp-3">
+                    "{blog.summary}"
                   </p>
-                  
-                  <div className="flex items-center justify-between gap-6 pt-8 border-t border-border mt-auto">
-                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-bg-page text-xs font-bold">
-                           {blog.author.charAt(0)}
-                        </div>
-                        <span className="text-xs font-bold text-text-primary uppercase tracking-wider">{blog.author}</span>
-                     </div>
-                     
-                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1 text-text-secondary">
-                           <Eye size={14} />
-                           <span className="text-[10px] font-bold">{blog.viewsCount}</span>
-                        </div>
-                        <button 
-                          onClick={(e) => handleLike(e, blog.id, idx)}
-                          disabled={likingId === blog.id}
-                          className="flex items-center gap-1 text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50"
-                        >
-                           <Heart size={14} className={likingId === blog.id ? "animate-pulse" : ""} />
-                           <span className="text-[10px] font-bold">{blog.likesCount}</span>
-                        </button>
-                        <Link 
-                          to={`/blog/${blog.slug}`} 
-                          className="btn-minimal-primary px-6 py-2 text-xs font-bold font-sans"
-                        >
-                          Read &rarr;
-                        </Link>
-                     </div>
+
+                  <div className="mt-auto flex items-center justify-between border-t border-border pt-6">
+                    <div className="flex items-center gap-4 text-[10px] font-mono font-bold">
+                       <span className="flex items-center gap-1.5"><Eye size={12} /> {blog.viewsCount}</span>
+                       <span className="flex items-center gap-1.5"><Heart size={12} className="text-red-500" /> {blog.likesCount}</span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest group-hover:underline underline-offset-4">Read Full Entry &rarr;</span>
                   </div>
                 </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4">
-               <div className="bg-surface rounded-2xl p-6 border border-border flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] uppercase font-bold tracking-widest text-text-secondary mb-1">Expert Consensus</p>
-                    <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => {
-                       const newBlogs = [...blogs];
-                       newBlogs[idx] = { ...newBlogs[idx], ratingAverage: avg, ratingCount: count };
-                       setBlogs(newBlogs);
-                    }} />
-                  </div>
-               </div>
-               <div className="bg-surface rounded-2xl p-6 border border-border">
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-text-secondary mb-3 flex items-center gap-2">
-                     <MessageSquare size={12} /> Conversations
-                  </p>
-                  <p className="text-sm font-serif italic text-text-secondary">Join the discussion on this analysis below.</p>
-               </div>
-            </div>
-          </motion.section>
+              </article>
+            </Link>
+          </motion.div>
         ))}
       </div>
 
-      <div className="mt-32 max-w-4xl mx-auto border-t border-border pt-20">
-         <NewsletterBox />
+      <div className="border-x border-border p-12 md:p-24 bg-surface text-center">
+         <div className="max-w-2xl mx-auto">
+            <NewsletterBox />
+         </div>
       </div>
     </div>
   );

@@ -36,39 +36,37 @@ export default function SplashScreen({ onEnter }: SplashScreenProps) {
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
               className="relative w-full text-center"
             >
-              <div className="text-[12vw] sm:text-[10vw] md:text-8xl lg:text-9xl font-serif font-black tracking-tighter text-text-primary relative z-10 leading-none break-all sm:break-normal">
-                O<span className="text-accent underline decoration-2 sm:decoration-4 underline-offset-4 sm:underline-offset-8">P</span>INIO<span className="text-blue-500">N</span>ATE
+              <div className="text-[12vw] sm:text-[10vw] md:text-8xl lg:text-[10rem] font-display font-black tracking-tighter text-text-primary relative z-10 leading-[0.8] uppercase break-all sm:break-normal">
+                Opinio<span className="text-accent underline decoration-4 underline-offset-8">n</span>ate
               </div>
               
-              {/* Decorative Funky Elements */}
+              {/* Orbital Circles */}
               <motion.div
-                animate={{ 
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.05, 0.95, 1]
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-6 -right-6 sm:-top-10 sm:-right-10 w-12 h-12 sm:w-20 sm:h-20 border-2 border-accent rounded-full opacity-20"
-              />
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] aspect-square border border-border/50 rounded-full pointer-events-none"
+              >
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-accent rounded-full" />
+              </motion.div>
               <motion.div
-                animate={{ 
-                  x: [0, 10, -10, 0],
-                  y: [0, -10, 10, 0]
-                }}
-                transition={{ duration: 6, repeat: Infinity }}
-                className="absolute -bottom-8 -left-12 w-16 h-16 bg-blue-500/10 rounded-xl blur-xl"
-              />
+                animate={{ rotate: -360 }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square border border-border/20 rounded-full pointer-events-none"
+              >
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-text-secondary rounded-full" />
+              </motion.div>
             </motion.div>
 
             <motion.p
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="mt-8 text-xs md:text-sm font-bold uppercase tracking-[0.5em] text-text-secondary flex items-center gap-3"
+              className="mt-12 text-[10px] md:text-xs font-mono font-bold uppercase tracking-[0.6em] text-text-secondary flex items-center gap-4"
             >
-              Stay <span className="text-accent">Opiniated</span> <Sparkles size={14} className="text-accent animate-pulse" />
+              STAY <span className="text-accent">OPINIONATED</span> &bull; VOL. 2026
             </motion.p>
           </div>
 

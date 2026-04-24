@@ -51,23 +51,26 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
                   cn(
-                    'text-[14px] font-medium transition-all py-1',
-                    isActive ? 'text-text-primary border-b-2 border-text-primary' : 'text-text-secondary hover:text-text-primary'
+                    'text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all py-1 relative group',
+                    isActive ? 'text-accent' : 'text-text-secondary hover:text-accent'
                   )
                 }
               >
                 {link.name}
+                <span className={cn(
+                  "absolute -bottom-1 left-0 h-0.5 bg-accent transition-all duration-300",
+                  "w-0 group-hover:w-full"
+                )} />
               </NavLink>
             ))}
-            <div className="h-4 w-px bg-border mx-2" />
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-4">
               <button 
                 onClick={toggleDarkMode}
                 className="btn-minimal p-2"

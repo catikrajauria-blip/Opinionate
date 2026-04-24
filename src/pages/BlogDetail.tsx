@@ -113,106 +113,124 @@ export default function BlogDetail() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto px-4 md:px-6">
       <Link 
         to="/archive" 
-        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary transition-colors mb-10 group"
+        className="inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary hover:text-accent transition-colors mb-20 group"
       >
         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-        Back to Archive
+        BACK TO ENTRIES
       </Link>
 
       <motion.article 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-20"
+        className="mb-32"
       >
-        <header className="mb-12">
-          <div className="badge-minimal">
-            Daily Opinion &bull; {formatDate(blog.date)}
+        <header className="mb-20">
+          <div className="flex items-center gap-4 mb-8">
+            <span className="badge-minimal m-0">DAILY ANALYSIS</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">VOL. 04 &bull; {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight mb-8">
+          <h1 className="text-5xl md:text-7xl lg:text-9xl font-display font-black leading-[0.9] mb-12 tracking-tighter uppercase break-words">
             {blog.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-6 pb-6 border-b border-border text-text-secondary text-sm font-medium">
-            <div className="flex items-center gap-2">
-              <span className="text-text-primary">By <strong>{blog.author}</strong></span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-border">
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">Author</span>
+              <span className="text-sm font-display font-bold uppercase tracking-tight">{blog.author}</span>
             </div>
-            <span>&bull; {calculateReadingTime(blog.content)} min read</span>
-            <div className="flex items-center gap-1.5">
-               <span>👁️ {blog.viewsCount} Views</span>
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">Metric</span>
+              <span className="text-sm font-display font-bold uppercase tracking-tight">{calculateReadingTime(blog.content)} MIN READ &bull; {blog.viewsCount} ACCESSES</span>
             </div>
-            <div className="flex items-center gap-1.5">
-               <span>💬 {blog.ratingCount} ratings</span>
-            </div>
-            <div className="flex items-center gap-1.5 ml-auto">
-               <span className="text-yellow-500">★★★★☆</span>
-               <span className="text-text-primary mr-4">{blog.ratingAverage.toFixed(1)}</span>
-               <button 
-                 onClick={handleLike}
-                 className={cn(
-                   "flex items-center gap-1 transition-colors",
-                   hasLiked ? "text-red-500" : "hover:text-red-500"
-                 )}
-               >
-                 <Heart size={16} className={hasLiked ? "fill-red-500 text-red-500" : ""} />
-                 <span className="text-text-primary font-bold">{blog.likesCount}</span>
-               </button>
+            <div className="flex flex-col gap-2 md:items-end">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">Engagement</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <span className="text-yellow-500 font-mono font-bold">{blog.ratingAverage.toFixed(1)}</span>
+                  <span className="text-[10px] font-mono opacity-30">/5.0</span>
+                </div>
+                <button 
+                  onClick={handleLike}
+                  className={cn(
+                    "flex items-center gap-1 transition-colors",
+                    hasLiked ? "text-red-500" : "hover:text-red-500"
+                  )}
+                >
+                  <Heart size={16} className={hasLiked ? "fill-red-500" : ""} />
+                  <span className="text-xs font-mono font-bold uppercase">{blog.likesCount}</span>
+                </button>
+              </div>
             </div>
           </div>
         </header>
 
         {blog.image && (
-          <div className="mb-12 rounded-xl overflow-hidden aspect-[16/9] border border-border">
-            <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.5 }}
+            className="mb-20 overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000"
+          >
+            <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover" referrerPolicy="no-referrer" />
+            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-widest mt-4 opacity-50 text-center">Reference Visual: {blog.title}</p>
+          </motion.div>
         )}
 
-        <div className="blog-content mb-16 px-0 lg:px-4">
-          <ReactMarkdown>{blog.content}</ReactMarkdown>
+        <div className="max-w-3xl mx-auto">
+          <div className="blog-content mb-24">
+            <ReactMarkdown>{blog.content}</ReactMarkdown>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-10 border-y border-border mb-24">
+             <div className="flex items-center gap-3">
+                <button 
+                  onClick={handleLike}
+                  className={cn(
+                    "btn-minimal group border-accent/20",
+                    hasLiked && "bg-accent text-bg-page"
+                  )}
+                >
+                   <Heart size={16} className={cn(
+                     "transition-colors",
+                     hasLiked ? "fill-bg-page" : "group-hover:text-red-500"
+                   )} />
+                   <span>{hasLiked ? 'OPINION ENDORSED' : 'ENDORSE OPINION'}</span>
+                </button>
+  
+                <button 
+                  onClick={toggleSave}
+                  className={cn(
+                    "btn-minimal p-3",
+                    isSaved && "bg-accent text-bg-page"
+                  )}
+                  title="Archive for later"
+                >
+                  {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                </button>
+             </div>
+             
+             <button className="btn-minimal-primary gap-3">
+                <Share2 size={16} /> DISTRIBUTE ENTRY
+             </button>
+          </div>
+  
+          <section className="mb-24">
+             <div className="flex items-center gap-4 mb-10">
+               <span className="h-px bg-border flex-grow" />
+               <h3 className="text-xs font-mono font-bold tracking-[0.3em] uppercase">Consensus Mechanism</h3>
+               <span className="h-px bg-border flex-grow" />
+             </div>
+             <div className="bg-surface p-10 border border-border">
+                <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
+             </div>
+          </section>
+  
+          <CommentSection blogId={blog.id} />
         </div>
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-border mt-16">
-           <div className="flex items-center gap-3">
-              <button 
-                onClick={handleLike}
-                className={cn(
-                  "btn-minimal group",
-                  hasLiked && "text-red-500 border-red-500/20 bg-red-500/5 transition-all"
-                )}
-              >
-                 <Heart size={16} className={cn(
-                   "transition-colors",
-                   hasLiked ? "fill-red-500 text-red-500" : "text-text-secondary group-hover:text-red-500"
-                 )} />
-                 <span>{hasLiked ? 'Liked' : 'Like'} ({blog.likesCount})</span>
-              </button>
-
-              <button 
-                onClick={toggleSave}
-                className={cn(
-                  "btn-minimal",
-                  isSaved && "bg-text-primary text-bg-page border-text-primary"
-                )}
-              >
-                {isSaved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                <span>{isSaved ? 'Saved' : 'Save for later'}</span>
-              </button>
-           </div>
-           
-           <button className="btn-minimal-primary">
-              Share Opinion
-           </button>
-        </div>
-
-        <div className="mt-16 pt-16 border-t border-border">
-           <h3 className="text-xl font-bold mb-8">Rate the Conversation</h3>
-           <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
-        </div>
-
-        <CommentSection blogId={blog.id} />
       </motion.article>
     </div>
   );
