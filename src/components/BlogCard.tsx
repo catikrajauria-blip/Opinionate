@@ -107,7 +107,7 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           
           <Link to={`/blog/${blog.slug}`} className="mb-4">
             <h3 className={cn(
-               "font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter",
+               "font-display font-black group-hover:text-accent transition-colors leading-tight uppercase tracking-tighter",
                isGrid ? "text-2xl md:text-3xl" : "text-4xl md:text-6xl"
             )}>
               {blog.title}

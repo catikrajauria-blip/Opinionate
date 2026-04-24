@@ -133,7 +133,7 @@ export default function BlogDetail() {
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">VOL. 04 &bull; {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-display font-black leading-[0.9] mb-12 tracking-tighter uppercase break-words">
+          <h1 className="text-5xl md:text-7xl lg:text-9xl font-display font-black leading-tight mb-12 tracking-tighter uppercase break-words">
             {blog.title}
           </h1>
 

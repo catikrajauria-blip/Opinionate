@@ -34,7 +34,7 @@ export default function Contact() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black mb-8 leading-[0.9] tracking-tighter uppercase">Let's start a <span className="underline decoration-accent decoration-8">conversation</span>.</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black mb-8 leading-tight tracking-tighter uppercase">Let's start a <span className="underline decoration-accent decoration-8">conversation</span>.</h1>
           <p className="text-text-secondary text-lg mb-12 max-w-lg leading-relaxed font-display font-bold italic">
             Have a different take on today's news? Want to suggest a topic? Or just want to say hi? I'm all ears.
           </p>

@@ -45,7 +45,7 @@ export default function Archive() {
           <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent">CHRONICLE_DATABASE</span>
         </div>
         
-        <h1 className="text-6xl md:text-8xl font-display font-black mb-10 tracking-tighter uppercase leading-[0.8]">
+        <h1 className="text-6xl md:text-8xl font-display font-black mb-10 tracking-tighter uppercase leading-tight">
           The Archive
         </h1>
         <p className="text-text-secondary max-w-2xl mb-16 font-display font-bold text-xl md:text-2xl leading-tight uppercase tracking-tight">
@@ -142,7 +142,7 @@ export default function Archive() {
                      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                      <span className="h-px w-8 bg-border" />
                    </div>
-                   <h3 className="text-3xl md:text-4xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter">{blog.title}</h3>
+                   <h3 className="text-3xl md:text-4xl font-display font-black group-hover:text-accent transition-colors leading-tight uppercase tracking-tighter">{blog.title}</h3>
                    <p className="text-text-secondary font-display font-black text-sm line-clamp-2 max-w-2xl uppercase">{blog.summary}</p>
                    
                    <div className="flex flex-wrap items-center gap-8 py-6 border-y border-border/50">

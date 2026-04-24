@@ -118,7 +118,7 @@ export default function Home() {
          <motion.h1 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
-           className="text-[12vw] md:text-8xl lg:text-[10rem] font-display font-black mb-4 tracking-tighter leading-[0.85] uppercase"
+           className="text-[12vw] md:text-8xl lg:text-[10rem] font-display font-black mb-4 tracking-tighter leading-tight uppercase"
          >
            The Briefing.
          </motion.h1>
@@ -208,7 +208,7 @@ export default function Home() {
                   </div>
 
                   <h2 className={cn(
-                    "font-display font-black text-text-primary leading-none mb-6 tracking-tighter uppercase group-hover:text-accent transition-colors",
+                    "font-display font-black text-text-primary leading-tight mb-6 tracking-tighter uppercase group-hover:text-accent transition-colors",
                     idx === 0 ? "text-4xl md:text-6xl lg:text-7xl" : "text-3xl"
                   )}>
                     {blog.title}

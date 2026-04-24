@@ -38,7 +38,7 @@ export default function Newspapers() {
           <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent">PUBLIC_RECORD_OFFICIAL</span>
         </div>
         
-        <h1 className="text-6xl md:text-8xl font-display font-black mb-10 tracking-tighter uppercase leading-[0.8]">
+        <h1 className="text-6xl md:text-8xl font-display font-black mb-10 tracking-tighter uppercase leading-tight">
           The Daily Ledger
         </h1>
         <p className="text-text-secondary max-w-2xl mb-16 font-display font-bold text-xl md:text-2xl leading-tight uppercase tracking-tight">
@@ -125,7 +125,7 @@ export default function Newspapers() {
 
                 <div className="mb-4">
                   <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent mb-2">EDITION_DATE: {item.date}</p>
-                  <h3 className="text-3xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter">
+                  <h3 className="text-3xl font-display font-black group-hover:text-accent transition-colors leading-tight uppercase tracking-tighter">
                     {item.title}
                   </h3>
                 </div>
