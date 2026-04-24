@@ -8,7 +8,9 @@ import {
   Image as ImageIcon, Link as LinkIcon, CheckCircle2, 
   Zap, Trash2, PieChart, Users, Shield, ShieldAlert,
   Search as SearchIcon, Mail as MailIcon, Clock, X,
-  MessageSquare, Star, Copy, ExternalLink, User, Eye, Download
+  MessageSquare, Star, Copy, ExternalLink, User, Eye, Download,
+  MousePointer2, BarChart3, ToggleLeft, ToggleRight, 
+  Factory, HardHat, ShieldCheck, Cpu, TrendingUp
 } from 'lucide-react';
 import { generateSlug, cn, formatDate } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
@@ -17,12 +19,12 @@ import { UserProfile } from '../types';
 
 import { statsService } from '../lib/statsService';
 import { pollService } from '../lib/pollService';
-import { MousePointer2, BarChart3, ToggleLeft, ToggleRight } from 'lucide-react';
+import { policyService, PolicyUpdate } from '../lib/policyService';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
   const [aiLoading, setAiLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'polls'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'polls' | 'policy'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [allComments, setAllComments] = useState<any[]>([]);
@@ -30,7 +32,10 @@ export default function Admin() {
   const [allMessages, setAllMessages] = useState<any[]>([]);
   const [allSubscribers, setAllSubscribers] = useState<any[]>([]);
   const [allPolls, setAllPolls] = useState<any[]>([]);
+  const [allPolicies, setAllPolicies] = useState<PolicyUpdate[]>([]);
   const [userSearch, setUserSearch] = useState('');
+  const [auditSearch, setAuditSearch] = useState('');
+  const [archiveSearch, setArchiveSearch] = useState('');
   const [stats, setStats] = useState<any>({
     totalBlogs: 0,
     totalSubscribers: 0,
@@ -91,6 +96,7 @@ export default function Admin() {
       if (activeTab === 'users') coreTasks.push(loadAllUsers());
       if (activeTab === 'community') coreTasks.push(loadCommunityData());
       if (activeTab === 'polls') coreTasks.push(loadPolls());
+      if (activeTab === 'policy') coreTasks.push(loadPolicies());
 
       await Promise.all(coreTasks);
     } catch (err) {
@@ -107,6 +113,60 @@ export default function Admin() {
       setAllPolls(p);
     } catch (err) {
       console.error('Error loading polls:', err);
+    }
+  };
+
+  // Policy Form State
+  const [policySector, setPolicySector] = useState<'Manufacturing' | 'Infrastructure' | 'Defence' | 'Tech' | 'Economy'>('Manufacturing');
+  const [policyTitle, setPolicyTitle] = useState('');
+  const [policyDesc, setPolicyDesc] = useState('');
+  const [policyDate, setPolicyDate] = useState(new Date().toISOString().split('T')[0]);
+  const [policySource, setPolicySource] = useState('');
+
+  const loadPolicies = async () => {
+    try {
+      const p = await policyService.getAllUpdates();
+      setAllPolicies(p);
+    } catch (err) {
+      console.error('Error loading policies:', err);
+    }
+  };
+
+  const handleCreatePolicy = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!policyTitle || !policyDesc || !policyDate) return;
+    
+    setSubmitting(true);
+    try {
+      await policyService.addUpdate({
+        sector: policySector,
+        title: policyTitle,
+        description: policyDesc,
+        date: policyDate,
+        sourceUrl: policySource || undefined
+      });
+      
+      setSuccess(true);
+      setPolicyTitle('');
+      setPolicyDesc('');
+      setPolicySource('');
+      loadPolicies();
+    } catch (err: any) {
+      console.error('Error creating policy update:', err);
+      alert(err.message || 'Error creating policy update');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  const handleDeletePolicy = async (id: string) => {
+    if (!confirm('DELETE_THIS_RECORD?_IRREVERSIBLE.')) return;
+    try {
+      await policyService.deleteUpdate(id);
+      loadPolicies();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -509,6 +569,7 @@ export default function Admin() {
               { id: 'news', label: 'CURATED_FEED', icon: Zap },
               { id: 'users', label: 'SYSTEM_REGISTRY', icon: Users },
               { id: 'community', label: 'AUDIENCE_DATA', icon: MessageSquare },
+              { id: 'policy', label: 'POLICY_TRACKER', icon: ShieldCheck },
               { id: 'analytics', label: 'CORE_METRICS', icon: PieChart },
               { id: 'polls', label: 'OPINION_MATTERS', icon: BarChart3 }
             ].map((tab) => (
@@ -978,6 +1039,116 @@ export default function Admin() {
                   {allPolls.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20 border border-border border-dashed">No opinion surveys identified in archive.</p>}
                </div>
              </div>
+           ) : activeTab === 'policy' ? (
+             <div className="space-y-12">
+               <form onSubmit={handleCreatePolicy} className="bg-bg-page p-10 border border-border space-y-12">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
+                     <div>
+                       <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
+                          Growth_Marker_Ingestion
+                       </h2>
+                       <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">POLICY_MONITORING_MODULE</p>
+                     </div>
+                     <div className="flex flex-wrap gap-4">
+                       {success && (
+                           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
+                             <CheckCircle2 size={14} /> COMMITTED_TO_TIMELINE.
+                           </motion.div>
+                       )}
+                     </div>
+                  </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Strategic_Sector</label>
+                       <select 
+                          value={policySector} onChange={(e) => setPolicySector(e.target.value as any)}
+                          className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
+                       >
+                          <option value="Manufacturing">MANUFACTURING</option>
+                          <option value="Infrastructure">INFRASTRUCTURE</option>
+                          <option value="Defence">DEFENCE</option>
+                          <option value="Tech">TECH</option>
+                          <option value="Economy">ECONOMY</option>
+                       </select>
+                    </div>
+                    <div className="space-y-4 lg:col-span-1">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Marker_Title</label>
+                       <input 
+                          type="text" required value={policyTitle} onChange={(e) => setPolicyTitle(e.target.value)}
+                          className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
+                          placeholder="INITIATIVE_NAME..."
+                       />
+                    </div>
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Occurrence_Date</label>
+                       <input 
+                          type="date" required value={policyDate} onChange={(e) => setPolicyDate(e.target.value)}
+                          className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
+                       />
+                    </div>
+                 </div>
+
+                 <div className="space-y-4">
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Technical_Description</label>
+                    <textarea 
+                       required value={policyDesc} onChange={(e) => setPolicyDesc(e.target.value)}
+                       rows={4}
+                       className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-sm leading-relaxed"
+                       placeholder="SPECIFY_GROWTH_DYNAMICS..."
+                    />
+                 </div>
+
+                 <div className="space-y-4">
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Source_URL (Optional)</label>
+                    <div className="relative">
+                       <LinkIcon size={14} className="absolute left-5 top-6 text-text-secondary opacity-30" />
+                       <input 
+                          type="url" value={policySource} onChange={(e) => setPolicySource(e.target.value)}
+                          className="w-full bg-surface border border-border p-5 pl-12 outline-none focus:border-accent font-mono text-xs"
+                          placeholder="https://pib.gov.in/..."
+                       />
+                    </div>
+                 </div>
+
+                 <button 
+                   disabled={submitting}
+                   className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
+                 >
+                   {submitting ? 'RECORDING_POLICY...' : 'COMMIT_TO_GROWTH_TRACKER'}
+                 </button>
+               </form>
+
+               <div className="space-y-8">
+                  <h3 className="text-xl font-display font-black uppercase tracking-tighter border-l-4 border-accent pl-6">
+                     Strategic_Timeline_Ledger
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     {allPolicies.map((p) => (
+                        <div key={p.id} className="bg-surface border border-border p-8 hover:border-accent transition-all group">
+                           <div className="flex justify-between items-start mb-6">
+                              <span className="text-[8px] font-mono font-bold px-2 py-0.5 uppercase tracking-tighter border border-accent/20 text-accent bg-accent/5">
+                                 {p.sector}
+                              </span>
+                              <button 
+                                onClick={() => handleDeletePolicy(p.id!)}
+                                className="text-text-secondary opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                           </div>
+                           <h4 className="text-lg font-display font-black uppercase tracking-tighter mb-4 leading-tight">{p.title}</h4>
+                           <p className="text-xs text-text-secondary leading-relaxed mb-6 line-clamp-3">{p.description}</p>
+                           <div className="flex justify-between items-center text-[8px] font-mono font-bold uppercase opacity-30">
+                              <span>DATE: {p.date}</span>
+                              {p.sourceUrl && <span className="text-accent flex items-center gap-1">VERIFIED <CheckCircle2 size={8} /></span>}
+                           </div>
+                        </div>
+                     ))}
+                     {allPolicies.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20 border border-border border-dashed">Strategic timeline is currently empty.</p>}
+                  </div>
+               </div>
+             </div>
            ) : activeTab === 'community' ? (
             <div className="space-y-12">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -1136,14 +1307,19 @@ export default function Admin() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-border">
                   <div className="p-10 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">PORTAL_ENTRANCES</p>
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">USER_ENGAGEMENTS</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalSwipes}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_SWIPES_COMMITTED</p>
+                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_INTERACTIONS_COMMITTED</p>
                   </div>
                   <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">ENGAGEMENT_OPS</p>
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">OPINION_PENETRATION</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalViews}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_ENTRY_READS</p>
+                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_READ_EVENTS</p>
+                  </div>
+                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">DATABASE_DEPTH</p>
+                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalBlogs}</p>
+                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">LIFETIME_OPINION_COUNT</p>
                   </div>
                   <div className="p-10 hover:bg-surface transition-all group">
                      <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">NETWORK_NODES</p>
@@ -1168,11 +1344,67 @@ export default function Admin() {
                   </div>
                </div>
                
-               <h3 id="analysis-viewport" className="text-2xl font-display font-black mt-24 mb-10 text-text-primary uppercase tracking-tighter border-l-4 border-accent pl-6">
-                  Performance_Deep_Audit
-               </h3>
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                  <div className="lg:col-span-2 space-y-10">
+                     {/* Search and List logic... */}
+                     <div className="flex flex-col md:flex-row items-center gap-6 mt-24 mb-10 border-l-4 border-accent pl-6 bg-surface p-4 border border-border">
+                        <h3 id="analysis-viewport" className="text-2xl font-display font-black text-text-primary uppercase tracking-tighter flex-shrink-0">
+                           Performance_Deep_Audit
+                        </h3>
+                        <div className="relative flex-grow max-w-md">
+                           <SearchIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-accent" />
+                           <input 
+                              type="text" 
+                              placeholder="FILTER_AUDIT_LOG..."
+                              value={auditSearch}
+                              onChange={(e) => setAuditSearch(e.target.value)}
+                              className="w-full bg-bg-page border border-border p-3 pl-10 text-[10px] font-mono font-bold uppercase tracking-widest outline-none focus:border-accent"
+                           />
+                        </div>
+                        <div className="text-[9px] font-mono font-bold text-text-secondary uppercase tracking-widest opacity-40">
+                           {blogs.filter(b => b.title.toLowerCase().includes(auditSearch.toLowerCase())).length} IN_VIEW
+                        </div>
+                     </div>
+                  </div>
+
+                  <aside className="space-y-10">
+                     <div className="bg-bg-page border border-border p-10 group hover:border-accent transition-all">
+                        <div className="flex justify-between items-center mb-10 border-b border-border pb-6">
+                           <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-text-secondary">LATEST_SURVEY_INTEL</h3>
+                           <BarChart3 size={18} className="text-accent" />
+                        </div>
+                        {allPolls.length > 0 ? (
+                           <div className="space-y-6">
+                              <p className="text-lg font-display font-black uppercase tracking-tight leading-tight">{allPolls[0].question}</p>
+                              <div className="space-y-3">
+                                 {allPolls[0].options.map((opt: string, idx: number) => {
+                                    const perc = allPolls[0].totalVotes > 0 ? Math.round((allPolls[0].results[opt] / allPolls[0].totalVotes) * 100) : 0;
+                                    return (
+                                       <div key={idx} className="space-y-1">
+                                          <div className="flex justify-between text-[8px] font-mono font-bold uppercase opacity-60">
+                                             <span>{opt}</span>
+                                             <span>{perc}%</span>
+                                          </div>
+                                          <div className="h-0.5 bg-surface relative">
+                                             <div className="absolute top-0 left-0 h-full bg-accent" style={{ width: `${perc}%` }} />
+                                          </div>
+                                       </div>
+                                    );
+                                 })}
+                              </div>
+                              <div className="pt-4 flex justify-between items-center text-[8px] font-mono font-bold uppercase text-text-secondary opacity-30">
+                                 <span>TOTAL_RESPONSES: {allPolls[0].totalVotes}</span>
+                                 <span className="text-accent">{allPolls[0].status}</span>
+                              </div>
+                           </div>
+                        ) : (
+                           <p className="text-[10px] font-mono text-text-secondary opacity-30 uppercase">NO_INTEL_RECORDS_FOUND</p>
+                        )}
+                     </div>
+                  </aside>
+               </div>
                <div className="border border-border bg-surface">
-                  {blogs.map(b => (
+                  {blogs.filter(b => b.title.toLowerCase().includes(auditSearch.toLowerCase())).map(b => (
                     <div key={b.id} className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-10 border-b border-border last:border-0 hover:bg-bg-page transition-all group">
                        <div className="max-w-xl">
                           <p className="font-display font-bold text-lg text-text-primary uppercase tracking-tight group-hover:text-accent transition-colors mb-4">{b.title}</p>
@@ -1351,7 +1583,7 @@ export default function Admin() {
                  <FileText size={16} /> ARCHIVE_LOG
               </h3>
               <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
-                 {blogs.map((b, i) => (
+                 {blogs.filter(b => b.title.toLowerCase().includes(archiveSearch.toLowerCase())).map((b, i) => (
                     <div key={i} className="group border-b border-border pb-6 last:border-0 last:pb-0">
                        <div className="flex items-start gap-4 mb-3">
                           <div className="w-8 h-8 bg-surface border border-border flex items-center justify-center flex-shrink-0 group-hover:bg-accent group-hover:text-bg-page transition-all">

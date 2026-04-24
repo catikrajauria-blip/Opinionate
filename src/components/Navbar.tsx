@@ -30,6 +30,7 @@ export default function Navbar() {
     { name: 'Home', path: '/' },
     { name: 'Archive', path: '/archive' },
     { name: 'Saved', path: '/saved' },
+    { name: 'Indian Policy', path: '/indian-policy' },
     { name: 'Newsletter', path: '/newsletter' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },

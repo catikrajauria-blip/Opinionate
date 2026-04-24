@@ -79,7 +79,10 @@ export default function Archive() {
                 ))}
               </select>
             </div>
-            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest">TEMPORAL_FILTER</div>
+            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest flex items-center justify-between gap-4">
+              <span>TEMPORAL_FILTER</span>
+              <span className="text-accent">{filteredBlogs.length} ENTRIES_MATCHED</span>
+            </div>
           </div>
 
           <div className="md:col-span-2 p-8 flex items-center justify-center gap-6">

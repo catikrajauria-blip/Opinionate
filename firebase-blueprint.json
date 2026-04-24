@@ -157,6 +157,20 @@
       },
       "required": ["pollId", "userId", "option", "createdAt"]
     },
+    "PolicyUpdate": {
+      "title": "PolicyUpdate",
+      "description": "Government policy and growth initiatives tracker",
+      "type": "object",
+      "properties": {
+        "sector": { "type": "string", "enum": ["Manufacturing", "Infrastructure", "Defence", "Tech", "Economy"] },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "sourceUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sector", "title", "description", "date", "createdAt"]
+    },
     "Newspaper": {
       "title": "Newspaper",
       "description": "Daily newspaper editions extracted from PDF",
@@ -231,6 +245,10 @@
     "/poll_responses/{responseId}": {
       "schema": "PollResponse",
       "description": "User responses to polls"
+    },
+    "/policy_updates/{updateId}": {
+      "schema": "PolicyUpdate",
+      "description": "Government policy initiatives"
     },
     "/newspapers/{newspaperId}": {
       "schema": "Newspaper",

@@ -109,7 +109,7 @@ export default function PollWidget() {
                 >
                    <div className="flex items-center gap-2 mb-4 text-green-500">
                       <CheckCircle2 size={16} />
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">INTEL_RECORDED</span>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">REACTION_INTEL_GATHERED</span>
                    </div>
                    
                    {poll.options.map((option, idx) => {

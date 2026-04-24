@@ -202,6 +202,12 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Policy Updates
+    match /policy_updates/{updateId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // System Stats
     match /system_stats/{docId} {
       allow read, write: if true;
