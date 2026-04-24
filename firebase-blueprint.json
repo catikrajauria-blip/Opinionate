@@ -130,6 +130,33 @@
       },
       "required": ["blogId", "savedAt"]
     },
+    "Poll": {
+      "title": "Poll",
+      "description": "User opinion polls and surveys",
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "results": { "type": "object" },
+        "status": { "type": "string", "enum": ["active", "archived"] },
+        "showResults": { "type": "boolean" },
+        "totalVotes": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["question", "options", "status", "showResults", "totalVotes", "createdAt"]
+    },
+    "PollResponse": {
+      "title": "PollResponse",
+      "description": "Individual user responses to polls",
+      "type": "object",
+      "properties": {
+        "pollId": { "type": "string" },
+        "userId": { "type": "string" },
+        "option": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["pollId", "userId", "option", "createdAt"]
+    },
     "Newspaper": {
       "title": "Newspaper",
       "description": "Daily newspaper editions extracted from PDF",
@@ -196,6 +223,14 @@
     "/users/{uid}/saved_blogs/{blogId}": {
       "schema": "SavedBlog",
       "description": "Blogs saved by a specific user"
+    },
+    "/polls/{pollId}": {
+      "schema": "Poll",
+      "description": "User opinion polls"
+    },
+    "/poll_responses/{responseId}": {
+      "schema": "PollResponse",
+      "description": "User responses to polls"
     },
     "/newspapers/{newspaperId}": {
       "schema": "Newspaper",

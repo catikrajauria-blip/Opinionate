@@ -16,18 +16,20 @@ import { useAuth } from '../contexts/AuthContext';
 import { UserProfile } from '../types';
 
 import { statsService } from '../lib/statsService';
-import { MousePointer2 } from 'lucide-react';
+import { pollService } from '../lib/pollService';
+import { MousePointer2, BarChart3, ToggleLeft, ToggleRight } from 'lucide-react';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
   const [aiLoading, setAiLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'polls'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [allComments, setAllComments] = useState<any[]>([]);
   const [allRatings, setAllRatings] = useState<any[]>([]);
   const [allMessages, setAllMessages] = useState<any[]>([]);
   const [allSubscribers, setAllSubscribers] = useState<any[]>([]);
+  const [allPolls, setAllPolls] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState('');
   const [stats, setStats] = useState<any>({
     totalBlogs: 0,
@@ -62,6 +64,12 @@ export default function Admin() {
   const [newsSource, setNewsSource] = useState('');
   const [recentNews, setRecentNews] = useState<any[]>([]);
 
+  // Poll Form State
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOptions, setPollOptions] = useState(''); // Comma separated
+  const [pollStatus, setPollStatus] = useState<'active' | 'archived'>('active');
+  const [pollShowResults, setPollShowResults] = useState(false);
+
   useEffect(() => {
     if (user && isGlobalAdmin) {
       loadData();
@@ -82,6 +90,7 @@ export default function Admin() {
       if (activeTab === 'news') coreTasks.push(loadRecentNews());
       if (activeTab === 'users') coreTasks.push(loadAllUsers());
       if (activeTab === 'community') coreTasks.push(loadCommunityData());
+      if (activeTab === 'polls') coreTasks.push(loadPolls());
 
       await Promise.all(coreTasks);
     } catch (err) {
@@ -89,6 +98,15 @@ export default function Admin() {
     } finally {
       // Ensure a minimum loading time for smooth transition and data arrival
       setTimeout(() => setLoading(false), 300);
+    }
+  };
+
+  const loadPolls = async () => {
+    try {
+      const p = await pollService.getAllPolls();
+      setAllPolls(p);
+    } catch (err) {
+      console.error('Error loading polls:', err);
     }
   };
 
@@ -115,6 +133,66 @@ export default function Admin() {
       setNewsCounts(counts);
     } catch (err) {
       console.error('Error loading news counts:', err);
+    }
+  };
+  
+  const handleCreatePoll = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pollQuestion || !pollOptions) return;
+    
+    setSubmitting(true);
+    try {
+      const options = pollOptions.split(',').map(o => o.trim()).filter(o => o.length > 0);
+      if (options.length < 2) {
+        throw new Error('Please provide at least 2 options');
+      }
+      
+      await pollService.createPoll({
+        question: pollQuestion,
+        options,
+        status: pollStatus,
+        showResults: pollShowResults
+      });
+      
+      setSuccess(true);
+      setPollQuestion('');
+      setPollOptions('');
+      loadPolls();
+    } catch (err: any) {
+      console.error('Error creating poll:', err);
+      alert(err.message || 'Error creating poll');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  const handleTogglePollStatus = async (pollId: string, currentStatus: 'active' | 'archived') => {
+    try {
+      const nextStatus = currentStatus === 'active' ? 'archived' : 'active';
+      await pollService.updatePollStatus(pollId, nextStatus);
+      loadPolls();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleTogglePollVisibility = async (pollId: string, currentVal: boolean) => {
+    try {
+      await pollService.updatePollVisibility(pollId, !currentVal);
+      loadPolls();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleDeletePoll = async (pollId: string) => {
+    if (!window.confirm('IRREVERSIBLE_ACTION: Delete this poll and all associated data?')) return;
+    try {
+      await pollService.deletePoll(pollId);
+      loadPolls();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -431,7 +509,8 @@ export default function Admin() {
               { id: 'news', label: 'CURATED_FEED', icon: Zap },
               { id: 'users', label: 'SYSTEM_REGISTRY', icon: Users },
               { id: 'community', label: 'AUDIENCE_DATA', icon: MessageSquare },
-              { id: 'analytics', label: 'CORE_METRICS', icon: PieChart }
+              { id: 'analytics', label: 'CORE_METRICS', icon: PieChart },
+              { id: 'polls', label: 'OPINION_MATTERS', icon: BarChart3 }
             ].map((tab) => (
               <button 
                 key={tab.id}
@@ -760,7 +839,146 @@ export default function Admin() {
                 </div>
               </div>
             </div>
-          ) : activeTab === 'community' ? (
+           ) : activeTab === 'polls' ? (
+             <div className="space-y-12">
+               <form onSubmit={handleCreatePoll} className="bg-bg-page p-10 border border-border space-y-12">
+                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
+                   <div>
+                     <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
+                        Deploy_New_Survey
+                     </h2>
+                     <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">OPINION_COLLECTION_MODULE</p>
+                   </div>
+                   {success && activeTab === 'polls' && (
+                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
+                         <CheckCircle2 size={14} /> SURVEY_LIVE.
+                       </motion.div>
+                   )}
+                 </div>
+
+                 <div className="space-y-8">
+                   <div className="space-y-4">
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Survey_Question</label>
+                     <input 
+                       type="text" required value={pollQuestion} onChange={(e) => setPollQuestion(e.target.value)}
+                       className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
+                       placeholder="WHAT_IS_YOUR_PERSPECTIVE_ON_..."
+                     />
+                   </div>
+                   
+                   <div className="space-y-4">
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Response_Options_(COMMA_SEPARATED)</label>
+                     <input 
+                       type="text" required value={pollOptions} onChange={(e) => setPollOptions(e.target.value)}
+                       className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono text-sm uppercase"
+                       placeholder="AGREE, DISAGREE, NEUTRAL..."
+                     />
+                   </div>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                     <div className="space-y-4">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Deployment_Status</label>
+                       <select 
+                         value={pollStatus} onChange={(e) => setPollStatus(e.target.value as any)}
+                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
+                       >
+                         <option value="active">STAGED_ACTIVE</option>
+                         <option value="archived">ARCHIVED_RECORD</option>
+                       </select>
+                     </div>
+                     <div className="space-y-4">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Result_Transparency</label>
+                       <div className="flex items-center gap-4 bg-surface border border-border p-4">
+                         <button 
+                           type="button"
+                           onClick={() => setPollShowResults(!pollShowResults)}
+                           className="text-accent"
+                         >
+                           {pollShowResults ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-text-secondary opacity-30" />}
+                         </button>
+                         <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
+                           {pollShowResults ? 'PUBLIC_RECORDS_ENABLED' : 'PRIVATE_RECORDS_ONLY'}
+                         </span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+
+                 <button 
+                   disabled={submitting}
+                   className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
+                 >
+                   {submitting ? 'COMMITTING_SURVEY...' : 'DEPLOY_OPINION_WIDGET'}
+                 </button>
+               </form>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {allPolls.map((p) => (
+                    <div key={p.id} className="bg-bg-page border border-border p-8 hover:border-accent transition-all group relative flex flex-col">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="flex items-center gap-3">
+                          <span className={cn(
+                            "text-[8px] font-mono font-bold px-2 py-0.5 uppercase tracking-tighter border",
+                            p.status === 'active' ? "border-green-500 text-green-500 bg-green-500/5" : "border-border text-text-secondary"
+                          )}>
+                             {p.status}
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => handleDeletePoll(p.id)}
+                          className="text-text-secondary opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+
+                      <h3 className="text-xl font-display font-black uppercase tracking-tighter mb-8 leading-tight">
+                        {p.question}
+                      </h3>
+
+                      <div className="space-y-4 flex-grow mb-8 font-mono">
+                        {p.options.map((opt: string, idx: number) => {
+                          const votes = p.results[opt] || 0;
+                          const perc = p.totalVotes > 0 ? Math.round((votes / p.totalVotes) * 100) : 0;
+                          return (
+                            <div key={idx} className="space-y-1">
+                               <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-text-secondary opacity-60">
+                                  <span>{opt}</span>
+                                  <span>{votes} ({perc}%)</span>
+                               </div>
+                               <div className="h-1 bg-surface relative">
+                                  <div className="absolute top-0 left-0 h-full bg-accent/40" style={{ width: `${perc}%` }} />
+                               </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-6 border-t border-border mt-auto">
+                        <div className="flex items-center gap-4">
+                           <button 
+                             onClick={() => handleTogglePollStatus(p.id, p.status)}
+                             title="TOGGLE_STATUS"
+                             className="text-text-secondary hover:text-accent transition-colors"
+                           >
+                             <Send size={14} className={cn(p.status === 'active' && "text-accent")} />
+                           </button>
+                           <button 
+                             onClick={() => handleTogglePollVisibility(p.id, p.showResults)}
+                             title="TOGGLE_VISIBILITY"
+                             className="text-text-secondary hover:text-accent transition-colors"
+                           >
+                             {p.showResults ? <Eye size={14} className="text-accent" /> : <Shield size={14} />}
+                           </button>
+                        </div>
+                        <span className="text-[9px] font-mono text-text-secondary opacity-30 uppercase">TOTAL_VOTES: {p.totalVotes}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {allPolls.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20 border border-border border-dashed">No opinion surveys identified in archive.</p>}
+               </div>
+             </div>
+           ) : activeTab === 'community' ? (
             <div className="space-y-12">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="bg-bg-page border border-border p-10">

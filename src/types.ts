@@ -75,6 +75,24 @@ export interface SavedBlog {
   savedAt: Timestamp;
 }
 
+export interface Poll {
+  id: string;
+  question: string;
+  options: string[];
+  results: Record<string, number>;
+  status: 'active' | 'archived';
+  showResults: boolean;
+  totalVotes: number;
+  createdAt: Timestamp;
+}
+
+export interface PollResponse {
+  pollId: string;
+  userId: string;
+  option: string;
+  createdAt: Timestamp;
+}
+
 export interface Newspaper {
   id: string;
   title: string;

@@ -7,6 +7,7 @@ import BlogCard from '../components/BlogCard';
 import RatingSystem from '../components/RatingSystem';
 import CommentSection from '../components/CommentSection';
 import NewsletterBox from '../components/NewsletterBox';
+import PollWidget from '../components/PollWidget';
 import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
 import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap, ExternalLink, Newspaper as NewspaperIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -140,6 +141,8 @@ export default function Home() {
            </p>
          </motion.div>
       </header>
+
+      <PollWidget />
 
       {/* Featured Section */}
       <div className="grid grid-cols-1 md:grid-cols-12 border-x border-border/50 gap-0">
