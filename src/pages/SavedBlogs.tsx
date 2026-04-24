@@ -55,8 +55,8 @@ export default function SavedBlogs() {
           <div className="w-20 h-20 bg-accent/10 text-accent rounded-3xl flex items-center justify-center mx-auto mb-8 border border-accent/20">
             <Bookmark size={40} />
           </div>
-          <h1 className="text-3xl font-display font-bold mb-4 text-text-primary">Your Reading List</h1>
-          <p className="text-text-secondary mb-8 font-serif leading-relaxed">
+          <h1 className="text-3xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter leading-none">Your Reading List</h1>
+          <p className="text-text-secondary mb-8 font-display font-bold leading-relaxed italic">
             Sign in to start saving opinions for later reading. Your list will be synced across all your devices.
           </p>
           <Link
@@ -78,8 +78,8 @@ export default function SavedBlogs() {
           <Bookmark size={12} className="text-accent" />
           Personal Library
         </div>
-        <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6">Reading List</h1>
-        <p className="text-text-secondary max-w-2xl mx-auto font-serif text-lg leading-relaxed">
+        <h1 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tighter leading-none uppercase">Reading List</h1>
+        <p className="text-text-secondary max-w-2xl mx-auto font-display font-bold text-lg leading-relaxed italic">
           The ideas and perspectives you've archived for deeper contemplation.
         </p>
 
@@ -117,7 +117,7 @@ export default function SavedBlogs() {
           <div className="max-w-md mx-auto">
             <Bookmark size={48} className="mx-auto text-text-secondary opacity-20 mb-6" />
             <h2 className="text-2xl font-bold mb-4">Nothing saved yet</h2>
-            <p className="text-text-secondary font-serif mb-10">
+            <p className="text-text-secondary font-display font-bold mb-10">
               Browse the archive to find opinions and reports that resonate with you.
             </p>
             <Link
@@ -130,7 +130,7 @@ export default function SavedBlogs() {
         </div>
       ) : filteredBlogs.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-text-secondary font-serif italic text-xl">
+          <p className="text-text-secondary font-display font-bold italic text-xl">
             No saved opinions match your search.
           </p>
         </div>

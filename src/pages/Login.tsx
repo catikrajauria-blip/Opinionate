@@ -41,7 +41,7 @@ export default function Login() {
         <div className="bg-red-50 p-10 rounded-[2.5rem] border border-red-100">
           <AlertTriangle size={48} className="text-red-500 mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-red-900 mb-4">Account Blocked</h2>
-          <p className="text-red-700 font-serif leading-relaxed">
+          <p className="text-red-700 font-display font-black leading-relaxed">
             Your account has been blocked by the administrator. Please contact support if you believe this is an error.
           </p>
         </div>
@@ -60,11 +60,11 @@ export default function Login() {
            <LogIn size={40} />
         </div>
         
-        <h1 className="text-3xl font-display font-bold mb-4 text-text-primary">Welcome Back</h1>
-        <p className="text-text-secondary mb-8 font-serif leading-relaxed">
+        <h1 className="text-3xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter">Welcome Back</h1>
+        <p className="text-text-secondary mb-8 font-display font-bold leading-relaxed italic">
           Sign in to save opinions, like your favorite posts, and join the conversation.
           <br/>
-          <span className="text-[10px] text-text-secondary opacity-60 uppercase font-bold tracking-widest mt-2 block">
+          <span className="text-[10px] text-text-secondary opacity-90 uppercase font-black tracking-widest mt-2 block">
             Session active for 7 days
           </span>
         </p>

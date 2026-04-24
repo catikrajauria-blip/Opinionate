@@ -49,14 +49,14 @@ export default function Sidebar() {
                    <p className="text-sm font-display font-bold leading-tight mb-2 group-hover:text-accent transition-colors">
                      "{comment.content}"
                    </p>
-                   <p className="text-[8px] font-mono font-bold text-text-secondary uppercase tracking-[0.2em] opacity-50">
+                   <p className="text-[8px] font-mono font-black text-text-secondary uppercase tracking-[0.2em]">
                      TARGET: {comment.blogTitle}
                    </p>
                 </div>
               </Link>
             ))
           ) : (
-            <p className="text-text-secondary font-mono text-[10px] uppercase tracking-widest italic opacity-50">NULL_COMMENTS</p>
+            <p className="text-text-secondary font-mono text-[10px] uppercase tracking-widest italic">NULL_COMMENTS</p>
           )}
         </div>
       </div>

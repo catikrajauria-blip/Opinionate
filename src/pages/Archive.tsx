@@ -62,7 +62,7 @@ export default function Archive() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-transparent border-none outline-none text-2xl md:text-4xl font-display font-black placeholder:text-border placeholder:font-display uppercase tracking-tighter"
             />
-            <div className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 opacity-50 tracking-widest">INPUT FIELD [STRING]</div>
+            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest">INPUT FIELD [STRING]</div>
           </div>
 
           <div className="md:col-span-4 p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-center">
@@ -79,7 +79,7 @@ export default function Archive() {
                 ))}
               </select>
             </div>
-            <div className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 opacity-50 tracking-widest">TEMPORAL_FILTER</div>
+            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest">TEMPORAL_FILTER</div>
           </div>
 
           <div className="md:col-span-2 p-8 flex items-center justify-center gap-6">
@@ -143,7 +143,7 @@ export default function Archive() {
                      <span className="h-px w-8 bg-border" />
                    </div>
                    <h3 className="text-3xl md:text-4xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter">{blog.title}</h3>
-                   <p className="text-text-secondary font-display font-bold text-sm line-clamp-2 max-w-2xl opacity-60 uppercase">{blog.summary}</p>
+                   <p className="text-text-secondary font-display font-black text-sm line-clamp-2 max-w-2xl uppercase">{blog.summary}</p>
                    
                    <div className="flex flex-wrap items-center gap-8 py-6 border-y border-border/50">
                       <div className="flex flex-col gap-1">
@@ -172,7 +172,7 @@ export default function Archive() {
         <div className="py-32 text-center border-2 border-dashed border-border">
            <Search size={64} className="mx-auto text-border mb-8" />
            <h3 className="text-3xl font-display font-black uppercase tracking-tighter mb-4">NULL_RESULTS_FOUND</h3>
-           <p className="text-text-secondary font-mono text-xs uppercase tracking-widest opacity-50">THE REQUESTED QUERY RETURNED NO MATCHING ENTRIES IN THE ARCHIVE.</p>
+           <p className="text-text-secondary font-mono text-xs uppercase tracking-widest">THE REQUESTED QUERY RETURNED NO MATCHING ENTRIES IN THE ARCHIVE.</p>
         </div>
       )}
     </div>

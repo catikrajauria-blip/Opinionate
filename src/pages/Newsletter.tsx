@@ -114,8 +114,8 @@ function NewsCard({ item: initialItem, index }: { item: NewsItem; index: number 
                  </div>
               </div>
            </div>
-           <h3 className="text-xl font-serif font-bold mb-3 leading-snug">{item.title}</h3>
-           <p className="text-text-secondary text-[14px] leading-relaxed font-serif mb-6 group-hover:text-text-primary transition-colors">
+           <h3 className="text-xl font-display font-black mb-3 leading-snug">{item.title}</h3>
+           <p className="text-text-secondary text-[14px] leading-relaxed font-sans font-medium mb-6 group-hover:text-text-primary transition-colors">
               {item.summary}
            </p>
            <a 
@@ -168,8 +168,8 @@ export default function Newsletter() {
         <div className="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-full border border-border mb-6">
            <Newspaper size={12} /> Curated Daily Briefings
         </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight text-text-primary">The Pulse</h1>
-        <p className="text-text-secondary text-lg max-w-2xl mx-auto font-serif leading-relaxed italic">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black mb-6 tracking-tight text-text-primary">The Pulse</h1>
+        <p className="text-text-secondary text-lg max-w-2xl mx-auto font-display font-bold leading-relaxed italic">
           "Expertly curated news from global premium sources, selected for the sophisticated reader."
         </p>
       </motion.div>
@@ -180,8 +180,8 @@ export default function Newsletter() {
             <div className="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-full border border-border mb-4">
                <Calendar size={12} /> {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </div>
-            <h2 className="text-3xl font-serif font-bold mb-2">Today's Selected Reading</h2>
-            <p className="text-text-secondary font-serif italic max-w-sm">Deep headlines from premium sources analyzed for you.</p>
+            <h2 className="text-3xl font-display font-black mb-2">Today's Selected Reading</h2>
+            <p className="text-text-secondary font-display font-bold italic max-w-sm">Deep headlines from premium sources analyzed for you.</p>
           </div>
           
           <div className="flex flex-wrap gap-2">

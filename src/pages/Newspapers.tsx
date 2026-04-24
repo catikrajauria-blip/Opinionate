@@ -55,7 +55,7 @@ export default function Newspapers() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-transparent border-none outline-none text-2xl md:text-4xl font-display font-black placeholder:text-border placeholder:font-display uppercase tracking-tighter"
             />
-            <div className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 opacity-50 tracking-widest">QUERY FIELD [TITLE_DATE]</div>
+            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest">QUERY FIELD [TITLE_DATE]</div>
           </div>
 
           <div className="md:col-span-4 p-8 flex items-center justify-center gap-6">
@@ -104,14 +104,23 @@ export default function Newspapers() {
                 key={item.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className="group bg-bg-page p-10 hover:bg-surface transition-all relative overflow-hidden"
+                whileHover={{ 
+                  y: -8, 
+                  boxShadow: "0 30px 60px -12px rgba(0,0,0,0.25), 0 18px 36px -18px rgba(0,0,0,0.3)",
+                }}
+                transition={{ 
+                  delay: idx * 0.05,
+                  duration: 0.5,
+                  ease: [0.23, 1, 0.32, 1],
+                  y: { type: "spring", stiffness: 300, damping: 20 }
+                }}
+                className="group bg-bg-page p-10 hover:bg-surface transition-all relative overflow-hidden z-0 hover:z-10"
               >
                 <div className="flex items-center justify-between mb-8">
                    <div className="w-12 h-12 border border-border flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-bg-page transition-colors">
                       <Calendar size={20} />
                    </div>
-                   <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">#{idx + 100}</span>
+                   <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-text-secondary">#{idx + 100}</span>
                 </div>
 
                 <div className="mb-4">
@@ -121,7 +130,7 @@ export default function Newspapers() {
                   </h3>
                 </div>
                 
-                <p className="text-text-secondary font-display font-bold text-sm line-clamp-3 mb-10 opacity-60 uppercase tracking-tight">
+                <p className="text-text-secondary font-display font-black text-sm line-clamp-3 mb-10 uppercase tracking-tight">
                    {item.content.substring(0, 150)}...
                 </p>
 
@@ -166,7 +175,7 @@ export default function Newspapers() {
         <div className="py-32 text-center border-2 border-dashed border-border">
            <NewspaperIcon size={64} className="mx-auto text-border mb-8" />
            <h3 className="text-3xl font-display font-black uppercase tracking-tighter mb-4">VAULT_EMPTY</h3>
-           <p className="text-text-secondary font-mono text-xs uppercase tracking-widest opacity-50">NO NEWSPAPER EDITIONS MATCHING THE REQUESTED PARAMETERS WERE FOUND IN THE ARCHIVE.</p>
+           <p className="text-text-secondary font-mono text-xs uppercase tracking-widest">NO NEWSPAPER EDITIONS MATCHING THE REQUESTED PARAMETERS WERE FOUND IN THE ARCHIVE.</p>
         </div>
       )}
     </div>

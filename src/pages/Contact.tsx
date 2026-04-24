@@ -34,8 +34,8 @@ export default function Contact() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-8">Let's start a <span className="underline decoration-border decoration-4">conversation</span>.</h1>
-          <p className="text-text-secondary text-lg mb-12 max-w-lg leading-relaxed font-serif">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black mb-8 leading-[0.9] tracking-tighter uppercase">Let's start a <span className="underline decoration-accent decoration-8">conversation</span>.</h1>
+          <p className="text-text-secondary text-lg mb-12 max-w-lg leading-relaxed font-display font-bold italic">
             Have a different take on today's news? Want to suggest a topic? Or just want to say hi? I'm all ears.
           </p>
 
@@ -44,17 +44,17 @@ export default function Contact() {
               <div className="w-12 h-12 bg-surface border border-border rounded-xl flex items-center justify-center text-text-primary flex-shrink-0">
                 <Mail size={22} />
               </div>
-              <div className="font-serif">
-                <h4 className="font-bold text-text-primary mb-1">Email directly</h4>
-                <p className="text-text-secondary">catikrajauria@gmail.com</p>
+              <div className="font-display">
+                <h4 className="font-black text-text-primary mb-1 uppercase tracking-tight">Email directly</h4>
+                <p className="text-text-secondary font-mono font-bold">catikrajauria@gmail.com</p>
               </div>
             </div>
             <div className="flex gap-6 items-start">
               <div className="w-12 h-12 bg-surface border border-border rounded-xl flex items-center justify-center text-text-primary flex-shrink-0">
                 <Linkedin size={22} />
               </div>
-              <div className="font-serif">
-                <h4 className="font-bold text-text-primary mb-1">Social Channels</h4>
+              <div className="font-display">
+                <h4 className="font-black text-text-primary mb-1 uppercase tracking-tight">Social Channels</h4>
                 <div className="flex gap-4 mt-3">
                    {socialLinks.map((social, idx) => (
                      <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-text-primary transition-colors">
@@ -90,7 +90,7 @@ export default function Contact() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-50 ml-1">Full Name</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Full Name</label>
                     <input 
                       type="text" 
                       required
@@ -101,7 +101,7 @@ export default function Contact() {
                     />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-50 ml-1">Email Address</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Email Address</label>
                     <input 
                       type="email" 
                       required
@@ -114,7 +114,7 @@ export default function Contact() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary opacity-50 ml-1">Message</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-text-secondary ml-1">Message</label>
                 <textarea 
                   required
                   rows={6}

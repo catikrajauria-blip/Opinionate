@@ -86,8 +86,8 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-surface rounded-3xl p-12 border border-border"
         >
-          <h2 className="text-3xl font-serif font-bold text-text-secondary mb-4 italic opacity-30">Today's opinion coming soon</h2>
-          <p className="text-text-secondary mb-8 font-serif">Check back later or browse our archive for previous deep dives.</p>
+          <h2 className="text-3xl font-display font-black text-text-secondary mb-4 italic">Today's opinion coming soon</h2>
+          <p className="text-text-secondary mb-8 font-display font-bold uppercase tracking-tight">Check back later or browse our archive for previous deep dives.</p>
         </motion.div>
       </div>
     );
@@ -214,7 +214,7 @@ export default function Home() {
                     {blog.title}
                   </h2>
 
-                  <p className="text-sm md:text-base text-text-secondary font-display leading-relaxed mb-8 italic line-clamp-3">
+                  <p className="text-sm md:text-base text-text-secondary font-display font-bold leading-relaxed mb-8 italic line-clamp-3">
                     "{blog.summary}"
                   </p>
 

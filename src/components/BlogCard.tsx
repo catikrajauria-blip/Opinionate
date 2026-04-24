@@ -59,10 +59,21 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.03 }}
+      whileHover={isGrid ? { 
+        y: -8, 
+        boxShadow: "0 30px 60px -12px rgba(0,0,0,0.25), 0 18px 36px -18px rgba(0,0,0,0.3)",
+      } : {}}
+      transition={{ 
+        delay: index * 0.03,
+        duration: 0.5,
+        ease: [0.23, 1, 0.32, 1], // Custom cubic-bezier for smoother feel
+        y: { type: "spring", stiffness: 300, damping: 20 } // Spring for the lift
+      }}
       className={cn(
         "group h-full bg-bg-page transition-all duration-500",
-        isGrid ? "flex flex-col border border-border hover:border-accent" : "pb-16 mb-16 border-b border-border last:border-b-0"
+        isGrid 
+          ? "flex flex-col border border-border hover:border-accent relative z-0 hover:z-10" 
+          : "pb-16 mb-16 border-b border-border last:border-b-0"
       )}
     >
       <div className={cn(
@@ -104,7 +115,7 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           </Link>
           
           <p className={cn(
-            "font-display font-medium text-text-secondary leading-tight uppercase tracking-tight opacity-60 mb-8",
+            "font-display font-medium text-text-secondary leading-tight uppercase tracking-tight mb-8",
             isGrid ? "text-[13px] line-clamp-3" : "text-lg max-w-2xl"
           )}>
             {blog.summary}
@@ -112,30 +123,34 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
 
           <div className="mt-auto pt-8 border-t border-border/50 flex flex-wrap items-center gap-x-8 gap-y-4 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
              <div className="flex items-center gap-2">
-                <span className="opacity-40">METRIC:</span>
-                <span className="text-text-primary">{blog.viewsCount}_VIEWS</span>
+                <span className="opacity-80">METRIC:</span>
+                <span className="text-text-primary text-[11px]">{blog.viewsCount}_VIEWS</span>
              </div>
              <button 
                 onClick={handleLike}
                 disabled={isLiking}
                 className={cn(
-                  "flex items-center gap-2 transition-colors disabled:opacity-50",
+                  "flex items-center gap-2 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95",
                   hasLiked ? "text-red-500" : "hover:text-red-500"
                 )}
              >
                 <Heart size={12} className={cn(
+                  "transition-all duration-300",
                   isLiking ? "animate-pulse" : "",
-                  hasLiked && "fill-red-500"
+                  hasLiked && "fill-red-500 scale-110"
                 )} />
-                <span className={cn(hasLiked ? "text-red-500" : "text-text-primary")}>{blog.likesCount}_ENDORS</span>
+                <span className={cn("transition-colors duration-300", hasLiked ? "text-red-500" : "text-text-primary")}>{blog.likesCount}_ENDORS</span>
              </button>
              {blog.ratingCount > 0 && (
                <div className="flex items-center gap-2">
-                  <span className="opacity-40">GRADE:</span>
-                  <span className="text-text-primary">{blog.ratingAverage.toFixed(1)}/5.0</span>
+                  <span className="opacity-80">GRADE:</span>
+                  <span className="text-text-primary text-[11px]">{blog.ratingAverage.toFixed(1)}/5.0</span>
                </div>
              )}
-             <Link to={`/blog/${blog.slug}`} className="ml-auto flex items-center gap-2 text-accent hover:translate-x-1 transition-transform">
+             <Link 
+                to={`/blog/${blog.slug}`} 
+                className="ml-auto flex items-center gap-2 text-accent hover:translate-x-2 transition-all duration-300 font-bold"
+             >
                 LOAD_DATA &rarr;
              </Link>
           </div>

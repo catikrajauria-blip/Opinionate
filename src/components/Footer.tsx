@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="inline-block mb-6">
-              <span className="font-serif font-extrabold text-xl tracking-tighter uppercase">
+              <span className="font-display font-black text-2xl tracking-tighter uppercase">
                 OPINIONATE.
               </span>
             </Link>
@@ -26,21 +26,65 @@ export default function Footer() {
           </div>
 
           <div>
-             <h4 className="text-[12px] uppercase tracking-widest font-bold text-text-primary mb-6">Explore</h4>
+             <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8">Explore</h4>
              <ul className="space-y-4">
-               <li><Link to="/" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Home</Link></li>
-               <li><Link to="/archive" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Archive</Link></li>
-               <li><Link to="/saved" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Reading List</Link></li>
-               <li><Link to="/newsletter" className="text-[13px] text-text-secondary hover:text-text-primary transition-colors">Newsletter</Link></li>
+               <li>
+                 <Link to="/" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   Home
+                 </Link>
+               </li>
+               <li>
+                 <Link to="/archive" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   Archive
+                 </Link>
+               </li>
+               <li>
+                 <Link to="/saved" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   Reading List
+                 </Link>
+               </li>
+               <li>
+                 <Link to="/newsletter" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   Newsletter
+                 </Link>
+               </li>
              </ul>
           </div>
 
           <div>
-             <h4 className="text-[12px] uppercase tracking-widest font-bold text-text-primary mb-6">Connect</h4>
-             <div className="flex gap-4">
+             <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8">Series</h4>
+             <ul className="space-y-4">
+               <li>
+                 <Link to="/newspapers" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   Daily Digest
+                 </Link>
+               </li>
+               <li>
+                 <Link to="/about" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   The Mission
+                 </Link>
+               </li>
+               <li>
+                 <Link to="/contact" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
+                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                   Contact
+                 </Link>
+               </li>
+             </ul>
+          </div>
+
+          <div>
+             <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8 text-right md:text-left">Connect</h4>
+             <div className="flex flex-wrap justify-end md:justify-start gap-4">
                 {socialLinks.map((social, idx) => (
-                  <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="p-2 border border-border rounded-lg text-text-secondary hover:text-text-primary hover:border-black transition-all">
-                    <social.icon size={16} />
+                  <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="p-3.5 border border-border rounded-2xl text-text-secondary hover:text-bg-page hover:bg-text-primary hover:border-text-primary hover:scale-105 active:scale-95 transition-all shadow-sm hover:shadow-xl">
+                    <social.icon size={20} />
                   </a>
                 ))}
              </div>

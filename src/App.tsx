@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import Layout from './components/Layout';
 import { AuthProvider } from './contexts/AuthContext';
 import Home from './pages/Home';
@@ -14,6 +15,50 @@ import Login from './pages/Login';
 import NewspaperReader from './pages/NewspaperReader';
 import Newspapers from './pages/Newspapers';
 import SplashScreen from './components/SplashScreen';
+import ScrollToTopButton from './components/ScrollToTopButton';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.scrollTo(0, 0);
+    }
+  }, [pathname]);
+
+  return null;
+}
+
+function AnimatedRoutes({ showSplash, handleEnter }: { showSplash: boolean, handleEnter: () => void }) {
+  const location = useLocation();
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {showSplash && <SplashScreen onEnter={handleEnter} key="splash" />}
+      </AnimatePresence>
+      
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="archive" element={<Archive />} />
+          <Route path="blog/:slug" element={<BlogDetail />} />
+          <Route path="saved" element={<SavedBlogs />} />
+          <Route path="newsletter" element={<Newsletter />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="admin" element={<Admin />} />
+          <Route path="login" element={<Login />} />
+          <Route path="newspapers" element={<Newspapers />} />
+          <Route path="newspaper/:id" element={<NewspaperReader />} />
+          <Route path="*" element={<div className="text-center py-20 font-display font-bold text-3xl">404 - Page Not Found</div>} />
+        </Route>
+      </Routes>
+    </>
+  );
+}
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -34,23 +79,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        {showSplash && <SplashScreen onEnter={handleEnter} />}
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="archive" element={<Archive />} />
-            <Route path="blog/:slug" element={<BlogDetail />} />
-            <Route path="saved" element={<SavedBlogs />} />
-            <Route path="newsletter" element={<Newsletter />} />
-            <Route path="about" element={<About />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="admin" element={<Admin />} />
-            <Route path="login" element={<Login />} />
-            <Route path="newspapers" element={<Newspapers />} />
-            <Route path="newspaper/:id" element={<NewspaperReader />} />
-            <Route path="*" element={<div className="text-center py-20 font-display font-bold text-3xl">404 - Page Not Found</div>} />
-          </Route>
-        </Routes>
+        <ScrollToTop />
+        <ScrollToTopButton />
+        <AnimatedRoutes showSplash={showSplash} handleEnter={handleEnter} />
       </AuthProvider>
     </BrowserRouter>
   );

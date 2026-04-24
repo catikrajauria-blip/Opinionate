@@ -52,10 +52,10 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
         <button 
           disabled={status === 'loading' || status === 'success'}
           className={cn(
-            "w-full px-4 py-3 rounded-lg font-bold text-[13px] transition-all flex items-center justify-center gap-2",
+            "w-full px-4 py-3 rounded-lg font-bold text-[13px] transition-all flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95",
             variant === 'dark'
-              ? "bg-text-primary text-bg-page hover:opacity-90"
-              : "bg-text-primary text-bg-page hover:opacity-90"
+              ? "bg-text-primary text-bg-page"
+              : "bg-text-primary text-bg-page"
           )}
         >
           {status === 'loading' ? 'Joining...' : 'Subscribe Now'}

@@ -139,19 +139,19 @@ export default function BlogDetail() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-border">
             <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">Author</span>
-              <span className="text-sm font-display font-bold uppercase tracking-tight">{blog.author}</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">Author</span>
+              <span className="text-sm font-display font-black uppercase tracking-tight">{blog.author}</span>
             </div>
             <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">Metric</span>
-              <span className="text-sm font-display font-bold uppercase tracking-tight">{calculateReadingTime(blog.content)} MIN READ &bull; {blog.viewsCount} ACCESSES</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">Metric</span>
+              <span className="text-sm font-display font-black uppercase tracking-tight">{calculateReadingTime(blog.content)} MIN READ &bull; {blog.viewsCount} ACCESSES</span>
             </div>
             <div className="flex flex-col gap-2 md:items-end">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">Engagement</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">Engagement</span>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <span className="text-yellow-500 font-mono font-bold">{blog.ratingAverage.toFixed(1)}</span>
-                  <span className="text-[10px] font-mono opacity-30">/5.0</span>
+                  <span className="text-yellow-600 font-mono font-black">{blog.ratingAverage.toFixed(1)}</span>
+                  <span className="text-[10px] font-mono opacity-60">/5.0</span>
                 </div>
                 <button 
                   onClick={handleLike}
@@ -176,7 +176,7 @@ export default function BlogDetail() {
             className="mb-20 overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000"
           >
             <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover" referrerPolicy="no-referrer" />
-            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-widest mt-4 opacity-50 text-center">Reference Visual: {blog.title}</p>
+            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-widest mt-4 text-center">Reference Visual: {blog.title}</p>
           </motion.div>
         )}
 
