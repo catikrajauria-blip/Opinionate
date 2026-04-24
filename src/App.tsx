@@ -12,6 +12,10 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import Disclaimer from './pages/legal/Disclaimer';
+import Copyright from './pages/legal/Copyright';
+import Terms from './pages/legal/Terms';
+import ExternalLinks from './pages/legal/ExternalLinks';
 import SplashScreen from './components/SplashScreen';
 import ScrollToTopButton from './components/ScrollToTopButton';
 
@@ -49,6 +53,10 @@ function AnimatedRoutes({ showSplash, handleEnter }: { showSplash: boolean, hand
           <Route path="contact" element={<Contact />} />
           <Route path="admin" element={<Admin />} />
           <Route path="login" element={<Login />} />
+          <Route path="disclaimer" element={<Disclaimer />} />
+          <Route path="copyright" element={<Copyright />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="external-links" element={<ExternalLinks />} />
           <Route path="*" element={<div className="text-center py-20 font-display font-bold text-3xl">404 - Page Not Found</div>} />
         </Route>
       </Routes>

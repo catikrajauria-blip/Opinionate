@@ -26,6 +26,7 @@ export default function Admin() {
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [allComments, setAllComments] = useState<any[]>([]);
   const [allRatings, setAllRatings] = useState<any[]>([]);
+  const [allMessages, setAllMessages] = useState<any[]>([]);
   const [allSubscribers, setAllSubscribers] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState('');
   const [stats, setStats] = useState<any>({
@@ -93,14 +94,16 @@ export default function Admin() {
 
   const loadCommunityData = async () => {
     try {
-      const [comments, ratings, subs] = await Promise.all([
+      const [comments, ratings, subs, messages] = await Promise.all([
         blogService.getGlobalRecentComments(50),
         blogService.getGlobalRatings(50),
-        blogService.getSubscribers()
+        blogService.getSubscribers(),
+        blogService.getMessages(50)
       ]);
       setAllComments(comments);
       setAllRatings(ratings);
       setAllSubscribers(subs);
+      setAllMessages(messages);
     } catch (err) {
       console.error('Error loading community data:', err);
     }
@@ -343,11 +346,22 @@ export default function Admin() {
     if (!window.confirm(`Unsubscribe and remove ${email}?`)) return;
     try {
       await blogService.deleteSubscriber(email);
-      loadSubscribers();
+      loadCommunityData();
       loadStats(); // Update reader count in overview
     } catch (err: any) {
       console.error('Error deleting sub:', err);
       alert(`Failed to delete subscriber: ${err.message || 'Permission denied'}`);
+    }
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    if (!window.confirm('Delete this message?')) return;
+    try {
+      await blogService.deleteMessage(id);
+      loadCommunityData();
+    } catch (err: any) {
+      console.error('Error deleting message:', err);
+      alert(`Failed to delete message: ${err.message || 'Permission denied'}`);
     }
   };
 
@@ -809,6 +823,40 @@ export default function Admin() {
                         ))}
                         {allRatings.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40">No validation packets identified.</p>}
                      </div>
+                  </div>
+               </div>
+
+               <div className="bg-bg-page border border-border p-10">
+                  <h2 className="text-2xl font-display font-black mb-10 flex items-center gap-4 text-text-primary uppercase tracking-tighter">
+                     <MailIcon size={24} className="text-accent" />
+                     INCOMING_INTEL_MESSAGES
+                  </h2>
+                  <div className="space-y-6 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                     {allMessages.map((msg: any) => (
+                        <div key={msg.id} className="p-6 bg-surface border border-border hover:border-accent transition-all group relative">
+                           <div className="flex justify-between items-start mb-4">
+                              <div>
+                                 <p className="text-[11px] font-mono font-bold text-text-primary uppercase tracking-widest">{msg.name}</p>
+                                 <p className="text-[9px] font-mono text-text-secondary lowercase opacity-50">{msg.email}</p>
+                              </div>
+                              <div className="flex flex-col items-end">
+                                 <span className="text-[9px] font-mono text-text-secondary opacity-30 uppercase">{formatDate(msg.createdAt)}</span>
+                                 <button 
+                                   onClick={() => handleDeleteMessage(msg.id)}
+                                   className="mt-2 p-2 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white border border-red-500/20"
+                                 >
+                                   <Trash2 size={12} />
+                                 </button>
+                              </div>
+                           </div>
+                           <div className="bg-bg-page p-4 border-l-2 border-accent">
+                              <p className="text-sm font-display text-text-secondary leading-relaxed">
+                                 {msg.message}
+                               </p>
+                           </div>
+                        </div>
+                     ))}
+                     {allMessages.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 text-center py-10">Inbox is currently void of transmissions.</p>}
                   </div>
                </div>
 

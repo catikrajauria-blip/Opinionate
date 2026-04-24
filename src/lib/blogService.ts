@@ -257,6 +257,16 @@ export const blogService = {
     });
   },
 
+  async getMessages(limitCount = 50) {
+    const q = query(collection(db, MESSAGES_COL), orderBy('createdAt', 'desc'), limit(limitCount));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ContactMessage));
+  },
+
+  async deleteMessage(messageId: string) {
+    await deleteDoc(doc(db, MESSAGES_COL, messageId));
+  },
+
   // News operations
   async getNewsByCategory(category: string, limitCount = 10) {
     const q = query(

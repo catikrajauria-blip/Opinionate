@@ -86,10 +86,16 @@ export default function Footer() {
           
         </div>
 
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold uppercase tracking-widest text-text-secondary">
-          <p>&copy; {new Date().getFullYear()} OPINIONATE. All rights reserved.</p>
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary/50">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-8">
+            <p className="text-text-primary">&copy; {new Date().getFullYear()} OPINIONATE.</p>
+            <Link to="/disclaimer" className="hover:text-accent transition-colors">Disclaimer</Link>
+            <Link to="/copyright" className="hover:text-accent transition-colors">Fair Use</Link>
+            <Link to="/terms" className="hover:text-accent transition-colors">Terms</Link>
+            <Link to="/contact" className="hover:text-accent transition-colors">Contact for Removal</Link>
+          </div>
           <div className="flex items-center gap-2">
-            <span>Built with precision.</span>
+            <span>BUILT_WITH_PRECISION.</span>
           </div>
         </div>
       </div>
