@@ -146,22 +146,27 @@ export const newspaperService = {
   },
 
   async getNewspaperStats() {
-    const q = query(collection(db, NEWSPAPERS_COL));
-    const snapshot = await getDocs(q);
-    let totalReads = 0;
-    let totalDownloads = 0;
-    
-    snapshot.docs.forEach(doc => {
-      const data = doc.data();
-      totalReads += (data.readCount || 0);
-      totalDownloads += (data.downloadCount || 0);
-    });
-    
-    return {
-      totalReads,
-      totalDownloads,
-      count: snapshot.size
-    };
+    try {
+      const q = query(collection(db, NEWSPAPERS_COL));
+      const snapshot = await getDocs(q);
+      let totalReads = 0;
+      let totalDownloads = 0;
+      
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        totalReads += (data.readCount || 0);
+        totalDownloads += (data.downloadCount || 0);
+      });
+      
+      return {
+        totalReads,
+        totalDownloads,
+        count: snapshot.size
+      };
+    } catch (err) {
+      console.error("Error fetching newspaper stats:", err);
+      return { totalReads: 0, totalDownloads: 0, count: 0 };
+    }
   },
 
   async deleteNewspaper(id: string, _pdfUrl?: string) {

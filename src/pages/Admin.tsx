@@ -83,15 +83,25 @@ export default function Admin() {
   const loadData = async () => {
     setLoading(true);
     try {
-      if (activeTab === 'posts' || activeTab === 'analytics') loadBlogs();
-      if (activeTab === 'news') loadRecentNews();
-      if (activeTab === 'users') loadAllUsers();
-      if (activeTab === 'community') loadCommunityData();
-      if (activeTab === 'newspapers') loadNewspapers();
-      loadStats();
-      loadNewsCounts();
+      // Run stats and counts on every reload as they are lightweight/global
+      const coreTasks = [
+        loadStats(),
+        loadNewsCounts()
+      ];
+
+      // Run tab-specific data loading
+      if (activeTab === 'posts' || activeTab === 'analytics') coreTasks.push(loadBlogs());
+      if (activeTab === 'news') coreTasks.push(loadRecentNews());
+      if (activeTab === 'users') coreTasks.push(loadAllUsers());
+      if (activeTab === 'community') coreTasks.push(loadCommunityData());
+      if (activeTab === 'newspapers') coreTasks.push(loadNewspapers());
+
+      await Promise.all(coreTasks);
+    } catch (err) {
+      console.error('Error in loadData:', err);
     } finally {
-      setLoading(false);
+      // Ensure a minimum loading time for smooth transition and data arrival
+      setTimeout(() => setLoading(false), 300);
     }
   };
 
@@ -232,9 +242,14 @@ export default function Admin() {
       ]);
       setStats({
         ...s,
-        newspaperReads: nStats.totalReads,
-        newspaperDownloads: nStats.totalDownloads,
-        totalSwipes: sysStats.swipesCount
+        totalBlogs: s.totalBlogs || 0,
+        totalSubscribers: s.totalSubscribers || 0,
+        totalViews: s.totalViews || 0,
+        totalLikes: s.totalLikes || 0,
+        avgRating: s.avgRating || 0,
+        newspaperReads: nStats.totalReads || 0,
+        newspaperDownloads: nStats.totalDownloads || 0,
+        totalSwipes: sysStats.swipesCount || 0
       });
     } catch (err) {
       console.error('Error loading stats:', err);
@@ -1184,13 +1199,13 @@ export default function Admin() {
                           <p className="font-bold text-sm text-text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{b.title}</p>
                           <div className="flex items-center gap-4 mt-3">
                             <p className="text-[10px] text-text-secondary font-mono font-bold flex items-center gap-1.5 border border-border px-2 py-1">
-                              {b.viewsCount} <span className="opacity-40 uppercase font-sans">Reads</span>
+                              {b.viewsCount || 0} <span className="opacity-40 uppercase font-sans">Reads</span>
                             </p>
                             <p className="text-[10px] text-text-secondary font-mono font-bold flex items-center gap-1.5 border border-border px-2 py-1">
                               {b.likesCount || 0} <span className="opacity-40 uppercase font-sans text-red-500">Likes</span>
                             </p>
                             <p className="text-[10px] text-text-secondary font-mono font-bold flex items-center gap-1.5 border border-border px-2 py-1">
-                              {b.ratingAverage?.toFixed(1)} <span className="opacity-40 uppercase font-sans text-yellow-600">Grade</span>
+                              {b.ratingAverage?.toFixed(1) || '0.0'} <span className="opacity-40 uppercase font-sans text-yellow-600">Grade</span>
                             </p>
                           </div>
                        </div>

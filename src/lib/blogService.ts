@@ -195,26 +195,51 @@ export const blogService = {
     await deleteDoc(doc(db, SUBSCRIBERS_COL, email));
   },
 
-  async getAdminStats() {
-    const blogs = await this.getAllBlogs();
-    const subs = await this.getSubscribers();
-    
-    const totalViews = blogs.reduce((acc, b) => acc + (b.viewsCount || 0), 0);
-    const totalLikes = blogs.reduce((acc, b) => acc + (b.likesCount || 0), 0);
-    const avgRating = blogs.length > 0 
-      ? blogs.reduce((acc, b) => acc + (b.ratingAverage || 0), 0) / blogs.length 
-      : 0;
+  async getAdminStats(): Promise<{ totalBlogs: number; totalSubscribers: number; totalViews: number; totalLikes: number; avgRating: number }> {
+    try {
+      // Use getAllBlogs which gets all blogs.
+      // We'll calculate a weighted average for rating.
+      const blogs = await this.getAllBlogs();
+      const subs = await this.getSubscribers();
+      
+      const totalViews = blogs.reduce((acc, b) => acc + (b.viewsCount || 0), 0);
+      const totalLikes = blogs.reduce((acc, b) => acc + (b.likesCount || 0), 0);
+      
+      let totalWeightedScore = 0;
+      let totalRatingCount = 0;
+      
+      blogs.forEach(b => {
+        const count = b.ratingCount || 0;
+        const avg = b.ratingAverage || 0;
+        totalWeightedScore += (avg * count);
+        totalRatingCount += count;
+      });
 
-    return {
-      totalBlogs: blogs.length,
-      totalSubscribers: subs.length,
-      totalViews,
-      totalLikes,
-      avgRating
-    };
+      const avgRating = totalRatingCount > 0 
+        ? totalWeightedScore / totalRatingCount 
+        : 0;
+  
+      return {
+        totalBlogs: blogs.length,
+        totalSubscribers: subs.length,
+        totalViews,
+        totalLikes,
+        avgRating
+      };
+    } catch (error) {
+       console.error("Error calculating admin stats:", error);
+       return {
+         totalBlogs: 0,
+         totalSubscribers: 0,
+         totalViews: 0,
+         totalLikes: 0,
+         avgRating: 0
+       };
+    }
   },
 
   async getAllBlogs() {
+    // For admin, we might want fresh data from server
     const q = query(collection(db, BLOGS_COL), orderBy('date', 'desc'));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Blog));
