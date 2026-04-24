@@ -60,19 +60,20 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       whileHover={isGrid ? { 
-        y: -8, 
-        boxShadow: "0 30px 60px -12px rgba(0,0,0,0.25), 0 18px 36px -18px rgba(0,0,0,0.3)",
+        y: -12, 
+        borderColor: "var(--color-accent)",
+        boxShadow: "0 40px 80px -15px rgba(255, 77, 0, 0.15), 0 24px 48px -24px rgba(0,0,0,0.2)",
       } : {}}
       transition={{ 
         delay: index * 0.03,
-        duration: 0.5,
-        ease: [0.23, 1, 0.32, 1], // Custom cubic-bezier for smoother feel
-        y: { type: "spring", stiffness: 300, damping: 20 } // Spring for the lift
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        y: { type: "spring", stiffness: 260, damping: 24 }
       }}
       className={cn(
         "group h-full bg-bg-page transition-all duration-500",
         isGrid 
-          ? "flex flex-col border border-border hover:border-accent relative z-0 hover:z-10" 
+          ? "flex flex-col border border-border relative z-0 hover:z-10 rounded-2xl overflow-hidden" 
           : "pb-16 mb-16 border-b border-border last:border-b-0"
       )}
     >
@@ -84,14 +85,14 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           <Link 
             to={`/blog/${blog.slug}`} 
             className={cn(
-               "overflow-hidden flex-shrink-0 bg-surface grayscale hover:grayscale-0 transition-all duration-700",
-               isGrid ? "w-full aspect-[16/10] border-b border-border" : "w-full md:w-96 aspect-video border border-border"
+               "overflow-hidden flex-shrink-0 bg-surface saturate-[0.7] hover:saturate-100 transition-all duration-700",
+               isGrid ? "w-full aspect-[16/10] border-b border-border" : "w-full md:w-96 aspect-video border border-border rounded-xl"
             )}
           >
             <img 
               src={blog.image} 
               alt={blog.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+              className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-1000"
               referrerPolicy="no-referrer"
             />
           </Link>

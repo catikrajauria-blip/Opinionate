@@ -11,28 +11,28 @@
   --color-surface: #f4f4f2;
   --color-text-primary: #000000;
   --color-text-secondary: #333333;
-  --color-accent: #000000;
+  --color-accent: #ff4d00;
   --color-bg-page: #ffffff;
 }
 
 @layer base {
   :root {
-    --color-border: #e0e0da;
-    --color-surface: #f7f7f5;
-    --color-text-primary: #0a0a0a;
-    --color-text-secondary: #2d2d2d;
-    --color-accent: #000000;
+    --color-border: #e2e2e0;
+    --color-surface: #f9f9f7;
+    --color-text-primary: #0d0d0d;
+    --color-text-secondary: #4a4a4a;
+    --color-accent: #ff4d00;
     --color-bg-page: #ffffff;
     
     color-scheme: light;
   }
 
   .dark {
-    --color-border: #2a2a2a;
-    --color-surface: #0f0f0f;
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #b0b0b0;
-    --color-accent: #ffffff;
+    --color-border: #1a1a1a;
+    --color-surface: #0a0a0a;
+    --color-text-primary: #f2f2f2;
+    --color-text-secondary: #999999;
+    --color-accent: #ff4d00;
     --color-bg-page: #000000;
     
     color-scheme: dark;
@@ -44,19 +44,34 @@
   
   body {
     @apply bg-bg-page text-text-primary font-sans font-normal text-base leading-relaxed transition-colors duration-300;
-    -webkit-font-smoothing: initial;
+    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom Grain Overlay */
+  body::before {
+    content: "";
+    @apply fixed inset-0 z-[100] pointer-events-none opacity-[0.03] mix-blend-multiply;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  }
+
+  .dark body::before {
+    @apply opacity-[0.05] mix-blend-screen;
   }
 
   /* Custom Scrollbar for better UX */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-surface;
+    @apply bg-bg-page;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-border rounded-full hover:bg-text-secondary transition-colors;
+    @apply bg-border rounded-full border-2 border-transparent transition-colors;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent;
   }
   
   h1 {

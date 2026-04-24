@@ -95,70 +95,88 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-0">
-      <header className="py-20 md:py-32 border-b border-border mb-0 text-center relative overflow-hidden">
-         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 0.03, scale: 1 }}
-           transition={{ duration: 2 }}
-           className="absolute inset-0 flex items-center justify-center font-display font-black text-[30vw] pointer-events-none select-none uppercase tracking-tighter"
-         >
-           Opinio
-         </motion.div>
+      <header className="py-24 md:py-40 border-b border-border/50 mb-0 text-center relative overflow-hidden bg-bg-page">
+         {/* Aesthetic background elements */}
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none">
+            <motion.div 
+               animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, 0],
+                  opacity: [0.03, 0.05, 0.03]
+               }}
+               transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute top-0 left-0 w-full h-full font-display font-black text-[35vw] flex items-center justify-center select-none uppercase tracking-tighter text-accent"
+            >
+               Opinio
+            </motion.div>
+            
+            <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-accent/10 blur-[150px] rounded-full animate-pulse" />
+            <div className="absolute bottom-[20%] left-[5%] w-[30%] h-[30%] bg-accent/5 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '3s' }} />
+         </div>
 
          {user && (
            <motion.div 
-             initial={{ opacity: 0, y: -10 }} 
-             animate={{ opacity: 1, y: 0 }} 
-             className="badge-minimal mb-6"
+             initial={{ opacity: 0, scale: 0.95 }} 
+             animate={{ opacity: 1, scale: 1 }} 
+             className="inline-flex items-center gap-2 px-4 py-2 bg-surface backdrop-blur-md border border-border/50 rounded-full mb-8 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary"
            >
-              AUTHENTICATED AS: <span className="text-accent">{user.displayName || user.email}</span>
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              AUTHENTICATED: <span className="text-accent">{user.displayName || user.email?.split('@')[0]}</span>
            </motion.div>
          )}
          
          <motion.h1 
-           initial={{ opacity: 0, y: 20 }}
+           initial={{ opacity: 0, y: 30 }}
            animate={{ opacity: 1, y: 0 }}
-           className="text-[12vw] md:text-8xl lg:text-[10rem] font-display font-black mb-4 tracking-tighter leading-tight uppercase"
+           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+           className="text-[14vw] md:text-9xl lg:text-[12rem] font-display font-black mb-6 tracking-tighter leading-none uppercase relative z-10"
          >
-           The Briefing.
+           The Briefin<span className="text-accent italic">g</span>.
          </motion.h1>
-         <motion.p 
+         
+         <motion.div 
            initial={{ opacity: 0 }}
-           animate={{ opacity: 0.6 }}
-           transition={{ delay: 0.4 }}
-           className="text-text-secondary font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] mt-8"
+           animate={{ opacity: 1 }}
+           transition={{ delay: 0.6 }}
+           className="flex flex-col items-center gap-6 relative z-10"
          >
-           EDITION: {formatDate(new Date().toISOString().split('T')[0])} — VOL 04
-         </motion.p>
+           <div className="h-px w-20 bg-accent/30" />
+           <p className="text-text-secondary font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.6em]">
+             EDITION: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} &bull; VOL 04
+           </p>
+         </motion.div>
       </header>
 
-      {/* Latest Edition Bar */}
+      {/* Latest Edition Bar - Refined Glassmorphism */}
       {latestNewspaper && (
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="border-b border-border bg-surface py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-20 -mt-8 mx-4 md:mx-12 rounded-2xl border border-border/60 bg-bg-page/70 backdrop-blur-xl shadow-2xl py-6 px-8 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden group"
         >
-          <div className="flex items-center gap-4">
-             <div className="w-10 h-10 bg-accent text-bg-page flex items-center justify-center font-bold text-xs uppercase tracking-tighter">
-                New
+          <div className="absolute top-0 left-0 w-1 h-full bg-accent group-hover:w-full opacity-10 transition-all duration-700" />
+          
+          <div className="flex items-center gap-6 relative">
+             <div className="w-12 h-12 bg-accent text-bg-page flex items-center justify-center font-bold text-xs uppercase tracking-tighter rounded-full shadow-lg shadow-accent/20">
+                Live
              </div>
              <div>
-                <p className="text-[9px] font-mono font-bold uppercase tracking-widest text-text-secondary">Official Publication</p>
-                <h3 className="text-sm font-display font-bold uppercase tracking-tight">{latestNewspaper.title}</h3>
+                <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-1">OFFICIAL PUBLICATION</p>
+                <h3 className="text-lg md:text-xl font-display font-black uppercase tracking-tight">{latestNewspaper.title}</h3>
              </div>
           </div>
+          
           <Link 
             to={`/newspaper/${latestNewspaper.id}`}
-            className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] flex items-center gap-2 hover:text-accent group"
+            className="relative px-8 py-3 bg-text-primary text-bg-page rounded-full text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-accent hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/10"
           >
-            Access Digital Press <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+            Access Digital Press 
           </Link>
         </motion.div>
       )}
 
       {/* Featured Section */}
-      <div className="grid grid-cols-1 md:grid-cols-12 border-x border-border">
+      <div className="grid grid-cols-1 md:grid-cols-12 border-x border-border/50 gap-0">
         {blogs.map((blog, idx) => (
           <motion.div 
             key={blog.id}

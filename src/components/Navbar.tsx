@@ -45,8 +45,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-10">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-display font-black text-2xl tracking-tighter uppercase transition-all duration-300 group-hover:scale-105 group-hover:text-accent">
-              OPINIONATE.
+            <span className="font-display font-black text-2xl tracking-tighter uppercase transition-all duration-300 group-hover:scale-105 group-hover:text-accent flex items-center gap-1">
+              OPINIO<span className="text-accent italic">N</span>ATE.
             </span>
           </Link>
 
