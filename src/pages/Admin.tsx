@@ -15,16 +15,14 @@ import { GoogleGenAI } from "@google/genai";
 import { useAuth } from '../contexts/AuthContext';
 import { UserProfile } from '../types';
 
-import { newspaperService } from '../lib/newspaperService';
 import { statsService } from '../lib/statsService';
 import { MousePointer2 } from 'lucide-react';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
   const [aiLoading, setAiLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'newspapers'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
-  const [allNewspapers, setAllNewspapers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [allComments, setAllComments] = useState<any[]>([]);
   const [allRatings, setAllRatings] = useState<any[]>([]);
@@ -36,8 +34,6 @@ export default function Admin() {
     totalViews: 0,
     totalLikes: 0,
     avgRating: 0,
-    newspaperReads: 0,
-    newspaperDownloads: 0,
     totalSwipes: 0
   });
 
@@ -65,15 +61,6 @@ export default function Admin() {
   const [newsSource, setNewsSource] = useState('');
   const [recentNews, setRecentNews] = useState<any[]>([]);
 
-  // Newspaper Form State
-  const [newspaperTitle, setNewspaperTitle] = useState('');
-  const [newspaperDate, setNewspaperDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newspaperContent, setNewspaperContent] = useState('');
-  const [newspaperPdf, setNewspaperPdf] = useState<File | null>(null);
-  const [newspaperBucket, setNewspaperBucket] = useState('newspapers');
-  const [extractingPdf, setExtractingPdf] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-
   useEffect(() => {
     if (user && isGlobalAdmin) {
       loadData();
@@ -94,7 +81,6 @@ export default function Admin() {
       if (activeTab === 'news') coreTasks.push(loadRecentNews());
       if (activeTab === 'users') coreTasks.push(loadAllUsers());
       if (activeTab === 'community') coreTasks.push(loadCommunityData());
-      if (activeTab === 'newspapers') coreTasks.push(loadNewspapers());
 
       await Promise.all(coreTasks);
     } catch (err) {
@@ -102,101 +88,6 @@ export default function Admin() {
     } finally {
       // Ensure a minimum loading time for smooth transition and data arrival
       setTimeout(() => setLoading(false), 300);
-    }
-  };
-
-  const loadNewspapers = async () => {
-    try {
-      const n = await newspaperService.getLatestNewspapers(20);
-      setAllNewspapers(n);
-    } catch (err) {
-      console.error('Error loading newspapers:', err);
-    }
-  };
-
-  const handleAIPolish = async () => {
-    if (!newspaperContent || aiLoading) return;
-    setAiLoading(true);
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const prompt = `Format the following raw newspaper text into a beautiful, professional digital newspaper edition using Markdown. Use headers, sections, bullet points, and highlight key stories. Do not change the meaning of the news. Content: ${newspaperContent}`;
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt
-      });
-      if (response.text) {
-        setNewspaperContent(response.text);
-      }
-    } catch (error) {
-      console.error("AI Polish failed:", error);
-      alert("Failed to polish with AI. Please check your connection.");
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
-  const handleUploadNewspaper = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newspaperContent && !newspaperPdf) {
-      setError("Please provide either a PDF edition or text content for the digital reader.");
-      return;
-    }
-    
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      if (!isGlobalAdmin) {
-        throw new Error("Unauthorized: You do not have administrative privileges.");
-      }
-
-      await newspaperService.validateConnection();
-
-      let pdfUrl = undefined;
-      if (newspaperPdf) {
-        pdfUrl = await newspaperService.uploadNewspaperPDF(newspaperPdf, newspaperBucket);
-      }
-
-      await newspaperService.createNewspaper({
-        title: newspaperTitle || `Newspaper Edition - ${newspaperDate}`,
-        date: newspaperDate,
-        content: newspaperContent || 'Digital edition content available. See reading mode.',
-        pdfUrl: pdfUrl
-      });
-
-      setSuccess(true);
-      setNewspaperTitle('');
-      setNewspaperContent('');
-      setNewspaperPdf(null);
-      setNewspaperDate(new Date().toISOString().split('T')[0]);
-      loadNewspapers();
-    } catch (err: any) {
-      console.error('Error publishing newspaper:', err);
-      let errorMsg = err.message || 'Check Firestore status';
-      
-      if (errorMsg.includes('Bucket not found')) {
-        errorMsg = `Critical: Supabase Storage bucket named '${newspaperBucket}' was not found. Please create a bucket named '${newspaperBucket}' in your Supabase dashboard and set it to PUBLIC.`;
-      } else if (errorMsg.includes('row-level security policy')) {
-        errorMsg = "Supabase Permission Error: RLS (Row-Level Security) is blocking the upload. In your Supabase Storage dashboard, go to 'Policies' for the 'newspapers' bucket and add a policy to 'Allow INSERT for all users' (or for Authenticated users).";
-      }
-      
-      setError(`Failed to publish: ${errorMsg}`);
-      alert(`Error! ${errorMsg}`);
-    } finally {
-      setSubmitting(false);
-      setTimeout(() => setSuccess(false), 3000);
-    }
-  };
-
-  const handleDeleteNewspaper = async (id: string, pdfUrl?: string) => {
-    if (!window.confirm('Delete this newspaper archive?')) return;
-    try {
-      await newspaperService.deleteNewspaper(id, pdfUrl);
-      loadNewspapers();
-    } catch (err: any) {
-      console.error('Error deleting newspaper:', err);
-      alert(`Failed to delete newspaper: ${err.message}`);
     }
   };
 
@@ -235,9 +126,8 @@ export default function Admin() {
 
   const loadStats = async () => {
     try {
-      const [s, nStats, sysStats] = await Promise.all([
+      const [s, sysStats] = await Promise.all([
         blogService.getAdminStats(),
-        newspaperService.getNewspaperStats(),
         statsService.getSystemStats()
       ]);
       setStats({
@@ -247,8 +137,6 @@ export default function Admin() {
         totalViews: s.totalViews || 0,
         totalLikes: s.totalLikes || 0,
         avgRating: s.avgRating || 0,
-        newspaperReads: nStats.totalReads || 0,
-        newspaperDownloads: nStats.totalDownloads || 0,
         totalSwipes: sysStats.swipesCount || 0
       });
     } catch (err) {
@@ -529,7 +417,6 @@ export default function Admin() {
               { id: 'news', label: 'CURATED_FEED', icon: Zap },
               { id: 'users', label: 'SYSTEM_REGISTRY', icon: Users },
               { id: 'community', label: 'AUDIENCE_DATA', icon: MessageSquare },
-              { id: 'newspapers', label: 'ARCHIVE_VAULT', icon: LayoutGrid },
               { id: 'analytics', label: 'CORE_METRICS', icon: PieChart }
             ].map((tab) => (
               <button 
@@ -968,194 +855,6 @@ export default function Admin() {
                   </div>
                </div>
             </div>
-          ) : activeTab === 'newspapers' ? (
-            <div className="space-y-12">
-              <form onSubmit={handleUploadNewspaper} className="bg-bg-page p-10 border border-border space-y-12">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
-                  <div>
-                    <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                       Archive_Edition
-                    </h2>
-                    <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">DATA_VAULT_INGESTION</p>
-                  </div>
-                  {success && activeTab === 'newspapers' && (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
-                        <CheckCircle2 size={14} /> ARCHIVE_READY.
-                      </motion.div>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-4">
-                      <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Edition_Title_Reference</label>
-                      <input 
-                        type="text" value={newspaperTitle} onChange={(e) => setNewspaperTitle(e.target.value)}
-                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
-                        placeholder="GLOBAL_OUTLOOK - MORNING_OPS..."
-                      />
-                  </div>
-                  <div className="space-y-4">
-                      <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Staged_Date</label>
-                      <input 
-                        type="date" required value={newspaperDate} onChange={(e) => setNewspaperDate(e.target.value)}
-                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
-                      />
-                  </div>
-                </div>
-
-                <div className="space-y-10">
-                  <div className="space-y-4">
-                      <div className="flex justify-between items-end">
-                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Binary_Asset_PDF</label>
-                        <div className="flex items-center gap-3">
-                           <span className="text-[9px] font-mono font-bold text-text-secondary uppercase">SEGMENT:</span>
-                           <input 
-                             type="text" 
-                             value={newspaperBucket}
-                             onChange={(e) => setNewspaperBucket(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
-                             className="bg-surface border border-border px-3 py-1 text-[9px] font-mono text-accent outline-none focus:border-accent uppercase"
-                             placeholder="newspapers"
-                           />
-                        </div>
-                      </div>
-                      
-                      <div className={`border border-border p-12 flex flex-col items-center justify-center gap-6 hover:border-accent transition-all cursor-pointer relative overflow-hidden ${newspaperPdf ? 'bg-accent/5 border-accent' : 'bg-surface'}`}>
-                         <input 
-                           type="file" 
-                           accept="application/pdf"
-                           onChange={(e) => {
-                             const file = e.target.files?.[0] || null;
-                             setNewspaperPdf(file);
-                           }}
-                           className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                         />
-                         <ImageIcon size={48} className={newspaperPdf ? 'text-accent' : 'text-text-secondary opacity-20'} />
-                         <div className="text-center">
-                            <p className="font-display font-black text-lg text-text-primary uppercase tracking-tight">
-                              {newspaperPdf ? newspaperPdf.name : 'STAGING_PDF_BINARY'}
-                            </p>
-                            <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-widest mt-2">
-                               {newspaperPdf ? `SIZE: ${(newspaperPdf.size / 1024 / 1024).toFixed(2)} MB` : 'CLICK_OR_DRAG_TO_UPLOAD'}
-                            </p>
-                         </div>
-                         {newspaperPdf && (
-                           <button 
-                             type="button"
-                             onClick={(e) => { e.stopPropagation(); setNewspaperPdf(null); }}
-                             className="text-[9px] font-mono font-bold text-red-500 uppercase tracking-widest hover:bg-red-500 hover:text-white border border-red-500/20 px-4 py-2 relative z-20"
-                           >
-                             TERMINATE_UPLOAD
-                           </button>
-                         )}
-                      </div>
-                  </div>
-
-                  <div className="flex items-center gap-6 py-4">
-                    <div className="flex-1 h-px bg-border"></div>
-                    <span className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.4em] opacity-30">SEQUENTIAL_OR_PARALLEL</span>
-                    <div className="flex-1 h-px bg-border"></div>
-                  </div>
-
-                  <div className="p-10 bg-surface border border-border space-y-6">
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Digital_Synthesis_Content (MARKDOWN)</label>
-                        <textarea 
-                          placeholder="INPUT RAW INTELLIGENCE DATA FOR SYNTHESIS..."
-                          value={newspaperContent}
-                          onChange={(e) => setNewspaperContent(e.target.value)}
-                          className="w-full bg-bg-page border border-border p-6 outline-none focus:border-accent transition-all font-mono text-xs min-h-[400px] resize-none leading-relaxed"
-                        />
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-page p-5 border border-border">
-                          <p className="text-[9px] font-mono text-text-secondary uppercase font-bold tracking-widest">
-                            METRICS: {newspaperContent.length} CHARS
-                          </p>
-                          <button 
-                            type="button"
-                            onClick={handleAIPolish}
-                            disabled={!newspaperContent || aiLoading}
-                            className="text-[10px] font-mono font-bold uppercase tracking-widest flex items-center gap-3 text-accent hover:opacity-80 disabled:opacity-50 transition-all"
-                          >
-                            {aiLoading ? (
-                              <div className="w-3 h-3 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Zap size={14} />
-                            )}
-                            GEN_AI_POLISH_SYNTAX
-                          </button>
-                        </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-accent/5 border border-accent/20 p-6 flex items-start gap-4">
-                    <ShieldAlert size={18} className="text-accent flex-shrink-0" />
-                    <p className="text-[10px] font-mono text-text-primary font-bold uppercase leading-relaxed tracking-wider">
-                      PROTOCOL: PDF_ASSETS REDIRECTED TO SUPABASE_STORAGE. DATA_JSON COMMITTED TO CLOUD_FIRESTORE.
-                    </p>
-                </div>
-
-                <button 
-                  disabled={submitting || (!newspaperContent && !newspaperPdf)}
-                  className="btn-minimal-primary w-full py-8 text-2xl font-display font-black uppercase tracking-tighter flex items-center justify-center gap-4 border-2"
-                >
-                  {submitting ? (
-                    <>
-                      <div className="w-6 h-6 border-4 border-bg-page border-t-transparent rounded-full animate-spin" />
-                      COMMITTING_VAULT_ENTRY...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 size={32} />
-                      DEPLOY_TO_ARCHIVE
-                    </>
-                  )}
-                </button>
-              </form>
-
-              <div className="bg-bg-page border border-border p-10">
-                <div className="flex items-center justify-between mb-8 border-b border-border pb-6">
-                  <h2 className="text-2xl font-display font-black tracking-tighter uppercase leading-none">Archived_Editions_Manifest</h2>
-                  <span className="text-[10px] font-mono font-bold text-text-secondary opacity-50 uppercase tracking-widest">VAULT_LOCKED</span>
-                </div>
-                <div className="space-y-4">
-                  {allNewspapers.map((item) => (
-                    <div key={item.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 border border-border group bg-surface hover:border-accent transition-all gap-6">
-                      <div className="flex-grow">
-                        <p className="font-display font-bold text-lg text-text-primary uppercase tracking-tight">{item.title}</p>
-                        <div className="flex items-center gap-6 mt-2">
-                          <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-widest opacity-60">STAGED: {item.date}</p>
-                          <div className="flex items-center gap-4">
-                            <span className="flex items-center gap-2 text-[10px] font-mono font-bold text-accent">
-                               <Eye size={12} /> {item.readCount || 0} <span className="opacity-40 font-sans">ACCESSES</span>
-                            </span>
-                            <span className="flex items-center gap-2 text-[10px] font-mono font-bold text-accent">
-                               <Download size={12} /> {item.downloadCount || 0} <span className="opacity-40 font-sans">PULLS</span>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-3 w-full md:w-auto">
-                        <button 
-                          onClick={() => window.open(`/newspaper/${item.id}`, '_blank')}
-                          className="flex-1 md:flex-none flex items-center justify-center gap-3 text-accent hover:bg-accent hover:text-bg-page transition-all px-5 py-3 border border-accent/20 text-[10px] uppercase font-mono font-bold tracking-widest"
-                        >
-                          <ExternalLink size={14} />
-                          <span>ACCESS</span>
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteNewspaper(item.id, item.pdfUrl)}
-                          className="flex-1 md:flex-none flex items-center justify-center gap-3 text-red-500 hover:bg-red-500 hover:text-white transition-all px-5 py-3 border border-red-500/20 text-[10px] uppercase font-mono font-bold tracking-widest"
-                        >
-                          <Trash2 size={14} />
-                          <span>PURGE</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  {allNewspapers.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest py-10 opacity-40">Archive manifest empty.</p>}
-                </div>
-              </div>
-            </div>
           ) : (
             <div className="bg-bg-page border border-border p-10">
                <div className="mb-16 border-b border-border pb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
@@ -1175,15 +874,10 @@ export default function Admin() {
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalSwipes}</p>
                      <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_SWIPES_COMMITTED</p>
                   </div>
-                  <div className="p-10 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all group">
+                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
                      <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">ENGAGEMENT_OPS</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalViews}</p>
                      <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_ENTRY_READS</p>
-                  </div>
-                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">VAULT_ACCESS</p>
-                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.newspaperReads}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">NEWSPAPER_MANIFEST_READS</p>
                   </div>
                   <div className="p-10 hover:bg-surface transition-all group">
                      <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">NETWORK_NODES</p>
@@ -1202,9 +896,9 @@ export default function Admin() {
                      <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">SYSTEM_SATISFACTION_INDEX</p>
                   </div>
                   <div className="p-12 hover:bg-surface transition-all">
-                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">ASSET_ACQUISITION</p>
-                     <p className="text-7xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.newspaperDownloads}</p>
-                     <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">NEWSPAPER_BINARY_DOWNLOADS</p>
+                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">AUDIENCE_GROWTH</p>
+                     <p className="text-7xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.totalSubscribers}</p>
+                     <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">NETWORK_NODES_ACTIVE</p>
                   </div>
                </div>
                
@@ -1399,8 +1093,8 @@ export default function Admin() {
                           </div>
                           <div className="overflow-hidden w-full">
                              <p 
-                               onClick={() => { window.location.href = `/blog/${b.slug}`; }}
-                               className="text-xs font-display font-bold text-text-primary uppercase tracking-tight hover:text-accent cursor-pointer transition-colors leading-tight line-clamp-2"
+                                onClick={() => { window.location.href = `/blog/${b.slug}`; }}
+                                className="text-xs font-display font-bold text-text-primary uppercase tracking-tight hover:text-accent cursor-pointer transition-colors leading-tight line-clamp-2"
                              >
                                {b.title}
                              </p>

@@ -29,7 +29,6 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Archive', path: '/archive' },
-    { name: 'Newspapers', path: '/newspapers' },
     { name: 'Saved', path: '/saved' },
     { name: 'Newsletter', path: '/newsletter' },
     { name: 'About', path: '/about' },

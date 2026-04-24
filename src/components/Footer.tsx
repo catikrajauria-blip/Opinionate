@@ -57,13 +57,7 @@ export default function Footer() {
 
           <div>
              <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8">Series</h4>
-             <ul className="space-y-4">
-               <li>
-                 <Link to="/newspapers" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   Daily Digest
-                 </Link>
-               </li>
+              <ul className="space-y-4">
                <li>
                  <Link to="/about" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
                    <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>

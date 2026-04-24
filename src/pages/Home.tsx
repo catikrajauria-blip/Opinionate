@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { blogService } from '../lib/blogService';
-import { Newspaper, newspaperService } from '../lib/newspaperService';
 import { Blog } from '../types';
 import BlogCard from '../components/BlogCard';
 import RatingSystem from '../components/RatingSystem';
@@ -16,7 +15,6 @@ import { useAuth } from '../contexts/AuthContext';
 export default function Home() {
   const { user } = useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [latestNewspaper, setLatestNewspaper] = useState<Newspaper | null>(null);
   const [loading, setLoading] = useState(true);
   const [userId] = useState(() => user?.uid || generateUserId());
   const [likingId, setLikingId] = useState<string | null>(null);
@@ -24,15 +22,11 @@ export default function Home() {
   useEffect(() => {
     async function loadTodayData() {
       try {
-        const [todayBlogs, newspapers] = await Promise.all([
-          blogService.getTodayBlogs(),
-          newspaperService.getLatestNewspapers(1)
+        const [todayBlogs] = await Promise.all([
+          blogService.getTodayBlogs()
         ]);
         
         setBlogs(todayBlogs);
-        if (newspapers.length > 0) {
-          setLatestNewspaper(newspapers[0]);
-        }
         
         // Track views for the first one if it exists
         if (todayBlogs.length > 0) {
@@ -146,34 +140,6 @@ export default function Home() {
            </p>
          </motion.div>
       </header>
-
-      {/* Latest Edition Bar - Refined Glassmorphism */}
-      {latestNewspaper && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-20 -mt-8 mx-4 md:mx-12 rounded-2xl border border-border/60 bg-bg-page/70 backdrop-blur-xl shadow-2xl py-6 px-8 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden group"
-        >
-          <div className="absolute top-0 left-0 w-1 h-full bg-accent group-hover:w-full opacity-10 transition-all duration-700" />
-          
-          <div className="flex items-center gap-6 relative">
-             <div className="w-12 h-12 bg-accent text-bg-page flex items-center justify-center font-bold text-xs uppercase tracking-tighter rounded-full shadow-lg shadow-accent/20">
-                Live
-             </div>
-             <div>
-                <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-1">OFFICIAL PUBLICATION</p>
-                <h3 className="text-lg md:text-xl font-display font-black uppercase tracking-tight">{latestNewspaper.title}</h3>
-             </div>
-          </div>
-          
-          <Link 
-            to={`/newspaper/${latestNewspaper.id}`}
-            className="relative px-8 py-3 bg-text-primary text-bg-page rounded-full text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-accent hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/10"
-          >
-            Access Digital Press 
-          </Link>
-        </motion.div>
-      )}
 
       {/* Featured Section */}
       <div className="grid grid-cols-1 md:grid-cols-12 border-x border-border/50 gap-0">
