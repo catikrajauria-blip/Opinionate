@@ -32,33 +32,38 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
   return (
     <div className={cn(
       "w-full",
-      variant === 'dark' ? "text-bg-page" : "text-text-primary"
+      variant === 'dark' ? "text-white" : "text-text-primary"
     )}>
-      <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
-        <input 
-          type="email"
-          required
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={status === 'success'}
-          className={cn(
-            "w-full px-4 py-3 rounded-lg outline-none border transition-all text-[13px] font-medium",
-            variant === 'dark' 
-              ? "bg-text-primary/10 border-text-primary/20 text-text-primary placeholder:text-text-secondary focus:bg-text-primary/20"
-              : "bg-surface border-border focus:border-text-primary text-text-primary"
-          )}
-        />
+      <form onSubmit={handleSubscribe} className="space-y-4">
+        <div className="relative group">
+           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Mail size={16} className="text-accent opacity-50 group-focus-within:opacity-100 transition-opacity" />
+           </div>
+           <input 
+              type="email"
+              required
+              placeholder="ENTER_EMAIL_FOR_SYNC..."
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={status === 'success'}
+              className={cn(
+                "w-full pl-12 pr-4 py-4 rounded-sm outline-none border transition-all text-[13px] font-mono font-bold uppercase tracking-widest",
+                variant === 'dark' 
+                  ? "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-accent focus:bg-white/10"
+                  : "bg-surface border-border focus:border-accent text-text-primary"
+              )}
+           />
+        </div>
         <button 
           disabled={status === 'loading' || status === 'success'}
           className={cn(
-            "w-full px-4 py-3 rounded-lg font-bold text-[13px] transition-all flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95",
+            "w-full px-4 py-4 rounded-sm font-mono font-bold text-[12px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-2 hover:glow-cyan active:scale-95",
             variant === 'dark'
-              ? "bg-text-primary text-bg-page"
-              : "bg-text-primary text-bg-page"
+              ? "bg-accent text-bg-page hover:bg-white hover:text-bg-page"
+              : "bg-accent text-bg-page hover:bg-text-primary hover:text-white"
           )}
         >
-          {status === 'loading' ? 'Joining...' : 'Subscribe Now'}
+          {status === 'loading' ? 'INITIATING_SYNC...' : 'JOIN_THE_NETWORK'}
         </button>
       </form>
       

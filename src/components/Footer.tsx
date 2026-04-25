@@ -11,74 +11,63 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-surface border-t border-border pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+    <footer className="bg-bg-page border-t border-accent/20 pt-24 pb-12 overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+      <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-24">
           <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="inline-block mb-6">
-              <span className="font-display font-black text-2xl tracking-tighter uppercase">
-                OPINIONATE.
+            <Link to="/" className="inline-block mb-8 group">
+              <span className="font-display font-black text-3xl tracking-tighter uppercase group-hover:text-accent transition-colors">
+                OPINIO<span className="text-accent underline">N</span>ATE.
               </span>
             </Link>
-            <p className="text-text-secondary text-[14px] leading-relaxed mb-8">
-              Deciphering the noise with daily reflections on culture, tech, and the future of digital society.
+            <p className="text-text-secondary text-[14px] leading-relaxed mb-8 font-sans font-medium max-w-xs opacity-70">
+              DECODING_REALITY: DAILY_INSIGHTS_ON_CULTURE_TECHNOLOGY_AND_THE_SYNTHETIC_FRONTIER.
             </p>
           </div>
 
           <div>
-             <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8">Explore</h4>
+             <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8">INDEX_CORE</h4>
              <ul className="space-y-4">
-               <li>
-                 <Link to="/" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   Home
-                 </Link>
-               </li>
-               <li>
-                 <Link to="/archive" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   Archive
-                 </Link>
-               </li>
-               <li>
-                 <Link to="/saved" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   Reading List
-                 </Link>
-               </li>
-               <li>
-                 <Link to="/newsletter" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   Newsletter
-                 </Link>
-               </li>
+               {[
+                 { name: 'Home', path: '/' },
+                 { name: 'Archive', path: '/archive' },
+                 { name: 'Reading List', path: '/saved' },
+                 { name: 'Newsletter', path: '/newsletter' }
+               ].map((item) => (
+                 <li key={item.name}>
+                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-white transition-all">
+                     <span className="w-0 group-hover:w-4 h-[1px] bg-accent transition-all duration-300 mr-0 group-hover:mr-3"></span>
+                     {item.name}
+                   </Link>
+                 </li>
+               ))}
              </ul>
           </div>
 
           <div>
-             <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8">Series</h4>
+             <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8">SYSTEM_SPECS</h4>
               <ul className="space-y-4">
-               <li>
-                 <Link to="/about" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   The Mission
-                 </Link>
-               </li>
-               <li>
-                 <Link to="/contact" className="group flex items-center text-[13px] text-text-secondary hover:text-text-primary transition-all">
-                   <span className="w-0 group-hover:w-3 h-[2px] bg-accent transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                   Contact
-                 </Link>
-               </li>
+               {[
+                 { name: 'Mission_Log', path: '/about' },
+                 { name: 'Contact_Port', path: '/contact' }
+               ].map((item) => (
+                 <li key={item.name}>
+                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-white transition-all">
+                     <span className="w-0 group-hover:w-4 h-[1px] bg-accent transition-all duration-300 mr-0 group-hover:mr-3"></span>
+                     {item.name}
+                   </Link>
+                 </li>
+               ))}
              </ul>
           </div>
 
           <div>
-             <h4 className="text-[12px] uppercase tracking-[0.2em] font-black text-text-primary mb-8 text-right md:text-left">Connect</h4>
-             <div className="flex flex-wrap justify-end md:justify-start gap-4">
+             <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8 text-right md:text-left">NETWORK_UPLINK</h4>
+             <div className="flex flex-wrap justify-end md:justify-start gap-3">
                 {socialLinks.map((social, idx) => (
-                  <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="p-3.5 border border-border rounded-2xl text-text-secondary hover:text-bg-page hover:bg-text-primary hover:border-text-primary hover:scale-105 active:scale-95 transition-all shadow-sm hover:shadow-xl">
-                    <social.icon size={20} />
+                  <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="p-4 border border-border bg-surface text-text-secondary hover:text-accent hover:border-accent hover:scale-105 transition-all hover:glow-cyan">
+                    <social.icon size={18} />
                   </a>
                 ))}
              </div>
@@ -86,16 +75,16 @@ export default function Footer() {
           
         </div>
 
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary/50">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-8">
-            <p className="text-text-primary">&copy; {new Date().getFullYear()} OPINIONATE.</p>
-            <Link to="/disclaimer" className="hover:text-accent transition-colors">Disclaimer</Link>
-            <Link to="/copyright" className="hover:text-accent transition-colors">Fair Use</Link>
-            <Link to="/terms" className="hover:text-accent transition-colors">Terms</Link>
-            <Link to="/contact" className="hover:text-accent transition-colors">Contact for Removal</Link>
+        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-8 text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary/40">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-10">
+            <p className="text-text-primary/60">&copy; {new Date().getFullYear()} OPINIONATE_RESERVED.</p>
+            <Link to="/disclaimer" className="hover:text-accent transition-colors">DISCLAIMER</Link>
+            <Link to="/copyright" className="hover:text-accent transition-colors">FAIR_USE</Link>
+            <Link to="/terms" className="hover:text-accent transition-colors">PROTOCOL_TERMS</Link>
           </div>
-          <div className="flex items-center gap-2">
-            <span>BUILT_WITH_PRECISION.</span>
+          <div className="flex items-center gap-4 text-accent/40">
+             <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+             <span>DESIGN_SYSTEM_V4.0_STABLE</span>
           </div>
         </div>
       </div>

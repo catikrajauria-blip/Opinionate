@@ -246,6 +246,10 @@
       "schema": "PollResponse",
       "description": "User responses to polls"
     },
+    "/words_of_the_day/{wordId}": {
+      "schema": "WordOfTheDay",
+      "description": "Daily vocabulary words"
+    },
     "/policy_updates/{updateId}": {
       "schema": "PolicyUpdate",
       "description": "Government policy initiatives"

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
-import { Settings, LogIn, AlertTriangle } from 'lucide-react';
+import { Settings, LogIn, AlertTriangle, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Login() {
@@ -50,33 +50,38 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-md mx-auto py-20 px-4">
+    <div className="max-w-md mx-auto py-32 px-4">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-surface p-8 md:p-12 rounded-[2.5rem] border border-border shadow-xl text-center"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-surface/30 backdrop-blur-xl p-10 md:p-14 border border-white/5 relative overflow-hidden group"
       >
-        <div className="w-20 h-20 bg-accent/10 text-accent rounded-3xl flex items-center justify-center mx-auto mb-8 border border-accent/20">
-           <LogIn size={40} />
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-accent/5 blur-3xl rounded-full group-hover:bg-accent/10 transition-colors" />
+        
+        <div className="w-24 h-24 bg-accent/5 text-accent border border-accent/20 flex items-center justify-center mx-auto mb-10 glow-cyan/10 relative">
+           <LogIn size={48} className="animate-pulse" />
+           <div className="absolute -top-1 -left-1 w-2 h-2 bg-accent" />
+           <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-accent" />
         </div>
         
-        <h1 className="text-3xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter">Welcome Back</h1>
-        <p className="text-text-secondary mb-8 font-display font-bold leading-relaxed italic">
-          Sign in to save opinions, like your favorite posts, and join the conversation.
-          <br/>
-          <span className="text-[10px] text-text-secondary opacity-90 uppercase font-black tracking-widest mt-2 block">
-            Session active for 7 days
-          </span>
+        <h1 className="text-4xl font-display font-black mb-4 text-white uppercase tracking-tighter">Initialize_Auth</h1>
+        <p className="text-text-secondary mb-10 font-mono font-bold leading-relaxed text-[11px] uppercase tracking-widest opacity-60">
+          UPLINK REQUIRED TO ACCESS CORE MODULES, RATE ANALYTICS, AND PARTICIPATE IN SYNCHRONOUS POLLS.
         </p>
 
         <AnimatePresence>
           {error && (
             <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-xs font-bold mb-6 border border-red-100 dark:border-red-900/30 text-left"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-red-500/10 text-red-500 p-5 border border-red-500/20 text-xs font-mono font-bold mb-8 text-left uppercase tracking-widest flex gap-3"
             >
-              ⚠️ {error}
+              <AlertTriangle size={16} className="shrink-0" />
+              <div>
+                <p className="mb-1">SYSTEM_ERROR_CODE_0xEX</p>
+                <p className="opacity-70 leading-relaxed">{error}</p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -84,23 +89,29 @@ export default function Login() {
         <button 
           onClick={handleSignIn}
           disabled={signingIn}
-          className="w-full py-4 bg-text-primary text-bg-page rounded-2xl font-bold flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl shadow-black/5 active:scale-95 disabled:opacity-50"
+          className="w-full py-5 bg-accent text-bg-page font-mono font-black uppercase tracking-[0.4em] text-[11px] flex items-center justify-center gap-4 hover:glow-cyan transition-all active:scale-95 disabled:opacity-50"
         >
           {signingIn ? (
-            <span className="flex items-center gap-2">
-               <div className="w-4 h-4 border-2 border-bg-page border-t-transparent rounded-full animate-spin" />
-               Connecting...
+            <span className="flex items-center gap-3">
+               <Cpu className="animate-spin" size={18} />
+               PROCESSING_HANDSHAKE...
             </span>
           ) : (
             <>
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5 bg-white rounded-full p-0.5" referrerPolicy="no-referrer" />
-              Sign in with Google
+              IDENTIFY_VIA_GOOGLE
             </>
           )}
         </button>
 
-        <p className="mt-8 text-[10px] text-text-secondary font-bold uppercase tracking-widest leading-relaxed">
-          By signing in, you agree to our community guidelines.
+        <div className="mt-10 flex items-center justify-center gap-3 opacity-30">
+          <div className="h-[1px] flex-1 bg-white/10" />
+          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.5em]">SECURE_UPLINK</span>
+          <div className="h-[1px] flex-1 bg-white/10" />
+        </div>
+
+        <p className="mt-8 text-[9px] text-text-secondary font-mono font-bold uppercase tracking-[0.3em] leading-relaxed opacity-40">
+          BY PROCEEDING, YOU AGREE TO PROTOCOL GUIDELINES AND DATA ENCRYPTION STANDARDS.
         </p>
       </motion.div>
     </div>

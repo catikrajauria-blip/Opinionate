@@ -113,55 +113,56 @@ export default function BlogDetail() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6">
+    <div className="max-w-5xl mx-auto px-4 md:px-6 py-20 text-text-primary">
       <Link 
         to="/archive" 
-        className="inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary hover:text-accent transition-colors mb-20 group"
+        className="inline-flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-accent hover:text-white transition-all mb-20 group"
       >
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-        BACK TO ENTRIES
+        <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
+        BACK_TO_ENTRIES[ARCHIVE]
       </Link>
 
       <motion.article 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-32"
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="mb-32 relative"
       >
-        <header className="mb-20">
-          <div className="flex items-center gap-4 mb-8">
-            <span className="badge-minimal m-0">DAILY ANALYSIS</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">VOL. 04 &bull; {formatDate(blog.date)}</span>
+        <header className="mb-24">
+          <div className="flex items-center gap-6 mb-10">
+            <span className="px-4 py-1 bg-accent/10 border border-accent/30 text-accent text-[10px] font-mono font-black uppercase tracking-[0.3em] glow-cyan/10">DAILY_ANALYSIS</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">VOL_04_INDEX // {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-display font-black leading-tight mb-12 tracking-tighter uppercase break-words">
+          <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] mb-16 tracking-tighter uppercase break-words text-text-primary drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             {blog.title}
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-border">
-            <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">Author</span>
-              <span className="text-sm font-display font-black uppercase tracking-tight">{blog.author}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 border-y border-border bg-surface backdrop-blur-sm px-8">
+            <div className="flex flex-col gap-3">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ORIGINATOR</span>
+              <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{blog.author}</span>
             </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">Metric</span>
-              <span className="text-sm font-display font-black uppercase tracking-tight">{calculateReadingTime(blog.content)} MIN READ &bull; {blog.viewsCount} ACCESSES</span>
+            <div className="flex flex-col gap-3">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">METRICS_LOG</span>
+              <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{calculateReadingTime(blog.content)} MIN_SYNC &bull; {blog.viewsCount} ACCESS_NODES</span>
             </div>
-            <div className="flex flex-col gap-2 md:items-end">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">Engagement</span>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-600 font-mono font-black">{blog.ratingAverage.toFixed(1)}</span>
-                  <span className="text-[10px] font-mono opacity-60">/5.0</span>
+            <div className="flex flex-col gap-3 md:items-end">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ENGAGEMENT_SIG</span>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-secondary-accent font-display font-black text-2xl drop-shadow-[0_0_10px_rgba(255,0,255,0.3)]">{blog.ratingAverage.toFixed(1)}</span>
+                  <span className="text-[10px] font-mono opacity-30 uppercase tracking-widest">/V.5.0</span>
                 </div>
                 <button 
                   onClick={handleLike}
                   className={cn(
-                    "flex items-center gap-1 transition-colors",
-                    hasLiked ? "text-red-500" : "hover:text-red-500"
+                    "flex items-center gap-2 px-4 py-2 border transition-all",
+                    hasLiked ? "text-secondary-accent border-secondary-accent/40 bg-secondary-accent/10 glow-pink/10" : "text-text-secondary border-border hover:text-text-primary hover:border-accent"
                   )}
                 >
-                  <Heart size={16} className={hasLiked ? "fill-red-500" : ""} />
-                  <span className="text-xs font-mono font-bold uppercase">{blog.likesCount}</span>
+                  <Heart size={16} className={hasLiked ? "fill-secondary-accent" : ""} />
+                  <span className="text-xs font-mono font-black uppercase">{blog.likesCount}</span>
                 </button>
               </div>
             </div>
@@ -170,61 +171,65 @@ export default function BlogDetail() {
 
         {blog.image && (
           <motion.div 
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5 }}
-            className="mb-20 overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mb-24 relative group"
           >
-            <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover" referrerPolicy="no-referrer" />
-            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-widest mt-4 text-center">Reference Visual: {blog.title}</p>
+            <div className="absolute inset-0 bg-accent/10 mix-blend-color opacity-50 group-hover:opacity-0 transition-opacity duration-1000" />
+            <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000 border border-border" referrerPolicy="no-referrer" />
+            <div className="absolute inset-0 border-[20px] border-bg-page/20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.6em] mt-6 text-center opacity-40 group-hover:opacity-100 transition-opacity">VISUAL_ANCHOR: {blog.title}</p>
           </motion.div>
         )}
 
-        <div className="max-w-3xl mx-auto">
-          <div className="blog-content mb-24">
-            <ReactMarkdown>{blog.content}</ReactMarkdown>
+        <div className="max-w-3xl mx-auto relative">
+          <div className="blog-content mb-32 relative text-xl leading-[1.7] font-medium text-text-primary/90">
+             <div className="absolute -left-12 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent/50 via-accent/5 to-transparent h-40" />
+             <ReactMarkdown>{blog.content}</ReactMarkdown>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-10 border-y border-border mb-24">
-             <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-8 py-12 border-y border-border mb-32 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                <Share2 size={120} />
+             </div>
+             <div className="flex items-center gap-4 z-10">
                 <button 
                   onClick={handleLike}
                   className={cn(
-                    "btn-minimal group border-accent/20",
-                    hasLiked && "bg-accent text-bg-page"
+                    "flex items-center gap-3 px-8 py-4 border font-mono font-black uppercase tracking-[0.3em] text-[11px] transition-all",
+                    hasLiked ? "bg-secondary-accent text-bg-page border-secondary-accent glow-pink" : "border-border hover:border-accent hover:text-accent"
                   )}
                 >
-                   <Heart size={16} className={cn(
-                     "transition-colors",
-                     hasLiked ? "fill-bg-page" : "group-hover:text-red-500"
-                   )} />
-                   <span>{hasLiked ? 'OPINION ENDORSED' : 'ENDORSE OPINION'}</span>
+                   <Heart size={16} className={cn(hasLiked && "fill-bg-page")} />
+                   <span>{hasLiked ? 'OPINION_COMMITTED' : 'COMMIT_OPINION'}</span>
                 </button>
   
                 <button 
                   onClick={toggleSave}
                   className={cn(
-                    "btn-minimal p-3",
-                    isSaved && "bg-accent text-bg-page"
+                    "p-4 border transition-all",
+                    isSaved ? "bg-accent text-bg-page border-accent glow-cyan" : "border-border hover:border-accent hover:text-accent"
                   )}
                   title="Archive for later"
                 >
-                  {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                   {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
                 </button>
              </div>
              
-             <button className="btn-minimal-primary gap-3">
-                <Share2 size={16} /> DISTRIBUTE ENTRY
+             <button className="flex items-center gap-4 px-8 py-4 bg-surface border border-border text-text-primary font-mono font-black uppercase tracking-[0.4em] text-[11px] hover:bg-accent hover:text-bg-page transition-all z-10">
+                <Share2 size={16} /> BROADCAST_ENTRY
              </button>
           </div>
   
-          <section className="mb-24">
-             <div className="flex items-center gap-4 mb-10">
-               <span className="h-px bg-border flex-grow" />
-               <h3 className="text-xs font-mono font-bold tracking-[0.3em] uppercase">Consensus Mechanism</h3>
-               <span className="h-px bg-border flex-grow" />
+          <section className="mb-32">
+             <div className="flex items-center gap-6 mb-12">
+               <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-border" />
+               <h3 className="text-[11px] font-mono font-black tracking-[0.6em] uppercase text-accent">CONSENSUS_MECHANISM</h3>
+               <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-border" />
              </div>
-             <div className="bg-surface p-10 border border-border">
+             <div className="bg-surface/30 backdrop-blur-md p-12 border border-border relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-[2px] h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
              </div>
           </section>

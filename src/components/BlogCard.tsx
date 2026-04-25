@@ -60,20 +60,19 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       whileHover={isGrid ? { 
-        y: -12, 
+        y: -15, 
         borderColor: "var(--color-accent)",
-        boxShadow: "0 40px 80px -15px rgba(255, 77, 0, 0.15), 0 24px 48px -24px rgba(0,0,0,0.2)",
       } : {}}
       transition={{ 
-        delay: index * 0.03,
+        delay: index * 0.05,
         duration: 0.6,
-        ease: [0.22, 1, 0.36, 1],
-        y: { type: "spring", stiffness: 260, damping: 24 }
+        ease: [0.16, 1, 0.3, 1],
+        y: { type: "spring", stiffness: 300, damping: 20 }
       }}
       className={cn(
-        "group h-full bg-bg-page transition-all duration-500",
+        "group h-full bg-surface/30 transition-all duration-500 backdrop-blur-sm hover:glow-cyan",
         isGrid 
-          ? "flex flex-col border border-border relative z-0 hover:z-10 rounded-2xl overflow-hidden" 
+          ? "flex flex-col border border-border relative z-0 hover:z-10 rounded-sm overflow-hidden" 
           : "pb-16 mb-16 border-b border-border last:border-b-0"
       )}
     >
@@ -85,14 +84,15 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           <Link 
             to={`/blog/${blog.slug}`} 
             className={cn(
-               "overflow-hidden flex-shrink-0 bg-surface saturate-[0.7] hover:saturate-100 transition-all duration-700",
-               isGrid ? "w-full aspect-[16/10] border-b border-border" : "w-full md:w-96 aspect-video border border-border rounded-xl"
+               "overflow-hidden flex-shrink-0 bg-slate-900 saturate-50 hover:saturate-150 transition-all duration-1000 relative",
+               isGrid ? "w-full aspect-[16/10] border-b border-border" : "w-full md:w-96 aspect-video border border-border"
             )}
           >
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 to-transparent z-10 pointer-events-none opacity-40 group-hover:opacity-0 transition-opacity" />
             <img 
               src={blog.image} 
               alt={blog.title}
-              className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-1000"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000"
               referrerPolicy="no-referrer"
             />
           </Link>
@@ -102,24 +102,25 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           isGrid ? "p-8 flex-grow" : "flex-grow pt-8 md:pt-0"
         )}>
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-accent">ANALYSIS &bull; {formatDate(blog.date)}</span>
-            <span className="h-px flex-grow bg-border opacity-30" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent drop-shadow-[0_0_5px_rgba(0,238,255,0.3)]">ANALYSIS::{formatDate(blog.date)}</span>
+            <span className="h-[1px] flex-grow bg-accent/20" />
           </div>
           
-          <Link to={`/blog/${blog.slug}`} className="mb-4">
+          <Link to={`/blog/${blog.slug}`} className="mb-6 block relative group/title">
             <h3 className={cn(
-               "font-display font-black group-hover:text-accent transition-colors leading-tight uppercase tracking-tighter",
-               isGrid ? "text-2xl md:text-3xl" : "text-4xl md:text-6xl"
+               "font-display font-black leading-[1] uppercase tracking-tighter transition-all group-hover:text-accent",
+               isGrid ? "text-2xl md:text-3xl" : "text-4xl md:text-7xl lg:text-8xl"
             )}>
               {blog.title}
             </h3>
+            {!isGrid && <div className="absolute -bottom-2 left-0 w-0 h-1 bg-accent group-hover/title:w-full transition-all duration-500 glow-cyan" />}
           </Link>
           
           <p className={cn(
-            "font-display font-medium text-text-secondary leading-tight uppercase tracking-tight mb-8",
-            isGrid ? "text-[13px] line-clamp-3" : "text-lg max-w-2xl"
+            "font-sans font-medium text-text-secondary leading-relaxed mb-10 opacity-80",
+            isGrid ? "text-[13px] line-clamp-3" : "text-xl md:text-2xl max-w-3xl border-l border-white/10 pl-6"
           )}>
-            {blog.summary}
+            "{blog.summary}"
           </p>
 
           <div className="mt-auto pt-8 border-t border-border/50 flex flex-wrap items-center gap-x-8 gap-y-4 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
@@ -131,16 +132,21 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
                 onClick={handleLike}
                 disabled={isLiking}
                 className={cn(
-                  "flex items-center gap-2 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95",
+                  "group/like flex items-center gap-2 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95",
                   hasLiked ? "text-red-500" : "hover:text-red-500"
                 )}
              >
-                <Heart size={12} className={cn(
-                  "transition-all duration-300",
-                  isLiking ? "animate-pulse" : "",
-                  hasLiked && "fill-red-500 scale-110"
-                )} />
-                <span className={cn("transition-colors duration-300", hasLiked ? "text-red-500" : "text-text-primary")}>{blog.likesCount}_ENDORS</span>
+                <motion.div
+                  animate={hasLiked ? { scale: [1, 1.4, 1], rotate: [0, -15, 0] } : { scale: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <Heart size={12} className={cn(
+                    "transition-all duration-300",
+                    isLiking ? "animate-pulse" : "",
+                    hasLiked ? "fill-red-500 text-red-500" : "text-text-primary group-hover/like:text-red-500"
+                  )} />
+                </motion.div>
+                <span className={cn("transition-colors duration-300", hasLiked ? "text-red-500" : "text-text-primary group-hover/like:text-red-500")}>{blog.likesCount}_ENDORS</span>
              </button>
              {blog.ratingCount > 0 && (
                <div className="flex items-center gap-2">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { blogService } from '../lib/blogService';
+import { wordService, WordOfTheDay } from '../lib/wordService';
 import { Blog } from '../types';
 import BlogCard from '../components/BlogCard';
 import RatingSystem from '../components/RatingSystem';
@@ -16,6 +17,7 @@ import { useAuth } from '../contexts/AuthContext';
 export default function Home() {
   const { user } = useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [wotd, setWotd] = useState<WordOfTheDay | null>(null);
   const [loading, setLoading] = useState(true);
   const [userId] = useState(() => user?.uid || generateUserId());
   const [likingId, setLikingId] = useState<string | null>(null);
@@ -23,11 +25,13 @@ export default function Home() {
   useEffect(() => {
     async function loadTodayData() {
       try {
-        const [todayBlogs] = await Promise.all([
-          blogService.getTodayBlogs()
+        const [todayBlogs, latestWord] = await Promise.all([
+          blogService.getTodayBlogs(),
+          wordService.getLatestWord()
         ]);
         
         setBlogs(todayBlogs);
+        setWotd(latestWord);
         
         // Track views for the first one if it exists
         if (todayBlogs.length > 0) {
@@ -67,8 +71,14 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 flex justify-center">
-        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="max-w-4xl mx-auto px-4 py-40 flex flex-col items-center justify-center gap-8">
+        <div className="relative w-20 h-20">
+          <div className="absolute inset-0 border-2 border-accent/20 rounded-full" />
+          <div className="absolute inset-0 border-t-2 border-accent rounded-full animate-spin glow-cyan" />
+          <div className="absolute inset-4 border-2 border-pink-500/20 rounded-full" />
+          <div className="absolute inset-4 border-b-2 border-pink-500 rounded-full animate-spin-reverse glow-pink" style={{ animationDuration: '1.5s' }} />
+        </div>
+        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] animate-pulse text-accent">INITIALIZING_OPINIO_PROTOCOL...</p>
       </div>
     );
   }
@@ -90,57 +100,96 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-0">
-      <header className="py-24 md:py-40 border-b border-border/50 mb-0 text-center relative overflow-hidden bg-bg-page">
+      <header className="py-24 md:py-48 border-b border-border/30 mb-0 text-center relative overflow-hidden bg-bg-page">
          {/* Aesthetic background elements */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none">
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] pointer-events-none">
             <motion.div 
                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, 0],
-                  opacity: [0.03, 0.05, 0.03]
+                  scale: [1, 1.05, 1],
+                  rotate: [0, 2, 0],
+                  opacity: [0.05, 0.08, 0.05]
                }}
-               transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-               className="absolute top-0 left-0 w-full h-full font-display font-black text-[35vw] flex items-center justify-center select-none uppercase tracking-tighter text-accent"
+               transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute top-0 left-0 w-full h-full font-display font-black text-[40vw] flex items-center justify-center select-none uppercase tracking-tighter text-accent mix-blend-overlay"
             >
-               Opinio
+               OPINIO
             </motion.div>
             
-            <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-accent/10 blur-[150px] rounded-full animate-pulse" />
-            <div className="absolute bottom-[20%] left-[5%] w-[30%] h-[30%] bg-accent/5 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '3s' }} />
+            <div className="absolute top-[10%] right-[5%] w-[50%] h-[50%] bg-accent/20 blur-[180px] rounded-full animate-pulse" />
+            <div className="absolute bottom-[10%] left-[0%] w-[40%] h-[40%] bg-secondary-accent/10 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '4s' }} />
          </div>
 
          {user && (
            <motion.div 
-             initial={{ opacity: 0, scale: 0.95 }} 
-             animate={{ opacity: 1, scale: 1 }} 
-             className="inline-flex items-center gap-2 px-4 py-2 bg-surface backdrop-blur-md border border-border/50 rounded-full mb-8 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary"
+             initial={{ opacity: 0, x: -20 }} 
+             animate={{ opacity: 1, x: 0 }} 
+             className="inline-flex items-center gap-3 px-6 py-2 bg-accent/5 backdrop-blur-xl border border-accent/20 rounded-sm mb-12 text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent glow-cyan"
            >
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              AUTHENTICATED: <span className="text-accent">{user.displayName || user.email?.split('@')[0]}</span>
+              <div className="w-2 h-2 bg-accent rounded-full animate-ping" />
+              SYSTEM_LINK_ACTIVE: <span className="text-text-primary">{user.displayName || user.email?.split('@')[0]}</span>
            </motion.div>
          )}
          
-         <motion.h1 
-           initial={{ opacity: 0, y: 30 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-           className="text-[14vw] md:text-9xl lg:text-[12rem] font-display font-black mb-6 tracking-tighter leading-none uppercase relative z-10"
+         <motion.div
+           initial={{ opacity: 0, scale: 0.9 }}
+           animate={{ opacity: 1, scale: 1 }}
+           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+           className="relative z-10"
          >
-           The Briefin<span className="text-accent italic">g</span>.
-         </motion.h1>
+           <motion.h1 
+             className="text-[15vw] md:text-9xl lg:text-[13rem] font-display font-black mb-8 tracking-tighter leading-none uppercase"
+           >
+             The Briefin<span className="text-accent italic drop-shadow-[0_0_30px_rgba(0,238,255,0.5)]">g</span>.
+           </motion.h1>
+         </motion.div>
          
          <motion.div 
            initial={{ opacity: 0 }}
            animate={{ opacity: 1 }}
-           transition={{ delay: 0.6 }}
-           className="flex flex-col items-center gap-6 relative z-10"
+           transition={{ delay: 0.8 }}
+           className="flex flex-col items-center gap-8 relative z-10"
          >
-           <div className="h-px w-20 bg-accent/30" />
-           <p className="text-text-secondary font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.6em]">
-             EDITION: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} &bull; VOL 04
+           <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-accent to-transparent" />
+           <p className="text-text-secondary font-mono text-[11px] md:text-sm font-bold uppercase tracking-[0.8em]">
+             <span className="text-accent underline underline-offset-8">EDITION_{new Date().getFullYear()}</span> &bull; PROTOCAL_VOL_04
            </p>
          </motion.div>
       </header>
+
+      {wotd && (
+        <section className="border-x border-b border-border bg-gradient-to-r from-accent/5 via-secondary-accent/5 to-accent/5 overflow-hidden group relative">
+           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent animate-pulse" />
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
+              <div className="p-8 md:p-14 border-b md:border-b-0 md:border-r border-border relative flex flex-col justify-center overflow-hidden bg-surface/30">
+                 <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-[0.05]" />
+                 <div className="absolute top-0 left-0 w-full h-full font-display font-black text-7xl opacity-[0.05] select-none flex items-center justify-center -rotate-12 pointer-events-none tracking-tighter">DATA</div>
+                 <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-[0.4em] mb-4 block relative z-10">DAILY_SEMANTIC_UPDATE</span>
+                 <h2 className="text-6xl md:text-7xl font-display font-black uppercase tracking-tighter text-text-primary leading-none group-hover:text-accent transition-all relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                   {wotd.word}
+                 </h2>
+              </div>
+              <div className="md:col-span-3 p-8 md:p-14 flex flex-col justify-center space-y-8 backdrop-blur-sm">
+                 <div className="space-y-6">
+                    <p className="text-2xl md:text-4xl font-display font-bold leading-[1.1] uppercase tracking-tight text-text-primary line-clamp-3">
+                      "{wotd.definition}"
+                    </p>
+                    {wotd.usage && (
+                      <div className="flex items-start gap-4 p-4 bg-surface border-l-2 border-accent">
+                        <p className="text-sm md:text-base text-text-secondary font-mono italic opacity-90 leading-relaxed">
+                          CONTEXT: {wotd.usage}
+                        </p>
+                      </div>
+                    )}
+                 </div>
+                 <div className="flex flex-wrap items-center gap-6 text-[10px] font-mono font-bold text-text-secondary opacity-50 mt-auto uppercase tracking-[0.3em]">
+                    <span className="flex items-center gap-2"><div className="w-1 h-1 bg-accent rounded-full" /> TOKEN_ID_{wotd.id?.slice(-6)}</span>
+                    <span className="flex items-center gap-2"><div className="w-1 h-1 bg-secondary-accent rounded-full" /> TIMESTAMP_{wotd.date}</span>
+                    <span className="ml-auto text-accent border border-accent/20 px-2 py-1">VERIFIED_ENTRY</span>
+                 </div>
+              </div>
+           </div>
+        </section>
+      )}
 
       <PollWidget />
 

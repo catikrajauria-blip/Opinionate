@@ -38,144 +38,153 @@ export default function Archive() {
   const months = Array.from(new Set(blogs.map(b => b.date.substring(0, 7)))).sort().reverse();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6">
-      <header className="mb-20">
-        <div className="flex items-center gap-4 mb-10">
-          <span className="w-12 h-px bg-accent" />
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent">CHRONICLE_DATABASE</span>
+    <div className="max-w-7xl mx-auto px-6 md:px-10 py-12">
+      <header className="mb-32">
+        <div className="flex items-center gap-6 mb-12">
+          <div className="w-16 h-[2px] bg-accent glow-cyan"></div>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">CHRONICLE_DATABASE_V1.0</span>
         </div>
         
-        <h1 className="text-6xl md:text-8xl font-display font-black mb-10 tracking-tighter uppercase leading-tight">
-          The Archive
+        <h1 className="text-6xl md:text-9xl font-display font-black mb-12 tracking-tighter uppercase leading-[0.85] text-text-primary">
+          THE <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.4)]">ARCHIVE</span>
         </h1>
-        <p className="text-text-secondary max-w-2xl mb-16 font-display font-bold text-xl md:text-2xl leading-tight uppercase tracking-tight">
-          EXPLORE A SYSTEMATIC RECORD OF DAILY REFLECTIONS AND CRITICAL ANALYSES WITHIN THE GLOBAL ECOSYSTEM.
+        <p className="text-text-secondary max-w-3xl mb-24 font-sans font-medium text-xl md:text-2xl leading-relaxed opacity-70 border-l-2 border-accent/30 pl-8">
+          A SECURE REPOSITORY OF SYSTEMATIC ANALYSES, TRACKING THE EVOLUTION OF DIGITAL CULTURE AND GLOBAL POLICY ACROSS THE TIMELINE.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-0 border border-border">
-          <div className="md:col-span-6 p-6 md:p-10 border-b md:border-b-0 md:border-r border-border relative group">
-            <Search className="absolute right-10 top-1/2 -translate-y-1/2 text-accent opacity-20 group-focus-within:opacity-100 transition-opacity" size={24} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-border bg-surface/20 backdrop-blur-md">
+          <div className="lg:col-span-6 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border relative group">
+            <Search className="absolute right-12 top-1/2 -translate-y-1/2 text-accent opacity-20 group-focus-within:opacity-100 transition-opacity animate-pulse" size={32} />
             <input 
               type="text" 
-              placeholder="SEARCH_QUERY..."
+              placeholder="INITIATE_SEARCH..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-none outline-none text-2xl md:text-4xl font-display font-black placeholder:text-border placeholder:font-display uppercase tracking-tighter"
+              className="w-full bg-transparent border-none outline-none text-2xl md:text-5xl font-display font-black placeholder:text-text-secondary/20 placeholder:font-display uppercase tracking-tighter text-text-primary"
             />
-            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest">INPUT FIELD [STRING]</div>
+            <div className="text-[10px] font-mono font-black uppercase text-accent mt-6 tracking-[0.3em] flex items-center gap-2">
+               <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" />
+               QUERY_IDENTIFIER [STR]
+            </div>
           </div>
 
-          <div className="md:col-span-4 p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-center">
-            <div className="flex items-center gap-4">
-              <Calendar size={18} className="text-accent" />
+          <div className="lg:col-span-4 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border flex flex-col justify-center bg-surface">
+            <div className="flex items-center gap-4 group/select">
+              <Calendar size={20} className="text-accent group-hover/select:rotate-12 transition-transform" />
               <select 
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="bg-transparent text-sm font-mono font-bold uppercase tracking-[0.2em] outline-none cursor-pointer text-text-primary flex-grow"
+                className="bg-transparent text-sm font-mono font-bold uppercase tracking-[0.3em] outline-none cursor-pointer text-text-primary flex-grow focus:text-accent transition-colors"
               >
-                <option value="all">ALL_MONTHS</option>
+                <option value="all">ALL_TEMPORAL_UNITS</option>
                 {months.map(m => (
                   <option key={m} value={m} className="bg-bg-page">{new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()}</option>
                 ))}
               </select>
             </div>
-            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-4 tracking-widest flex items-center justify-between gap-4">
-              <span>TEMPORAL_FILTER</span>
-              <span className="text-accent">{filteredBlogs.length} ENTRIES_MATCHED</span>
+            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-6 tracking-[0.2em] flex items-center justify-between gap-4">
+              <span className="opacity-40">TEMPORAL_FILTER.EXE</span>
+              <span className="text-secondary-accent">{filteredBlogs.length} NODES_INDEXED</span>
             </div>
           </div>
 
-          <div className="md:col-span-2 p-8 flex items-center justify-center gap-6">
+          <div className="lg:col-span-2 p-8 flex items-center justify-center gap-6 bg-surface/50">
             <button 
               onClick={() => setViewMode('grid')}
               className={cn(
-                "p-4 border transition-all",
-                viewMode === 'grid' ? "bg-accent border-accent text-bg-page" : "border-border text-text-secondary hover:border-accent"
+                "p-5 border transition-all duration-300 relative group",
+                viewMode === 'grid' ? "bg-accent border-accent text-bg-page glow-cyan" : "border-border text-text-secondary hover:border-accent/50"
               )}
             >
-              <LayoutGrid size={20} />
+              <LayoutGrid size={22} />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
             <button 
               onClick={() => setViewMode('list')}
               className={cn(
-                "p-4 border transition-all",
-                viewMode === 'list' ? "bg-accent border-accent text-bg-page" : "border-border text-text-secondary hover:border-accent"
+                "p-5 border transition-all duration-300 relative group",
+                viewMode === 'list' ? "bg-accent border-accent text-bg-page glow-cyan" : "border-border text-text-secondary hover:border-accent/50"
               )}
             >
-              <ListIcon size={20} />
+              <ListIcon size={22} />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </div>
         </div>
       </header>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center gap-6">
-          <div className="w-16 h-1 w-16 bg-border overflow-hidden">
+        <div className="py-32 flex flex-col items-center gap-8">
+          <div className="w-32 h-1 bg-border overflow-hidden rounded-full">
              <motion.div 
-               animate={{ x: [-64, 64] }} 
-               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-               className="w-16 h-full bg-accent"
+                animate={{ x: [-128, 128] }} 
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-32 h-full bg-gradient-to-r from-transparent via-accent to-transparent glow-cyan"
              />
           </div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-text-secondary">SYSTEM_RETRIEVING...</span>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.8em] text-accent animate-pulse">SYSTEM_RETRIEVING_DATA_CORES...</span>
         </div>
       ) : filteredBlogs.length > 0 ? (
         <div className={cn(
-          "grid gap-px bg-border border border-border",
+          "grid gap-6",
           viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}>
           {filteredBlogs.map((blog, idx) => (
             viewMode === 'grid' ? (
-              <div key={blog.id} className="bg-bg-page p-px">
+              <div key={blog.id}>
                 <BlogCard blog={blog} index={idx} isGrid={true} />
               </div>
             ) : (
               <motion.div
                 key={blog.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="group bg-bg-page border-b border-border last:border-b-0 p-8 flex flex-col md:flex-row gap-12 hover:bg-surface transition-all"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05, duration: 0.8 }}
+                className="group bg-surface/30 backdrop-blur-sm border border-border p-8 md:p-12 flex flex-col md:flex-row gap-12 hover:border-accent/30 transition-all relative overflow-hidden"
               >
-                <div className="w-full md:w-80 aspect-video overflow-hidden flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-700">
-                  <img src={blog.image || `https://picsum.photos/seed/${blog.slug}/800/500`} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" referrerPolicy="no-referrer" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity glow-cyan" />
+                <div className="w-full md:w-96 aspect-video overflow-hidden flex-shrink-0 border border-border saturate-50 group-hover:saturate-150 transition-all duration-1000 relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 to-transparent z-10 opacity-40" />
+                  <img src={blog.image || `https://picsum.photos/seed/${blog.slug}/800/500`} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000" referrerPolicy="no-referrer" />
                 </div>
-                <div className="flex flex-col justify-center gap-6 flex-grow">
-                   <div className="flex items-center gap-4">
-                     <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                     <span className="h-px w-8 bg-border" />
+                <div className="flex flex-col justify-center gap-8 flex-grow">
+                   <div className="flex items-center gap-6">
+                     <span className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-accent drop-shadow-[0_0_5px_rgba(0,238,255,0.3)]">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}</span>
+                     <div className="h-[1px] flex-grow bg-border" />
                    </div>
-                   <h3 className="text-3xl md:text-4xl font-display font-black group-hover:text-accent transition-colors leading-tight uppercase tracking-tighter">{blog.title}</h3>
-                   <p className="text-text-secondary font-display font-black text-sm line-clamp-2 max-w-2xl uppercase">{blog.summary}</p>
+                   <h3 className="text-4xl md:text-6xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter text-text-primary">{blog.title}</h3>
+                   <p className="text-text-secondary font-sans font-medium text-lg md:text-xl line-clamp-2 max-w-3xl opacity-70 border-l border-border pl-6">"{blog.summary}"</p>
                    
-                   <div className="flex flex-wrap items-center gap-8 py-6 border-y border-border/50">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[8px] font-mono text-text-secondary uppercase tracking-widest">ACCESS_CODE</span>
-                        <span className="text-xs font-mono font-bold uppercase">{blog.viewsCount || 0}_VIEWS</span>
+                   <div className="flex flex-wrap items-center gap-12">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">METRIC_VIEWS</span>
+                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.viewsCount || 0}_UNIT</span>
                       </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[8px] font-mono text-text-secondary uppercase tracking-widest">SENTIMENT</span>
-                        <span className="text-xs font-mono font-bold uppercase">{blog.likesCount || 0}_POSITIVE</span>
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">ENDORSEMENTS</span>
+                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.likesCount || 0}_REACTIONS</span>
                       </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[8px] font-mono text-text-secondary uppercase tracking-widest">RATING</span>
-                        <span className="text-xs font-mono font-bold uppercase">{blog.ratingAverage?.toFixed(1) || '0.0'} / 5.0</span>
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">STABILITY_GRADE</span>
+                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.ratingAverage?.toFixed(1) || '0.0'} / 5.0_CRIT</span>
                       </div>
+                      <Link to={`/blog/${blog.slug}`} className="ml-auto group/btn flex items-center gap-4 text-accent font-mono font-bold text-xs tracking-[0.4em] hover:translate-x-4 transition-all duration-500">
+                         ACCESS_DATA_STREAM <ChevronRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
+                      </Link>
                    </div>
-
-                   <Link to={`/blog/${blog.slug}`} className="btn-minimal self-start group/btn font-mono">
-                      LOAD_ANALYSIS <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-                   </Link>
                 </div>
               </motion.div>
             )
           ))}
         </div>
       ) : (
-        <div className="py-32 text-center border-2 border-dashed border-border">
-           <Search size={64} className="mx-auto text-border mb-8" />
-           <h3 className="text-3xl font-display font-black uppercase tracking-tighter mb-4">NULL_RESULTS_FOUND</h3>
-           <p className="text-text-secondary font-mono text-xs uppercase tracking-widest">THE REQUESTED QUERY RETURNED NO MATCHING ENTRIES IN THE ARCHIVE.</p>
+        <div className="py-48 text-center border border-dashed border-border bg-surface/10 flex flex-col items-center justify-center">
+           <div className="w-24 h-24 rounded-full border border-accent/20 flex items-center justify-center mb-10 group bg-accent/5">
+             <Search size={40} className="text-accent opacity-40 group-hover:opacity-100 transition-opacity" />
+           </div>
+           <h3 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter mb-6 text-text-primary">NULL_POINTER_EXCEPTION</h3>
+           <p className="text-text-secondary font-mono text-xs uppercase tracking-[0.4em] max-w-sm mx-auto leading-relaxed opacity-60">THE REQUESTED SEARCH PARAMETERS HAVE RETURNED ZERO MATCHING NODES IN THE CORE DATABASE.</p>
         </div>
       )}
     </div>

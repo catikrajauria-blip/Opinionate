@@ -20,11 +20,12 @@ import { UserProfile } from '../types';
 import { statsService } from '../lib/statsService';
 import { pollService } from '../lib/pollService';
 import { policyService, PolicyUpdate } from '../lib/policyService';
+import { wordService, WordOfTheDay } from '../lib/wordService';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
   const [aiLoading, setAiLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'polls' | 'policy'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'news' | 'users' | 'analytics' | 'community' | 'polls' | 'policy' | 'words'>('posts');
   const [blogs, setBlogs] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [allComments, setAllComments] = useState<any[]>([]);
@@ -33,6 +34,7 @@ export default function Admin() {
   const [allSubscribers, setAllSubscribers] = useState<any[]>([]);
   const [allPolls, setAllPolls] = useState<any[]>([]);
   const [allPolicies, setAllPolicies] = useState<PolicyUpdate[]>([]);
+  const [allWords, setAllWords] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState('');
   const [auditSearch, setAuditSearch] = useState('');
   const [archiveSearch, setArchiveSearch] = useState('');
@@ -97,6 +99,7 @@ export default function Admin() {
       if (activeTab === 'community') coreTasks.push(loadCommunityData());
       if (activeTab === 'polls') coreTasks.push(loadPolls());
       if (activeTab === 'policy') coreTasks.push(loadPolicies());
+      if (activeTab === 'words') coreTasks.push(loadWords());
 
       await Promise.all(coreTasks);
     } catch (err) {
@@ -237,6 +240,29 @@ export default function Admin() {
     }
   };
 
+  const handleSeedWordData = async () => {
+    if (!confirm('SEED_LEXICAL_DATASET?_BATCH_DEPLOYING_SAMPLE_WORDS.')) return;
+    setSubmitting(true);
+    try {
+      const sampleWords = [
+        { word: 'AMRIT KAAL', definition: 'The 25-year period until 2047, the centenary of India\'s independence, envisioned as a golden age of development.', usage: 'The Vision 2047 document outlines the roadmap for Amrit Kaal.', date: new Date().toISOString().split('T')[0] },
+        { word: 'ATMANIRBHAR', definition: 'Self-reliant; specifically referring to the Atmanirbhar Bharat initiative for economic independence.', usage: 'India is striving to become atmanirbhar in defense manufacturing.', date: new Date(Date.now() - 86400000).toISOString().split('T')[0] },
+        { word: 'GATI SHAKTI', definition: 'Motive power or infrastructure speed; a national master plan for multi-modal connectivity.', usage: 'PM Gati Shakti is integrating logistics planning across ministries.', date: new Date(Date.now() - 172800000).toISOString().split('T')[0] }
+      ];
+
+      for (const w of sampleWords) {
+        await wordService.addWord(w);
+      }
+      setSuccess(true);
+      loadWords();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
   const handleSeedEconomyData = async () => {
     if (!confirm('SEED_ECONOMY_DATASET?_THIS_WILL_ADD_21_RECORDS.')) return;
     setSubmitting(true);
@@ -314,6 +340,48 @@ export default function Admin() {
       loadPolicies();
     } catch (err: any) {
       alert(`Error: ${err.message}`);
+    }
+  };
+
+  // Word of the Day Form State
+  const [wotdWord, setWotdWord] = useState('');
+  const [wotdDefinition, setWotdDefinition] = useState('');
+  const [wotdUsage, setWotdUsage] = useState('');
+  const [wotdDate, setWotdDate] = useState(new Date().toISOString().split('T')[0]);
+
+  const loadWords = async () => {
+    try {
+      const w = await wordService.getAllWords();
+      setAllWords(w);
+    } catch (err) {
+      console.error('Error loading words:', err);
+    }
+  };
+
+  const handleCreateWord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!wotdWord || !wotdDefinition) return;
+    
+    setSubmitting(true);
+    try {
+      await wordService.addWord({
+        word: wotdWord,
+        definition: wotdDefinition,
+        usage: wotdUsage || undefined,
+        date: wotdDate
+      });
+      
+      setSuccess(true);
+      setWotdWord('');
+      setWotdDefinition('');
+      setWotdUsage('');
+      loadWords();
+    } catch (err: any) {
+      console.error('Error creating word:', err);
+      alert(err.message || 'Error creating word');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
     }
   };
 
@@ -697,40 +765,44 @@ export default function Admin() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 text-text-primary">
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 mb-16 border-b border-border pb-12">
-        <div className="flex flex-col md:flex-row md:items-center gap-8 w-full xl:w-auto">
-          <div className="flex items-center gap-4">
-            <Shield className="text-accent" size={32} />
+    <div className="max-w-7xl mx-auto px-6 md:px-10 py-12 text-text-primary">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-12 mb-20 border-b border-white/5 pb-12 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-accent/0 via-accent/40 to-accent/0" />
+        <div className="flex flex-col lg:flex-row lg:items-center gap-12 w-full xl:w-auto relative z-10">
+          <div className="flex items-center gap-6 group">
+            <div className="p-4 bg-accent/5 border border-accent/20 glow-cyan transition-transform group-hover:scale-110">
+              <Shield className="text-accent animate-pulse" size={32} />
+            </div>
             <div>
-              <h1 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">Command_Central</h1>
-              <p className="text-text-secondary flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest mt-1">
-                ACCESS_LOG: <span className="text-text-primary">{user.email}</span>
+              <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none text-text-primary">Command_Central_v4</h1>
+              <p className="text-text-secondary flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] mt-2 opacity-60">
+                AUTH_STATUS: <span className="text-accent underline">VERIFIED_SECURE</span>
               </p>
             </div>
           </div>
           
-          <nav className="flex flex-wrap gap-x-1 gap-y-1 md:border-l border-border md:pl-8">
+          <nav className="flex flex-wrap gap-2 md:border-l border-white/5 md:pl-12">
             {[
-              { id: 'posts', label: 'ANALYTICS_INPUT', icon: FileText },
-              { id: 'news', label: 'CURATED_FEED', icon: Zap },
-              { id: 'users', label: 'SYSTEM_REGISTRY', icon: Users },
-              { id: 'community', label: 'AUDIENCE_DATA', icon: MessageSquare },
-              { id: 'policy', label: 'POLICY_TRACKER', icon: ShieldCheck },
-              { id: 'analytics', label: 'CORE_METRICS', icon: PieChart },
-              { id: 'polls', label: 'OPINION_MATTERS', icon: BarChart3 }
+              { id: 'posts', label: 'POSTS::GEN', icon: FileText },
+              { id: 'news', label: 'NEWS::SYNC', icon: Zap },
+              { id: 'users', label: 'USER::LOG', icon: Users },
+              { id: 'community', label: 'COMM::INTEL', icon: MessageSquare },
+              { id: 'policy', label: 'POLICY::X', icon: ShieldCheck },
+              { id: 'words', label: 'LEX::UNIT', icon: FileText },
+              { id: 'analytics', label: 'CORE::META', icon: PieChart },
+              { id: 'polls', label: 'VOX::POP', icon: BarChart3 }
             ].map((tab) => (
               <button 
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all relative flex items-center gap-2",
+                  "px-5 py-3 text-[9px] font-mono font-bold uppercase tracking-[0.3em] transition-all relative flex items-center gap-3 border backdrop-blur-sm",
                   activeTab === tab.id 
-                    ? "text-accent bg-accent/5 border border-accent/20" 
-                    : "text-text-secondary hover:text-text-primary border border-transparent hover:border-border"
+                    ? "text-accent bg-accent/10 border-accent/40 glow-cyan" 
+                    : "text-text-secondary hover:text-text-primary border-white/5 hover:border-white/20 bg-white/5"
                 )}
               >
-                <tab.icon size={12} />
+                <tab.icon size={14} className={cn(activeTab === tab.id ? "text-accent" : "opacity-30")} />
                 {tab.label}
               </button>
             ))}
@@ -738,9 +810,9 @@ export default function Admin() {
         </div>
         <button 
           onClick={() => signOut(auth)}
-          className="btn-minimal px-6 py-3 font-mono text-[10px] gap-3"
+          className="flex items-center gap-4 px-8 py-4 bg-red-500/5 border border-red-500/20 text-red-500 font-mono font-black uppercase tracking-[0.4em] text-[10px] hover:bg-red-500 hover:text-white transition-all glow-pink/10"
         >
-          <LogOut size={14} /> TERMINATE_SESSION
+          <LogOut size={16} /> TERMINATE_SESSION_CORE
         </button>
       </div>
 
@@ -1145,11 +1217,11 @@ export default function Admin() {
                       </h3>
 
                       <div className="space-y-4 flex-grow mb-8 font-mono">
-                        {p.options.map((opt: string, idx: number) => {
+                        {p.options.map((opt: string) => {
                           const votes = p.results[opt] || 0;
                           const perc = p.totalVotes > 0 ? Math.round((votes / p.totalVotes) * 100) : 0;
                           return (
-                            <div key={idx} className="space-y-1">
+                            <div key={opt} className="space-y-1">
                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-text-secondary opacity-60">
                                   <span>{opt}</span>
                                   <span>{votes} ({perc}%)</span>
@@ -1324,6 +1396,94 @@ export default function Admin() {
                   </div>
                </div>
              </div>
+           ) : activeTab === 'words' ? (
+              <div className="space-y-12">
+                <form onSubmit={handleCreateWord} className="bg-bg-page p-10 border border-border space-y-12">
+                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
+                      <div>
+                        <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
+                           Vocabulary_Asset_Deployment
+                        </h2>
+                        <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">LINGUISTIC_MAINTENANCE_MODULE</p>
+                      </div>
+                      <div className="flex flex-wrap gap-4">
+                        <button 
+                          type="button"
+                          onClick={handleSeedWordData}
+                          className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
+                        >
+                          <Zap size={14} /> SEED_LEXICAL_DATASET
+                        </button>
+                        {success && activeTab === 'words' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
+                              <CheckCircle2 size={14} /> LEXICON_UPDATED.
+                            </motion.div>
+                        )}
+                      </div>
+                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Word_Asset</label>
+                        <input 
+                           type="text" required value={wotdWord} onChange={(e) => setWotdWord(e.target.value)}
+                           className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
+                           placeholder="SPECIFY_WORD..."
+                        />
+                     </div>
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Activation_Date</label>
+                        <input 
+                           type="date" required value={wotdDate} onChange={(e) => setWotdDate(e.target.value)}
+                           className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="space-y-4">
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Operational_Definition</label>
+                     <textarea 
+                        required value={wotdDefinition} onChange={(e) => setWotdDefinition(e.target.value)}
+                        rows={3}
+                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-sm leading-relaxed"
+                        placeholder="DEFINE_SEMANTICS..."
+                     />
+                  </div>
+
+                  <div className="space-y-4">
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Contextual_Usage</label>
+                     <textarea 
+                        value={wotdUsage} onChange={(e) => setWotdUsage(e.target.value)}
+                        rows={2}
+                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-sm leading-relaxed"
+                        placeholder="DEMONSTRATE_APPLICATION..."
+                     />
+                  </div>
+
+                  <button 
+                    disabled={submitting}
+                    className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
+                  >
+                    {submitting ? 'COMMITTING_TO_LEXICON...' : 'DEPLOY_WORD_OF_DAY'}
+                  </button>
+                </form>
+
+                <div className="space-y-8">
+                   <h3 className="text-xl font-display font-black uppercase tracking-tighter border-l-4 border-accent pl-6">
+                      Lexical_History_Registry
+                   </h3>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {allWords.map((w) => (
+                         <div key={w.id} className="bg-surface border border-border p-8 hover:border-accent transition-all group">
+                            <p className="text-[8px] font-mono font-bold opacity-30 uppercase mb-4 tracking-widest">{w.date}</p>
+                            <h4 className="text-2xl font-display font-black uppercase tracking-tighter mb-4 text-accent">{w.word}</h4>
+                            <p className="text-xs text-text-secondary leading-tight mb-6 line-clamp-3 italic">"{w.definition}"</p>
+                         </div>
+                      ))}
+                      {allWords.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20 border border-border border-dashed">Lexical registry is currently empty.</p>}
+                   </div>
+                </div>
+              </div>
            ) : activeTab === 'community' ? (
             <div className="space-y-12">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -1552,10 +1712,10 @@ export default function Admin() {
                            <div className="space-y-6">
                               <p className="text-lg font-display font-black uppercase tracking-tight leading-tight">{allPolls[0].question}</p>
                               <div className="space-y-3">
-                                 {allPolls[0].options.map((opt: string, idx: number) => {
+                                 {allPolls[0].options.map((opt: string) => {
                                     const perc = allPolls[0].totalVotes > 0 ? Math.round((allPolls[0].results[opt] / allPolls[0].totalVotes) * 100) : 0;
                                     return (
-                                       <div key={idx} className="space-y-1">
+                                       <div key={opt} className="space-y-1">
                                           <div className="flex justify-between text-[8px] font-mono font-bold uppercase opacity-60">
                                              <span>{opt}</span>
                                              <span>{perc}%</span>
@@ -1654,8 +1814,8 @@ export default function Admin() {
                                <span className="text-xl font-display font-black text-accent">{selectedBlogAnalysis.highRatings.length}</span>
                             </div>
                             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                               {selectedBlogAnalysis.highRatings.map((r: any, idx: number) => (
-                                 <div key={idx} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-accent transition-all">
+                               {selectedBlogAnalysis.highRatings.map((r: any) => (
+                                 <div key={r.id || r.userId} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-accent transition-all">
                                     <div className="w-10 h-10 bg-accent/10 border border-accent/20 text-accent flex items-center justify-center text-xs font-mono font-bold">
                                        {r.score}.0
                                     </div>
@@ -1677,8 +1837,8 @@ export default function Admin() {
                                <span className="text-xl font-display font-black text-red-500">{selectedBlogAnalysis.lowRatings.length}</span>
                             </div>
                             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                               {selectedBlogAnalysis.lowRatings.map((r: any, idx: number) => (
-                                 <div key={idx} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-red-500/30 transition-all">
+                               {selectedBlogAnalysis.lowRatings.map((r: any) => (
+                                 <div key={r.id || r.userId} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-red-500/30 transition-all">
                                     <div className="w-10 h-10 bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center text-xs font-mono font-bold">
                                        {r.score}.0
                                     </div>
@@ -1758,8 +1918,8 @@ export default function Admin() {
                  <FileText size={16} /> ARCHIVE_LOG
               </h3>
               <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
-                 {blogs.filter(b => b.title.toLowerCase().includes(archiveSearch.toLowerCase())).map((b, i) => (
-                    <div key={i} className="group border-b border-border pb-6 last:border-0 last:pb-0">
+                 {blogs.filter(b => b.title.toLowerCase().includes(archiveSearch.toLowerCase())).map((b) => (
+                    <div key={b.id} className="group border-b border-border pb-6 last:border-0 last:pb-0">
                        <div className="flex items-start gap-4 mb-3">
                           <div className="w-8 h-8 bg-surface border border-border flex items-center justify-center flex-shrink-0 group-hover:bg-accent group-hover:text-bg-page transition-all">
                              <Plus size={14} />

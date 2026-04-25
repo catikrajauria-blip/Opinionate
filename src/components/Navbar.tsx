@@ -8,12 +8,22 @@ import { useAuth } from '../contexts/AuthContext';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const { profile, signOut, isAdmin: isUserAdmin } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
+    // Initial theme check
+    const isDark = document.documentElement.classList.contains('dark') || 
+                  (!('light' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setIsDarkMode(isDark);
+    if (!isDark) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -22,8 +32,15 @@ export default function Navbar() {
   }, []);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
   };
 
   const navLinks = [
@@ -39,34 +56,35 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-border bg-bg-page py-4'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 bg-bg-page/80 backdrop-blur-xl py-5 md:py-6'
       )}
     >
-      <div className="max-w-7xl mx-auto px-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-display font-black text-2xl tracking-tighter uppercase transition-all duration-300 group-hover:scale-105 group-hover:text-accent flex items-center gap-1">
-              OPINIO<span className="text-accent italic">N</span>ATE.
+          <Link to="/" className="flex items-center gap-2 group relative">
+            <span className="font-display font-black text-2xl md:text-3xl tracking-tighter uppercase transition-all duration-300 group-hover:text-accent flex items-center gap-1">
+              OPINIO<span className="text-secondary-accent animate-pulse font-mono font-bold">[N]</span>ATE.
             </span>
+            <div className="absolute -bottom-1 left-0 w-full h-[1px] bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left glow-cyan" />
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-10">
+          <div className="hidden md:flex items-center gap-8 lg:gap-12">
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
                   cn(
-                    'text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all py-1 relative group',
-                    isActive ? 'text-accent' : 'text-text-secondary hover:text-accent'
+                    'text-[10px] font-mono font-bold uppercase tracking-[0.3em] transition-all py-1 relative group',
+                    isActive ? 'text-accent drop-shadow-[0_0_8px_rgba(0,238,255,0.5)]' : 'text-text-secondary hover:text-accent'
                   )
                 }
               >
                 {link.name}
                 <span className={cn(
-                  "absolute -bottom-1 left-0 h-0.5 bg-accent transition-all duration-300",
-                  "w-0 group-hover:w-full"
+                  "absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-accent rounded-full opacity-0 transition-opacity",
+                  "group-hover:opacity-100 glow-cyan"
                 )} />
               </NavLink>
             ))}
