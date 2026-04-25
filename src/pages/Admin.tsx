@@ -132,6 +132,37 @@ export default function Admin() {
     }
   };
 
+  const handleSeedInfraData = async () => {
+    if (!confirm('SEED_INFRASTRUCTURE_DATASET?_THIS_WILL_ADD_10_RECORDS.')) return;
+    setSubmitting(true);
+    try {
+      const seeds = [
+        { sector: "Infrastructure", title: "Make in India (Infra foundation)", date: "2014-01-01", description: "Industrial corridors, smart cities, and logistics infrastructure development started. Focused on making India a manufacturing hub with strong infrastructure backbone." },
+        { sector: "Infrastructure", title: "Smart Cities Mission", date: "2015-01-01", description: "Development of 100 cities with modern transport, power, and utilities. Created infrastructure-ready urban industrial clusters." },
+        { sector: "Infrastructure", title: "Bharatmala Pariyojana", date: "2016-01-01", description: "Economic corridors and national highways expansion. Reduced transport time for manufacturing supply chains." },
+        { sector: "Infrastructure", title: "Sagarmala Programme", date: "2016-06-01", description: "Port modernization and coastal industrial zones. Boosted export-oriented manufacturing." },
+        { sector: "Infrastructure", title: "Dedicated Freight Corridor", date: "2018-01-01", description: "High-speed freight rail network for cargo. Reduced logistics cost for industries." },
+        { sector: "Infrastructure", title: "National Infrastructure Pipeline", date: "2019-01-01", description: "₹100 lakh crore infrastructure investment roadmap. Covered roads, railways, power, logistics, ports." },
+        { sector: "Infrastructure", title: "PM Gati Shakti National Master Plan", date: "2021-10-13", description: "Integrated infrastructure planning across ministries. Improved connectivity for industrial zones." },
+        { sector: "Infrastructure", title: "National Logistics Policy", date: "2022-09-17", description: "Reduced logistics cost and improved supply chain. Focused on multimodal transport infrastructure." },
+        { sector: "Infrastructure", title: "Industrial Corridor Development Programme", date: "2023-01-01", description: "Smart industrial cities along major freight corridors. Boosted manufacturing infrastructure." },
+        { sector: "Infrastructure", title: "Multi Modal Logistics Parks", date: "2024-01-01", description: "Large logistics hubs integrating rail, road, warehousing. Improves freight handling and reduces cost." }
+      ];
+
+      for (const s of seeds) {
+        await policyService.addUpdate(s as any);
+      }
+      
+      setSuccess(true);
+      loadPolicies();
+    } catch (err: any) {
+      alert(err.message || 'Error seeding data');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
   const handleCreatePolicy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!policyTitle || !policyDesc || !policyDate) return;
@@ -1050,6 +1081,13 @@ export default function Admin() {
                        <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">POLICY_MONITORING_MODULE</p>
                      </div>
                      <div className="flex flex-wrap gap-4">
+                       <button 
+                         type="button"
+                         onClick={handleSeedInfraData}
+                         className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
+                       >
+                         <Zap size={14} /> SEED_INFRA_DATASET
+                       </button>
                        {success && (
                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
                              <CheckCircle2 size={14} /> COMMITTED_TO_TIMELINE.
