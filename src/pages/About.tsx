@@ -39,7 +39,7 @@ export default function About() {
               I started OPINIONATE as a platform for critical inquiry. In an era where information moves at the speed of an algorithm, I believe there is immense value in slowing down to analyze the "why" behind the headlines.
             </p>
             <p>
-              My background encompasses a deep interest in software development and the digital economy. You can explore my full professional journey and technical projects on my <a href="https://kartik-portfolio-bwge.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-text-primary underline decoration-border hover:decoration-black transition-all">personal portfolio</a>.
+              My background encompasses a deep interest in software development and the digital economy. You can explore my full professional journey and technical projects on my <a href="https://kartik-portfolio-bwge.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-text-primary underline decoration-border hover:decoration-accent transition-all">personal portfolio</a>.
             </p>
             
             <div className="bg-surface border border-border p-8 rounded-xl my-12 italic">

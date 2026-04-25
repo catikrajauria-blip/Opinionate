@@ -38,10 +38,10 @@ export default function Login() {
   if (profile?.isBlocked) {
     return (
       <div className="max-w-md mx-auto py-20 px-4 text-center">
-        <div className="bg-red-50 p-10 rounded-[2.5rem] border border-red-100">
+        <div className="bg-red-500/5 p-10 border border-red-500/20">
           <AlertTriangle size={48} className="text-red-500 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-red-900 mb-4">Account Blocked</h2>
-          <p className="text-red-700 font-display font-black leading-relaxed">
+          <h2 className="text-2xl font-bold text-red-500 mb-4">Account Blocked</h2>
+          <p className="text-text-secondary font-display font-medium leading-relaxed">
             Your account has been blocked by the administrator. Please contact support if you believe this is an error.
           </p>
         </div>
@@ -54,7 +54,7 @@ export default function Login() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-surface/30 backdrop-blur-xl p-10 md:p-14 border border-white/5 relative overflow-hidden group"
+        className="bg-surface/30 backdrop-blur-xl p-10 md:p-14 border border-border relative overflow-hidden group"
       >
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-accent/5 blur-3xl rounded-full group-hover:bg-accent/10 transition-colors" />
@@ -65,7 +65,7 @@ export default function Login() {
            <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-accent" />
         </div>
         
-        <h1 className="text-4xl font-display font-black mb-4 text-white uppercase tracking-tighter">Initialize_Auth</h1>
+        <h1 className="text-4xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter">Initialize_Auth</h1>
         <p className="text-text-secondary mb-10 font-mono font-bold leading-relaxed text-[11px] uppercase tracking-widest opacity-60">
           UPLINK REQUIRED TO ACCESS CORE MODULES, RATE ANALYTICS, AND PARTICIPATE IN SYNCHRONOUS POLLS.
         </p>
@@ -105,9 +105,9 @@ export default function Login() {
         </button>
 
         <div className="mt-10 flex items-center justify-center gap-3 opacity-30">
-          <div className="h-[1px] flex-1 bg-white/10" />
+          <div className="h-[1px] flex-1 bg-border" />
           <span className="text-[9px] font-mono font-bold uppercase tracking-[0.5em]">SECURE_UPLINK</span>
-          <div className="h-[1px] flex-1 bg-white/10" />
+          <div className="h-[1px] flex-1 bg-border" />
         </div>
 
         <p className="mt-8 text-[9px] text-text-secondary font-mono font-bold uppercase tracking-[0.3em] leading-relaxed opacity-40">

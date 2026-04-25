@@ -766,7 +766,7 @@ export default function Admin() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-10 py-12 text-text-primary">
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-12 mb-20 border-b border-white/5 pb-12 relative overflow-hidden">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-12 mb-20 border-b border-border pb-12 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-accent/0 via-accent/40 to-accent/0" />
         <div className="flex flex-col lg:flex-row lg:items-center gap-12 w-full xl:w-auto relative z-10">
           <div className="flex items-center gap-6 group">
@@ -775,13 +775,13 @@ export default function Admin() {
             </div>
             <div>
               <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none text-text-primary">Command_Central_v4</h1>
-              <p className="text-text-secondary flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] mt-2 opacity-60">
+              <p className="text-text-secondary flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] mt-2">
                 AUTH_STATUS: <span className="text-accent underline">VERIFIED_SECURE</span>
               </p>
             </div>
           </div>
           
-          <nav className="flex flex-wrap gap-2 md:border-l border-white/5 md:pl-12">
+          <nav className="flex flex-wrap gap-2 md:border-l border-border md:pl-12">
             {[
               { id: 'posts', label: 'POSTS::GEN', icon: FileText },
               { id: 'news', label: 'NEWS::SYNC', icon: Zap },
@@ -799,7 +799,7 @@ export default function Admin() {
                   "px-5 py-3 text-[9px] font-mono font-bold uppercase tracking-[0.3em] transition-all relative flex items-center gap-3 border backdrop-blur-sm",
                   activeTab === tab.id 
                     ? "text-accent bg-accent/10 border-accent/40 glow-cyan" 
-                    : "text-text-secondary hover:text-text-primary border-white/5 hover:border-white/20 bg-white/5"
+                    : "text-text-secondary hover:text-accent border-border hover:border-accent/40 bg-surface/50"
                 )}
               >
                 <tab.icon size={14} className={cn(activeTab === tab.id ? "text-accent" : "opacity-30")} />
@@ -810,7 +810,7 @@ export default function Admin() {
         </div>
         <button 
           onClick={() => signOut(auth)}
-          className="flex items-center gap-4 px-8 py-4 bg-red-500/5 border border-red-500/20 text-red-500 font-mono font-black uppercase tracking-[0.4em] text-[10px] hover:bg-red-500 hover:text-white transition-all glow-pink/10"
+          className="flex items-center gap-4 px-8 py-4 bg-red-500/5 border border-red-500/20 text-red-500 font-mono font-black uppercase tracking-[0.4em] text-[10px] hover:bg-red-500 hover:text-bg-page transition-all glow-pink/10"
         >
           <LogOut size={16} /> TERMINATE_SESSION_CORE
         </button>
@@ -1007,7 +1007,7 @@ export default function Admin() {
                       </div>
                       <button 
                         onClick={() => handleDeleteNews(item.id)}
-                        className="flex items-center gap-3 text-red-500 hover:bg-red-500 hover:text-white transition-all px-4 py-2 border border-red-500/20 text-[10px] uppercase font-mono font-bold tracking-widest"
+                        className="flex items-center gap-3 text-red-500 hover:bg-red-500 hover:text-bg-page transition-all px-4 py-2 border border-red-500/20 text-[10px] uppercase font-mono font-bold tracking-widest"
                       >
                         <Trash2 size={14} />
                         <span>PURGE</span>
@@ -1099,7 +1099,7 @@ export default function Admin() {
                                      title={u.isBlocked ? "RESTORE_ACCESS" : "REVOKE_ACCESS"}
                                      className={cn(
                                        "p-3 border transition-all",
-                                       u.isBlocked ? "border-green-500/20 text-green-500 hover:bg-green-500 hover:text-white" : "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white"
+                                       u.isBlocked ? "border-green-500/20 text-green-500 hover:bg-green-500 hover:text-bg-page" : "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-bg-page"
                                      )}
                                    >
                                       {u.isBlocked ? <Shield size={16} /> : <ShieldAlert size={16} />}
@@ -1567,7 +1567,7 @@ export default function Admin() {
                                  <span className="text-[9px] font-mono text-text-secondary opacity-30 uppercase">{formatDate(msg.createdAt)}</span>
                                  <button 
                                    onClick={() => handleDeleteMessage(msg.id)}
-                                   className="mt-2 p-2 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white border border-red-500/20"
+                                   className="mt-2 p-2 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-bg-page border border-red-500/20"
                                  >
                                    <Trash2 size={12} />
                                  </button>
@@ -1716,7 +1716,7 @@ export default function Admin() {
                                     const perc = allPolls[0].totalVotes > 0 ? Math.round((allPolls[0].results[opt] / allPolls[0].totalVotes) * 100) : 0;
                                     return (
                                        <div key={opt} className="space-y-1">
-                                          <div className="flex justify-between text-[8px] font-mono font-bold uppercase opacity-60">
+                                          <div className="flex justify-between text-[8px] font-mono font-bold uppercase">
                                              <span>{opt}</span>
                                              <span>{perc}%</span>
                                           </div>
@@ -1727,13 +1727,13 @@ export default function Admin() {
                                     );
                                  })}
                               </div>
-                              <div className="pt-4 flex justify-between items-center text-[8px] font-mono font-bold uppercase text-text-secondary opacity-30">
+                              <div className="pt-4 flex justify-between items-center text-[8px] font-mono font-bold uppercase text-text-secondary">
                                  <span>TOTAL_RESPONSES: {allPolls[0].totalVotes}</span>
                                  <span className="text-accent">{allPolls[0].status}</span>
                               </div>
                            </div>
                         ) : (
-                           <p className="text-[10px] font-mono text-text-secondary opacity-30 uppercase">NO_INTEL_RECORDS_FOUND</p>
+                           <p className="text-[10px] font-mono text-text-secondary uppercase">NO_INTEL_RECORDS_FOUND</p>
                         )}
                      </div>
                   </aside>
@@ -1745,13 +1745,13 @@ export default function Admin() {
                           <p className="font-display font-bold text-lg text-text-primary uppercase tracking-tight group-hover:text-accent transition-colors mb-4">{b.title}</p>
                           <div className="flex flex-wrap items-center gap-3">
                             <div className="text-[10px] font-mono font-bold text-text-secondary flex items-center gap-2 border border-border px-3 py-1.5 bg-bg-page/50">
-                              <Eye size={12} className="text-accent" /> {b.viewsCount || 0} <span className="opacity-30 uppercase font-sans">Reads</span>
+                              <Eye size={12} className="text-accent" /> {b.viewsCount || 0} <span className="uppercase font-sans">Reads</span>
                             </div>
                             <div className="text-[10px] font-mono font-bold text-text-secondary flex items-center gap-2 border border-border px-3 py-1.5 bg-bg-page/50">
-                              <Star size={12} className="text-red-500" /> {b.likesCount || 0} <span className="opacity-30 uppercase font-sans">Likes</span>
+                              <Star size={12} className="text-red-500" /> {b.likesCount || 0} <span className="uppercase font-sans">Likes</span>
                             </div>
                             <div className="text-[10px] font-mono font-bold text-text-secondary flex items-center gap-2 border border-border px-3 py-1.5 bg-bg-page/50">
-                              <Shield size={12} className="text-yellow-600" /> {b.ratingAverage?.toFixed(1) || '0.0'} <span className="opacity-30 uppercase font-sans">Grade</span>
+                              <Shield size={12} className="text-yellow-600" /> {b.ratingAverage?.toFixed(1) || '0.0'} <span className="uppercase font-sans">Grade</span>
                             </div>
                           </div>
                        </div>
@@ -1814,8 +1814,8 @@ export default function Admin() {
                                <span className="text-xl font-display font-black text-accent">{selectedBlogAnalysis.highRatings.length}</span>
                             </div>
                             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                               {selectedBlogAnalysis.highRatings.map((r: any) => (
-                                 <div key={r.id || r.userId} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-accent transition-all">
+                               {selectedBlogAnalysis.highRatings.map((r: any, idx: number) => (
+                                 <div key={r.id || `${r.userId}-${idx}`} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-accent transition-all">
                                     <div className="w-10 h-10 bg-accent/10 border border-accent/20 text-accent flex items-center justify-center text-xs font-mono font-bold">
                                        {r.score}.0
                                     </div>
@@ -1837,8 +1837,8 @@ export default function Admin() {
                                <span className="text-xl font-display font-black text-red-500">{selectedBlogAnalysis.lowRatings.length}</span>
                             </div>
                             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                               {selectedBlogAnalysis.lowRatings.map((r: any) => (
-                                 <div key={r.id || r.userId} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-red-500/30 transition-all">
+                               {selectedBlogAnalysis.lowRatings.map((r: any, idx: number) => (
+                                 <div key={r.id || `${r.userId}-${idx}`} className="flex items-center gap-5 p-5 bg-bg-page border border-border hover:border-red-500/30 transition-all">
                                     <div className="w-10 h-10 bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center text-xs font-mono font-bold">
                                        {r.score}.0
                                     </div>
@@ -1876,12 +1876,12 @@ export default function Admin() {
               </h3>
               <div className="space-y-10">
                  <div className="border-b border-border pb-6">
-                    <p className="text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest mb-3 opacity-40">READER_STREAMS</p>
+                    <p className="text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest mb-3">READER_STREAMS</p>
                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.totalViews}</p>
                  </div>
                  
                  <div className="pt-2">
-                    <p className="text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest mb-6 opacity-40">CLASSIFICATION_BREAKDOWN</p>
+                    <p className="text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest mb-6">CLASSIFICATION_BREAKDOWN</p>
                     <div className="grid grid-cols-2 gap-4">
                        <div className="bg-bg-page border border-border p-4 group-hover:border-accent/40 transition-colors">
                           <p className="text-[9px] font-mono uppercase tracking-widest opacity-40 mb-1">FIN</p>
@@ -1903,7 +1903,7 @@ export default function Admin() {
                  </div>
 
                  <div className="flex justify-between items-end border-b border-border pb-6 pt-4">
-                    <span className="text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest opacity-40">OPINION_ARCHIVES</span>
+                    <span className="text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest">OPINION_ARCHIVES</span>
                     <span className="text-3xl font-display font-black text-text-primary">{blogs.length}</span>
                  </div>
                  <div className="flex justify-between items-end border-b border-border pb-6">
@@ -1939,7 +1939,7 @@ export default function Admin() {
                           </p>
                           <button
                             onClick={() => handleDeleteBlog(b.id)}
-                            className="p-2 border border-border text-red-500 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                            className="p-2 border border-border text-red-500 hover:bg-red-500 hover:text-bg-page transition-all opacity-0 group-hover:opacity-100"
                           >
                             <Trash2 size={12} />
                           </button>

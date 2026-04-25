@@ -105,7 +105,7 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
                   "transition-all duration-300",
                   (hoverRating || userRating) >= star
                     ? "text-orange-500 fill-orange-500"
-                    : "text-text-secondary/20"
+                    : "text-text-secondary/40"
                 )}
               />
               {!hasRated && hoverRating === star && (
@@ -122,7 +122,7 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
          <span className={cn(
             "px-3 py-1 rounded-lg border",
             hasRated 
-              ? "bg-green-500/5 text-green-600 border-green-500/20" 
+              ? "bg-green-500/5 text-green-500 border-green-500/20" 
               : "bg-surface text-text-secondary border-border"
          )}>
             {blog.ratingAverage > 0 ? blog.ratingAverage.toFixed(1) : 'PENDING'} <span className="opacity-40">/ 5.0</span>
@@ -137,7 +137,7 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
           <motion.p 
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[10px] text-green-600 font-bold uppercase tracking-wider mt-1"
+            className="text-[10px] text-green-500 font-bold uppercase tracking-wider mt-1"
           >
             Thanks for rating!
           </motion.p>

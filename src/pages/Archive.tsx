@@ -54,13 +54,13 @@ export default function Archive() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-border bg-surface/20 backdrop-blur-md">
           <div className="lg:col-span-6 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border relative group">
-            <Search className="absolute right-12 top-1/2 -translate-y-1/2 text-accent opacity-20 group-focus-within:opacity-100 transition-opacity animate-pulse" size={32} />
+            <Search className="absolute right-12 top-1/2 -translate-y-1/2 text-accent opacity-30 group-focus-within:opacity-100 transition-opacity animate-pulse" size={32} />
             <input 
               type="text" 
               placeholder="INITIATE_SEARCH..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-none outline-none text-2xl md:text-5xl font-display font-black placeholder:text-text-secondary/20 placeholder:font-display uppercase tracking-tighter text-text-primary"
+              className="w-full bg-transparent border-none outline-none text-2xl md:text-5xl font-display font-black placeholder:text-text-secondary/40 placeholder:font-display uppercase tracking-tighter text-text-primary"
             />
             <div className="text-[10px] font-mono font-black uppercase text-accent mt-6 tracking-[0.3em] flex items-center gap-2">
                <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" />

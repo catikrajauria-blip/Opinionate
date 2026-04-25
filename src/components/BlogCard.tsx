@@ -118,7 +118,7 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           
           <p className={cn(
             "font-sans font-medium text-text-secondary leading-relaxed mb-10 opacity-80",
-            isGrid ? "text-[13px] line-clamp-3" : "text-xl md:text-2xl max-w-3xl border-l border-white/10 pl-6"
+            isGrid ? "text-[13px] line-clamp-3" : "text-xl md:text-2xl max-w-3xl border-l border-border pl-6"
           )}>
             "{blog.summary}"
           </p>
@@ -138,6 +138,8 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
              >
                 <motion.div
                   animate={hasLiked ? { scale: [1, 1.4, 1], rotate: [0, -15, 0] } : { scale: 1 }}
+                   whileHover={{ scale: 1.2 }}
+                   whileTap={{ scale: 0.8 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
                   <Heart size={12} className={cn(

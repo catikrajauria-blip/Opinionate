@@ -79,9 +79,9 @@ export default function CommentSection({ blogId }: CommentSectionProps) {
   const getReplies = (parentId: string) => comments.filter(c => c.parentId === parentId);
 
   return (
-    <section className="mt-16 pt-16 border-t border-gray-100">
+    <section className="mt-16 pt-16 border-t border-border">
       <div className="flex items-center gap-3 mb-10">
-        <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+        <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center text-accent">
           <MessageSquare size={20} />
         </div>
         <h2 className="text-2xl font-display font-bold">Comments ({comments.length})</h2>
@@ -152,7 +152,7 @@ export default function CommentSection({ blogId }: CommentSectionProps) {
         </AnimatePresence>
         
         {!loading && comments.length === 0 && (
-          <div className="text-center py-10 text-gray-400 font-medium">
+          <div className="text-center py-10 text-text-secondary opacity-40 font-medium">
             No comments yet. Be the first to start the conversation!
           </div>
         )}
@@ -205,7 +205,7 @@ function CommentItem({ comment, onReply, replies }: { comment: Comment, onReply:
       </div>
 
       {showReplies && replies.length > 0 && (
-        <div className="ml-16 mt-6 space-y-6 border-l-2 border-gray-50 pl-6">
+        <div className="ml-16 mt-6 space-y-6 border-l-2 border-border pl-6">
           {replies.map(reply => (
              <CommentItem key={reply.id} comment={reply} onReply={onReply} replies={[]} />
           ))}

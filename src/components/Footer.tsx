@@ -36,7 +36,7 @@ export default function Footer() {
                  { name: 'Newsletter', path: '/newsletter' }
                ].map((item) => (
                  <li key={item.name}>
-                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-white transition-all">
+                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
                      <span className="w-0 group-hover:w-4 h-[1px] bg-accent transition-all duration-300 mr-0 group-hover:mr-3"></span>
                      {item.name}
                    </Link>
@@ -53,7 +53,7 @@ export default function Footer() {
                  { name: 'Contact_Port', path: '/contact' }
                ].map((item) => (
                  <li key={item.name}>
-                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-white transition-all">
+                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
                      <span className="w-0 group-hover:w-4 h-[1px] bg-accent transition-all duration-300 mr-0 group-hover:mr-3"></span>
                      {item.name}
                    </Link>
@@ -75,9 +75,9 @@ export default function Footer() {
           
         </div>
 
-        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-8 text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary/40">
+        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-8 text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-10">
-            <p className="text-text-primary/60">&copy; {new Date().getFullYear()} OPINIONATE_RESERVED.</p>
+            <p className="text-text-primary">&copy; {new Date().getFullYear()} OPINIONATE_RESERVED.</p>
             <Link to="/disclaimer" className="hover:text-accent transition-colors">DISCLAIMER</Link>
             <Link to="/copyright" className="hover:text-accent transition-colors">FAIR_USE</Link>
             <Link to="/terms" className="hover:text-accent transition-colors">PROTOCOL_TERMS</Link>

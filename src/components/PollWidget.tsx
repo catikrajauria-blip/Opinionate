@@ -71,9 +71,9 @@ export default function PollWidget() {
              <div className="w-10 h-[2px] bg-accent glow-cyan"></div>
              <p className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">INTEL_FEEDBACK_LOOP</p>
           </div>
-          <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.95] text-text-primary">
-            {poll.question}
-          </h2>
+                      <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.95] text-text-primary mb-6">
+                        {poll.question}
+                      </h2>
         </div>
 
         <div className="w-full md:w-auto min-w-[340px]">
@@ -139,7 +139,7 @@ export default function PollWidget() {
                      );
                    })}
                    
-                   <p className="text-[9px] font-mono text-text-secondary opacity-40 uppercase tracking-[0.4em] mt-8 pt-6 border-t border-white/5 flex justify-between items-center">
+                   <p className="text-[9px] font-mono text-text-secondary uppercase tracking-[0.4em] mt-8 pt-6 border-t border-border flex justify-between items-center">
                      <span>OPERATIONAL_METRICS</span>
                      <span className="text-accent">{poll.totalVotes} UNIT_LOAD</span>
                    </p>

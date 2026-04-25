@@ -70,7 +70,7 @@ export default function IndianPolicy() {
                   INDIAN_POLICY <br />
                   <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.3)]">GROWTH_ENGINE</span>
                 </h1>
-                <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-medium max-w-3xl border-l-2 border-border pl-8 opacity-70">
+                <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-medium max-w-3xl border-l-2 border-border pl-8 opacity-90">
                   REAL_TIME_MONITORING: SYSTEMATIC TRACKING OF STATE-LED STRATEGIC INITIATIVES DRIVING THE NATION'S INDUSTRIAL EVOLUTION.
                 </p>
               </div>
@@ -87,7 +87,7 @@ export default function IndianPolicy() {
                     <p className="text-6xl font-display font-black tracking-tighter text-text-primary">{updates.length}</p>
                  </div>
                  <div className="bg-surface/50 backdrop-blur-md border border-border p-8 min-w-[240px]">
-                    <p className="text-[11px] font-mono font-bold text-secondary-accent uppercase tracking-widest mb-4 opacity-60">LAST_INDEX_CMT</p>
+                    <p className="text-[11px] font-mono font-bold text-secondary-accent uppercase tracking-widest mb-4">LAST_INDEX_CMT</p>
                     <p className="text-6xl font-display font-black tracking-tighter text-text-primary">
                       {updates.length > 0 ? new Date(updates[0].date).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }).toUpperCase() : '--'}
                     </p>
@@ -107,8 +107,8 @@ export default function IndianPolicy() {
                     activeSector === sector.name ? "bg-accent/5 border-accent" : "hover:bg-surface/50"
                   )}
                 >
-                   <sector.icon size={32} className={cn("mb-8 transition-all duration-500", sector.color, activeSector === sector.name ? "scale-110 drop-shadow-[0_0_8px_currentColor]" : "opacity-30 grayscale group-hover:opacity-100 group-hover:grayscale-0")} />
-                   <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40 mb-3">MODULE_ID</p>
+                   <sector.icon size={32} className={cn("mb-8 transition-all duration-500", sector.color, activeSector === sector.name ? "scale-110 drop-shadow-[0_0_8px_currentColor]" : "opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0")} />
+                   <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary mb-3">MODULE_ID</p>
                    <h3 className="text-2xl font-display font-black uppercase tracking-tighter text-text-primary transition-colors group-hover:text-accent">{sector.name}</h3>
                    
                    {activeSector === sector.name && (
@@ -162,7 +162,7 @@ export default function IndianPolicy() {
                                  </span>
                                  <div className={isLeft ? "text-left" : "text-right"}>
                                     <p className="text-[10px] font-mono font-bold text-accent uppercase tracking-[0.4em] mb-1">{update.sector}</p>
-                                    <p className="text-[11px] font-mono font-bold text-text-primary uppercase tracking-widest opacity-80">
+                                    <p className="text-[11px] font-mono font-bold text-text-primary uppercase tracking-widest">
                                        {new Date(update.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}
                                     </p>
                                  </div>
@@ -172,7 +172,7 @@ export default function IndianPolicy() {
                                  {update.title}
                               </h2>
 
-                              <p className="text-text-secondary text-base leading-relaxed mb-10 opacity-70 font-sans font-medium">
+                              <p className="text-text-secondary text-base leading-relaxed mb-10 opacity-90 font-sans font-medium">
                                  "{update.description}"
                               </p>
 

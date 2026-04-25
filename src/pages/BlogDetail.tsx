@@ -116,7 +116,7 @@ export default function BlogDetail() {
     <div className="max-w-5xl mx-auto px-4 md:px-6 py-20 text-text-primary">
       <Link 
         to="/archive" 
-        className="inline-flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-accent hover:text-white transition-all mb-20 group"
+        className="inline-flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-accent hover:text-text-primary transition-all mb-20 group"
       >
         <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
         BACK_TO_ENTRIES[ARCHIVE]
@@ -134,7 +134,7 @@ export default function BlogDetail() {
             <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">VOL_04_INDEX // {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] mb-16 tracking-tighter uppercase break-words text-text-primary drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+          <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] mb-16 tracking-tighter uppercase break-words text-text-primary drop-shadow-[0_0_25px_rgba(var(--color-accent),0.1)]">
             {blog.title}
           </h1>
 
@@ -176,9 +176,9 @@ export default function BlogDetail() {
             viewport={{ once: true }}
             className="mb-24 relative group"
           >
-            <div className="absolute inset-0 bg-accent/10 mix-blend-color opacity-50 group-hover:opacity-0 transition-opacity duration-1000" />
-            <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000 border border-border" referrerPolicy="no-referrer" />
-            <div className="absolute inset-0 border-[20px] border-bg-page/20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-accent/5 mix-blend-multiply opacity-50 group-hover:opacity-0 transition-opacity duration-1000" />
+            <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover transition-all duration-1000 border border-border" referrerPolicy="no-referrer" />
+            <div className="absolute inset-0 border-[20px] border-bg-page/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
             <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.6em] mt-6 text-center opacity-40 group-hover:opacity-100 transition-opacity">VISUAL_ANCHOR: {blog.title}</p>
           </motion.div>
         )}

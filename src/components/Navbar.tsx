@@ -56,7 +56,7 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 bg-bg-page/80 backdrop-blur-xl py-5 md:py-6'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-border bg-bg-page/80 backdrop-blur-xl py-5 md:py-6'
       )}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10">
@@ -149,7 +149,7 @@ export default function Navbar() {
                             signOut();
                             setShowProfileMenu(false);
                           }}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                          className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors"
                         >
                           <LogOut size={14} /> Sign Out
                         </button>
@@ -238,7 +238,7 @@ export default function Navbar() {
                         signOut();
                         setIsOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-3 py-4 text-base font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg"
+                      className="w-full flex items-center gap-3 px-3 py-4 text-base font-medium text-red-500 hover:bg-red-500/10 rounded-lg"
                     >
                       <LogOut size={20} />
                       Sign Out

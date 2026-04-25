@@ -50,7 +50,7 @@ export default function SavedBlogs() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-surface p-12 rounded-[2.5rem] border border-border shadow-2xl"
+          className="bg-surface p-12 rounded-[2.5rem] border border-border"
         >
           <div className="w-20 h-20 bg-accent/10 text-accent rounded-3xl flex items-center justify-center mx-auto mb-8 border border-accent/20">
             <Bookmark size={40} />
@@ -61,7 +61,7 @@ export default function SavedBlogs() {
           </p>
           <Link
             to="/login"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-text-primary text-bg-page rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl shadow-black/5"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-text-primary text-bg-page rounded-2xl font-bold hover:glow-cyan transition-all border border-text-primary"
           >
             <LogIn size={20} />
             Sign in to Opinionate
