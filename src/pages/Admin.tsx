@@ -163,6 +163,122 @@ export default function Admin() {
     }
   };
 
+  const handleSeedDefenceData = async () => {
+    if (!confirm('SEED_DEFENCE_DATASET?_THIS_WILL_ADD_13_RECORDS.')) return;
+    setSubmitting(true);
+    try {
+      const seeds = [
+        { sector: "Defence", title: "Make in India (Defence Sector Opening)", date: "2014-09-25", description: "Defence manufacturing opened to private sector and FDI increased. Focus on domestic production of weapons, aircraft, and military equipment. Marked start of self-reliance push in defence." },
+        { sector: "Defence", title: "Defence Procurement Procedure 2016", date: "2016-03-28", description: "Introduced “Buy Indian – IDDM” category (Indigenously Designed, Developed, Manufactured). Prioritized domestic defence companies in procurement." },
+        { sector: "Defence", title: "Strategic Partnership Model", date: "2017-05-01", description: "Allowed private companies to partner with global defence manufacturers. Focus on submarines, fighter jets, helicopters, armored vehicles." },
+        { sector: "Defence", title: "Innovations for Defence Excellence (iDEX)", date: "2018-04-12", description: "Encouraged startups and MSMEs in defence innovation. Funding and support for indigenous defence technology." },
+        { sector: "Defence", title: "Defence Production Policy 2018", date: "2018-08-01", description: "Targeted $26 billion defence production. Focus on exports and domestic manufacturing ecosystem." },
+        { sector: "Defence", title: "Atmanirbhar Bharat Abhiyan (Defence Push)", date: "2020-05-12", description: "Major push for domestic defence manufacturing. Import substitution and local procurement mandates." },
+        { sector: "Defence", title: "Defence Positive Indigenisation List", date: "2020-08-09", description: "Banned import of 101 defence items initially. Encouraged domestic production of weapons systems." },
+        { sector: "Defence", title: "Defence Acquisition Procedure 2020", date: "2020-09-28", description: "Simplified procurement process. Increased preference for Indian manufacturers." },
+        { sector: "Defence", title: "Ordnance Factory Board Corporatisation", date: "2021-10-01", description: "Converted OFB into 7 defence PSUs. Improved efficiency and competitiveness." },
+        { sector: "Defence", title: "Defence Indigenisation Lists Expansion", date: "2022-04-01", description: "Additional defence equipment added to import ban list. Boost to domestic manufacturing." },
+        { sector: "Defence", title: "iDEX Prime", date: "2023-01-01", description: "Higher funding for deep-tech defence startups. Focus on AI, drones, autonomous systems." },
+        { sector: "Defence", title: "Defence Production and Export Promotion Policy update", date: "2024-01-01", description: "Target of ₹35,000 crore defence exports. Push for global defence manufacturing hub." },
+        { sector: "Defence", title: "Defence Industrial Corridors Expansion", date: "2025-01-01", description: "Expansion of UP and Tamil Nadu defence corridors. Focus on local supply chain ecosystem." }
+      ];
+
+      for (const s of seeds) {
+        await policyService.addUpdate(s as any);
+      }
+      
+      setSuccess(true);
+      loadPolicies();
+    } catch (err: any) {
+      alert(err.message || 'Error seeding data');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  const handleSeedTechData = async () => {
+    if (!confirm('SEED_TECH_DATASET?_THIS_WILL_ADD_19_RECORDS.')) return;
+    setSubmitting(true);
+    try {
+      const seeds = [
+        { sector: "Tech", title: "Digital India Launched", date: "2015-07-01", description: "Aimed to transform India into a digitally empowered economy. Focus on broadband, digital services, digital governance, and digital infrastructure." },
+        { sector: "Tech", title: "Startup India", date: "2016-01-16", description: "Tax benefits, funding support, and ease of compliance for startups. Boosted tech startups in AI, SaaS, fintech, and deep tech." },
+        { sector: "Tech", title: "BHIM UPI", date: "2017-06-29", description: "Government-backed digital payments ecosystem. Enabled fintech innovation and digital commerce growth." },
+        { sector: "Tech", title: "National Digital Communications Policy", date: "2018-06-01", description: "Focused on 5G, fiber connectivity, and IoT infrastructure. Targeted digital economy expansion." },
+        { sector: "Tech", title: "National Supercomputing Mission", date: "2018-02-28", description: "Development of high-performance computing infrastructure. Supports AI, weather, defense, and research." },
+        { sector: "Tech", title: "AI for All Strategy", date: "2018-07-12", description: "National AI roadmap for healthcare, agriculture, mobility. Focused on responsible AI adoption." },
+        { sector: "Tech", title: "National AI Portal", date: "2020-07-01", description: "Central hub for AI news, research, startups. Promotes AI ecosystem in India." },
+        { sector: "Tech", title: "National Digital Health Mission", date: "2020-08-01", description: "Digital health IDs and health data infrastructure. Major health-tech ecosystem push." },
+        { sector: "Tech", title: "Atmanirbhar Bharat Digital Push", date: "2020-05-12", description: "Focus on electronics, apps, and tech manufacturing. Promoted domestic tech ecosystem." },
+        { sector: "Tech", title: "Semicon India Program", date: "2021-12-01", description: "Incentives for chip manufacturing and fab units. Goal: build domestic semiconductor ecosystem." },
+        { sector: "Tech", title: "India Stack Expansion", date: "2021-01-01", description: "Aadhaar, UPI, DigiLocker expansion. Enabled digital economy growth." },
+        { sector: "Tech", title: "AVGC Promotion Task Force", date: "2022-04-01", description: "Focus on gaming, animation, and VFX industry. Boost to creative tech economy." },
+        { sector: "Tech", title: "5G Spectrum Auction", date: "2022-07-01", description: "Enabled nationwide 5G deployment. Boost to Industry 4.0 and IoT." },
+        { sector: "Tech", title: "Digital India Act Proposal", date: "2023-01-01", description: "Modern legal framework for internet platforms. Covers AI, social media, and digital governance." },
+        { sector: "Tech", title: "IndiaAI Mission", date: "2023-06-01", description: "Funding for AI compute infrastructure and startups. National AI ecosystem development." },
+        { sector: "Tech", title: "IndiaAI Mission Approval", date: "2024-03-01", description: "₹10,000+ crore allocation for AI infrastructure. GPU clusters, datasets, and research support." },
+        { sector: "Tech", title: "DPDP Act Implementation", date: "2024-08-01", description: "Data privacy and tech regulation framework. Important for AI and digital companies." },
+        { sector: "Tech", title: "National Deep Tech Startup Policy", date: "2025-01-01", description: "Support for AI, robotics, quantum computing startups. Funding and R&D incentives." },
+        { sector: "Tech", title: "Semiconductor Mission Expansion", date: "2026-01-01", description: "Additional incentives for fabs and packaging units. Focus on electronics and AI hardware." }
+      ];
+
+      for (const s of seeds) {
+        await policyService.addUpdate(s as any);
+      }
+      
+      setSuccess(true);
+      loadPolicies();
+    } catch (err: any) {
+      alert(err.message || 'Error seeding data');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  const handleSeedEconomyData = async () => {
+    if (!confirm('SEED_ECONOMY_DATASET?_THIS_WILL_ADD_21_RECORDS.')) return;
+    setSubmitting(true);
+    try {
+      const seeds = [
+        { sector: "Economy", title: "Pradhan Mantri Jan Dhan Yojana", date: "2014-08-28", description: "Mass bank account opening for financial inclusion. Enabled direct benefit transfer and formalization of economy." },
+        { sector: "Economy", title: "Make in India", date: "2014-09-25", description: "Attracted foreign investment and boosted domestic manufacturing. Aimed to increase manufacturing share in GDP." },
+        { sector: "Economy", title: "Digital India", date: "2015-07-01", description: "Digital infrastructure for payments, governance, and services. Backbone for digital economy growth." },
+        { sector: "Economy", title: "Startup India", date: "2016-01-16", description: "Tax benefits, funding, and compliance ease for startups. Boosted innovation-led economic growth." },
+        { sector: "Economy", title: "Demonetisation 2016", date: "2016-11-08", description: "₹500 and ₹1000 notes withdrawn. Aimed to formalize economy and promote digital payments." },
+        { sector: "Economy", title: "Goods and Services Tax (GST)", date: "2017-07-01", description: "Unified indirect tax across India. Simplified supply chain and improved tax compliance." },
+        { sector: "Economy", title: "Insolvency and Bankruptcy Code", date: "2016-05-28", description: "Faster resolution of stressed assets. Improved credit environment and investment climate." },
+        { sector: "Economy", title: "Corporate Tax Cut 2019", date: "2019-09-20", description: "Corporate tax reduced to 22% (15% for new manufacturing). Boosted investment and economic growth." },
+        { sector: "Economy", title: "National Infrastructure Pipeline", date: "2019-12-31", description: "₹100 lakh crore infrastructure investment roadmap. Stimulated economic growth and employment." },
+        { sector: "Economy", title: "Atmanirbhar Bharat Abhiyan", date: "2020-05-12", description: "COVID recovery package with reforms and liquidity. Focus on self-reliance and domestic production." },
+        { sector: "Economy", title: "Production Linked Incentive Scheme", date: "2020-03-01", description: "Incentives for incremental production. Boosted exports and domestic manufacturing." },
+        { sector: "Economy", title: "National Monetisation Pipeline", date: "2021-08-23", description: "Monetization of public infrastructure assets. Funded new infrastructure investments." },
+        { sector: "Economy", title: "PM Gati Shakti National Master Plan", date: "2021-10-13", description: "Integrated planning for logistics infrastructure. Reduced cost of doing business." },
+        { sector: "Economy", title: "National Logistics Policy", date: "2022-09-17", description: "Target to reduce logistics cost. Improved competitiveness of exports." },
+        { sector: "Economy", title: "Foreign Trade Policy 2023", date: "2023-03-31", description: "Target $2 trillion exports. Boost for MSME and manufacturing exports." },
+        { sector: "Economy", title: "Digital Public Infrastructure Expansion", date: "2023-01-01", description: "UPI, ONDC, Aadhaar ecosystem growth. Enabled digital commerce and fintech growth." },
+        { sector: "Economy", title: "IndiaAI Mission", date: "2024-03-07", description: "Investment in AI infrastructure and startups. Focus on tech-driven economic growth." },
+        { sector: "Economy", title: "India‑Japan Civil Nuclear Agreement", date: "2016-11-11", description: "Enabled nuclear cooperation and investment. Boosted infrastructure and energy sector." },
+        { sector: "Economy", title: "India‑UAE CEPA", date: "2022-02-18", description: "Reduced tariffs on goods and services. Boosted exports and trade." },
+        { sector: "Economy", title: "India‑Australia ECTA", date: "2022-04-02", description: "Trade liberalization across sectors. Increased exports and economic ties." },
+        { sector: "Economy", title: "India‑UK Free Trade Agreement (Ongoing)", date: "2024-01-01", description: "Expected to boost trade and investment. Focus on services and manufacturing." }
+      ];
+
+      for (const s of seeds) {
+        await policyService.addUpdate(s as any);
+      }
+      
+      setSuccess(true);
+      loadPolicies();
+    } catch (err: any) {
+      alert(err.message || 'Error seeding data');
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
   const handleCreatePolicy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!policyTitle || !policyDesc || !policyDate) return;
@@ -1087,6 +1203,27 @@ export default function Admin() {
                          className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                        >
                          <Zap size={14} /> SEED_INFRA_DATASET
+                       </button>
+                       <button 
+                         type="button"
+                         onClick={handleSeedDefenceData}
+                         className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
+                       >
+                         <ShieldCheck size={14} /> SEED_DEFENCE_DATASET
+                       </button>
+                       <button 
+                         type="button"
+                         onClick={handleSeedTechData}
+                         className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
+                       >
+                         <Cpu size={14} /> SEED_TECH_DATASET
+                       </button>
+                       <button 
+                         type="button"
+                         onClick={handleSeedEconomyData}
+                         className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
+                       >
+                         <TrendingUp size={14} /> SEED_ECONOMY_DATASET
                        </button>
                        {success && (
                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
