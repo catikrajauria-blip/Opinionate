@@ -78,7 +78,7 @@ export default function Home() {
           <div className="absolute inset-4 border-2 border-pink-500/20 rounded-full" />
           <div className="absolute inset-4 border-b-2 border-pink-500 rounded-full animate-spin-reverse glow-pink" style={{ animationDuration: '1.5s' }} />
         </div>
-        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] animate-pulse text-accent">INITIALIZING_OPINIO_PROTOCOL...</p>
+        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] animate-pulse text-accent">LOADING CONTENT...</p>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function Home() {
              className="inline-flex items-center gap-3 px-6 py-2 bg-accent/5 backdrop-blur-xl border border-accent/20 rounded-sm mb-12 text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent glow-cyan"
            >
               <div className="w-2 h-2 bg-accent rounded-full animate-ping" />
-              SYSTEM_LINK_ACTIVE: <span className="text-text-primary">{user.displayName || user.email?.split('@')[0]}</span>
+              WELCOME BACK: <span className="text-text-primary">{user.displayName || user.email?.split('@')[0]}</span>
            </motion.div>
          )}
          
@@ -151,7 +151,7 @@ export default function Home() {
          >
            <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-accent to-transparent" />
            <p className="text-text-secondary font-mono text-[11px] md:text-sm font-bold uppercase tracking-[0.8em]">
-             <span className="text-accent underline underline-offset-8">EDITION_{new Date().getFullYear()}</span> &bull; PROTOCAL_VOL_04
+             <span className="text-accent underline underline-offset-8">EDITION {new Date().getFullYear()}</span> &bull; VOL 04
            </p>
          </motion.div>
       </header>
@@ -163,28 +163,26 @@ export default function Home() {
               <div className="p-8 md:p-14 border-b md:border-b-0 md:border-r border-border relative flex flex-col items-center justify-center text-center overflow-hidden bg-surface/30">
                  <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-[0.05]" />
                  <div className="absolute top-0 left-0 w-full h-full font-display font-black text-5xl opacity-[0.03] select-none flex items-center justify-center -rotate-12 pointer-events-none tracking-tighter uppercase text-text-primary/10">DATA</div>
-                 <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-[0.4em] mb-4 block relative z-10">WORD_OF_THE_DAY</span>
-                 <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-black uppercase tracking-tighter text-text-primary leading-[0.9] group-hover:text-accent transition-all relative z-10 group-hover:drop-shadow-[0_0_15px_rgba(0,238,255,0.3)]">
+                 <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-[0.4em] mb-4 block relative z-10">WORD OF THE DAY</span>
+                 <h2 className="text-lg md:text-xl lg:text-2xl font-display font-black uppercase tracking-tighter text-text-primary leading-tight group-hover:text-accent transition-all relative z-10 group-hover:drop-shadow-[0_0_15px_rgba(0,238,255,0.3)]">
                    {wotd.word}
                  </h2>
               </div>
               <div className="md:col-span-3 p-8 md:p-14 flex flex-col justify-center space-y-8 backdrop-blur-sm">
-                 <div className="space-y-6">
-                    <p className="text-2xl md:text-4xl font-display font-black leading-[1.1] uppercase tracking-tighter text-text-primary line-clamp-3">
+                  <div className="space-y-6">
+                    <p className="text-2xl md:text-4xl font-display font-black leading-[1.1] uppercase tracking-tighter text-text-primary">
                       "{wotd.definition}"
                     </p>
                     {wotd.usage && (
                       <div className="flex items-start gap-4 p-6 bg-surface/50 border-l-4 border-accent">
                         <p className="text-sm md:text-lg text-text-secondary font-mono italic opacity-100 leading-relaxed">
-                          CONTEXT: {wotd.usage}
+                          In context: {wotd.usage}
                         </p>
                       </div>
                     )}
                  </div>
                  <div className="flex flex-wrap items-center gap-6 text-[10px] font-mono font-bold text-text-secondary mt-auto uppercase tracking-[0.3em]">
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-accent rounded-full" /> TOKEN_ID_{wotd.id?.slice(-6)}</span>
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-secondary-accent rounded-full" /> TIMESTAMP_{wotd.date}</span>
-                    <span className="ml-auto text-accent border border-accent/20 px-3 py-1 bg-accent/5">VERIFIED_ENTRY</span>
+                    <span className="ml-auto text-accent border border-accent/20 px-3 py-1 bg-accent/5">Featured Word</span>
                  </div>
               </div>
            </div>

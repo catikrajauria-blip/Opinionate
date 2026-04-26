@@ -26,13 +26,13 @@ export default function Sidebar() {
     <aside className="flex flex-col border-t lg:border-t-0 lg:border-l border-border min-h-fit lg:min-h-screen divide-y divide-border">
       <div className="p-10">
         <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-10">
-          LATEST INTRA-ACTIONS
+          RECENT COMMENTS
         </h4>
         <div className="space-y-10">
           {loading ? (
              <div className="flex items-center gap-3 text-text-secondary text-[10px] font-mono font-bold uppercase tracking-widest">
                 <Loader2 size={14} className="animate-spin text-accent" />
-                SYSTEM_SYNCING...
+                LOADING UPDATES...
              </div>
           ) : recentComments.length > 0 ? (
             recentComments.map((comment) => (
@@ -50,20 +50,20 @@ export default function Sidebar() {
                      "{comment.content}"
                    </p>
                    <p className="text-[8px] font-mono font-black text-text-secondary uppercase tracking-[0.2em]">
-                     TARGET: {comment.blogTitle}
+                     ON: {comment.blogTitle}
                    </p>
                 </div>
               </Link>
             ))
           ) : (
-            <p className="text-text-secondary font-mono text-[10px] uppercase tracking-widest italic">NULL_COMMENTS</p>
+            <p className="text-text-secondary font-mono text-[10px] uppercase tracking-widest italic">NO RECENT ACTIVITY</p>
           )}
         </div>
       </div>
       
       <div className="p-10 bg-surface">
          <h4 className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">
-           SYSTEM_CONNECT
+           STAY CONNECTED
          </h4>
          <NewsletterBox />
       </div>

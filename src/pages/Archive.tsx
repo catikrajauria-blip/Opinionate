@@ -42,14 +42,14 @@ export default function Archive() {
       <header className="mb-32">
         <div className="flex items-center gap-6 mb-12">
           <div className="w-16 h-[2px] bg-accent glow-cyan"></div>
-          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">CHRONICLE_DATABASE_V1.0</span>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">ARCHIVE DATABASE</span>
         </div>
         
         <h1 className="text-6xl md:text-9xl font-display font-black mb-12 tracking-tighter uppercase leading-[0.85] text-text-primary">
           THE <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.4)]">ARCHIVE</span>
         </h1>
         <p className="text-text-secondary max-w-3xl mb-24 font-sans font-medium text-xl md:text-2xl leading-relaxed opacity-70 border-l-2 border-accent/30 pl-8">
-          A SECURE REPOSITORY OF SYSTEMATIC ANALYSES, TRACKING THE EVOLUTION OF DIGITAL CULTURE AND GLOBAL POLICY ACROSS THE TIMELINE.
+          A collection of all published opinions and deep dives, tracking culture and policy over time.
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-border bg-surface/20 backdrop-blur-md">
@@ -57,14 +57,14 @@ export default function Archive() {
             <Search className="absolute right-12 top-1/2 -translate-y-1/2 text-accent opacity-30 group-focus-within:opacity-100 transition-opacity animate-pulse" size={32} />
             <input 
               type="text" 
-              placeholder="INITIATE_SEARCH..."
+              placeholder="Search the archive..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-transparent border-none outline-none text-2xl md:text-5xl font-display font-black placeholder:text-text-secondary/40 placeholder:font-display uppercase tracking-tighter text-text-primary"
             />
             <div className="text-[10px] font-mono font-black uppercase text-accent mt-6 tracking-[0.3em] flex items-center gap-2">
                <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" />
-               QUERY_IDENTIFIER [STR]
+               SEARCH RESULTS
             </div>
           </div>
 
@@ -76,15 +76,15 @@ export default function Archive() {
                 onChange={(e) => setFilterMonth(e.target.value)}
                 className="bg-transparent text-sm font-mono font-bold uppercase tracking-[0.3em] outline-none cursor-pointer text-text-primary flex-grow focus:text-accent transition-colors"
               >
-                <option value="all">ALL_TEMPORAL_UNITS</option>
+                <option value="all">ALL MONTHS</option>
                 {months.map(m => (
                   <option key={m} value={m} className="bg-bg-page">{new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()}</option>
                 ))}
               </select>
             </div>
             <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-6 tracking-[0.2em] flex items-center justify-between gap-4">
-              <span className="opacity-40">TEMPORAL_FILTER.EXE</span>
-              <span className="text-secondary-accent">{filteredBlogs.length} NODES_INDEXED</span>
+              <span className="opacity-40">DATE FILTER</span>
+              <span className="text-secondary-accent">{filteredBlogs.length} RESULTS FOUND</span>
             </div>
           </div>
 
@@ -122,7 +122,7 @@ export default function Archive() {
                 className="w-32 h-full bg-gradient-to-r from-transparent via-accent to-transparent glow-cyan"
              />
           </div>
-          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.8em] text-accent animate-pulse">SYSTEM_RETRIEVING_DATA_CORES...</span>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.8em] text-accent animate-pulse">Loading archive...</span>
         </div>
       ) : filteredBlogs.length > 0 ? (
         <div className={cn(
@@ -158,19 +158,19 @@ export default function Archive() {
                    
                    <div className="flex flex-wrap items-center gap-12">
                       <div className="flex flex-col gap-2">
-                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">METRIC_VIEWS</span>
-                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.viewsCount || 0}_UNIT</span>
+                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">TOTAL VIEWS</span>
+                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.viewsCount || 0}</span>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">ENDORSEMENTS</span>
-                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.likesCount || 0}_REACTIONS</span>
+                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">LIKES</span>
+                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.likesCount || 0}</span>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">STABILITY_GRADE</span>
-                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.ratingAverage?.toFixed(1) || '0.0'} / 5.0_CRIT</span>
+                        <span className="text-[9px] font-mono text-accent uppercase tracking-[0.3em] opacity-60">RATING</span>
+                        <span className="text-sm font-mono font-bold uppercase text-text-primary">{blog.ratingAverage?.toFixed(1) || '0.0'} / 5.0</span>
                       </div>
                       <Link to={`/blog/${blog.slug}`} className="ml-auto group/btn flex items-center gap-4 text-accent font-mono font-bold text-xs tracking-[0.4em] hover:translate-x-4 transition-all duration-500">
-                         ACCESS_DATA_STREAM <ChevronRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
+                         READ FULL ARTICLE <ChevronRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
                       </Link>
                    </div>
                 </div>
@@ -183,8 +183,8 @@ export default function Archive() {
            <div className="w-24 h-24 rounded-full border border-accent/20 flex items-center justify-center mb-10 group bg-accent/5">
              <Search size={40} className="text-accent opacity-40 group-hover:opacity-100 transition-opacity" />
            </div>
-           <h3 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter mb-6 text-text-primary">NULL_POINTER_EXCEPTION</h3>
-           <p className="text-text-secondary font-mono text-xs uppercase tracking-[0.4em] max-w-sm mx-auto leading-relaxed opacity-60">THE REQUESTED SEARCH PARAMETERS HAVE RETURNED ZERO MATCHING NODES IN THE CORE DATABASE.</p>
+           <h3 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter mb-6 text-text-primary">NO RESULTS FOUND</h3>
+           <p className="text-text-secondary font-mono text-xs uppercase tracking-[0.4em] max-w-sm mx-auto leading-relaxed opacity-60">We couldn't find any documents matching your search. Try different keywords or dates.</p>
         </div>
       )}
     </div>

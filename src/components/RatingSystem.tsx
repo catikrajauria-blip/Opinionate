@@ -84,7 +84,7 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
     <div className="flex flex-col items-center md:items-start gap-4">
       <div className="flex flex-col gap-1">
         <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary opacity-50">
-          {hasRated ? 'Your contribution recognized' : 'Cast your evaluation'}
+          {hasRated ? 'Thank you for your rating' : 'Rate this article'}
         </p>
         <div className="flex items-center gap-1 relative">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -125,10 +125,10 @@ export default function RatingSystem({ blog, userId, onRate }: RatingSystemProps
               ? "bg-green-500/5 text-green-500 border-green-500/20" 
               : "bg-surface text-text-secondary border-border"
          )}>
-            {blog.ratingAverage > 0 ? blog.ratingAverage.toFixed(1) : 'PENDING'} <span className="opacity-40">/ 5.0</span>
+            {blog.ratingAverage > 0 ? blog.ratingAverage.toFixed(1) : 'NONE'} <span className="opacity-40">/ 5.0</span>
          </span>
          <span className="text-text-secondary opacity-50 uppercase tracking-tighter">
-           {blog.ratingCount > 0 ? `Based on ${blog.ratingCount} evaluations` : 'Awaiting peer review'}
+           {blog.ratingCount > 0 ? `Based on ${blog.ratingCount} ratings` : 'Be the first to rate'}
          </span>
       </div>
 

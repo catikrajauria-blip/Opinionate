@@ -746,13 +746,13 @@ export default function Admin() {
            <div className="w-20 h-20 bg-red-500 text-bg-page flex items-center justify-center mx-auto mb-8">
               <ShieldAlert size={48} />
            </div>
-           <h2 className="text-4xl font-display font-black text-red-500 mb-4 uppercase tracking-tighter">ACCESS_DENIED</h2>
+           <h2 className="text-4xl font-display font-black text-red-500 mb-4 uppercase tracking-tighter">ACCESS DENIED</h2>
            <p className="text-red-700 dark:text-red-300 mb-10 font-display font-medium uppercase tracking-tight leading-tight">This area is reserved for the blog owner. Your account ({user.email}) does not have admin privileges.</p>
            <button 
              onClick={() => signOut(auth)}
              className="w-full px-8 py-5 bg-red-500 text-white font-mono font-bold uppercase tracking-[0.3em] hover:bg-black transition-all active:scale-95"
            >
-             TERMINATE_SESSION
+             TERMINATE SESSION
            </button>
         </div>
       </div>
@@ -774,23 +774,23 @@ export default function Admin() {
               <Shield className="text-accent animate-pulse" size={32} />
             </div>
             <div>
-              <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none text-text-primary">Command_Central_v4</h1>
+              <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none text-text-primary">Admin Panel</h1>
               <p className="text-text-secondary flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] mt-2">
-                AUTH_STATUS: <span className="text-accent underline">VERIFIED_SECURE</span>
+                AUTH_STATUS: <span className="text-accent underline">SECURE ACCESS GRANTED</span>
               </p>
             </div>
           </div>
           
           <nav className="flex flex-wrap gap-2 md:border-l border-border md:pl-12">
             {[
-              { id: 'posts', label: 'POSTS::GEN', icon: FileText },
-              { id: 'news', label: 'NEWS::SYNC', icon: Zap },
-              { id: 'users', label: 'USER::LOG', icon: Users },
-              { id: 'community', label: 'COMM::INTEL', icon: MessageSquare },
-              { id: 'policy', label: 'POLICY::X', icon: ShieldCheck },
-              { id: 'words', label: 'LEX::UNIT', icon: FileText },
-              { id: 'analytics', label: 'CORE::META', icon: PieChart },
-              { id: 'polls', label: 'VOX::POP', icon: BarChart3 }
+              { id: 'posts', label: 'POSTS', icon: FileText },
+              { id: 'news', label: 'NEWS', icon: Zap },
+              { id: 'users', label: 'USERS', icon: Users },
+              { id: 'community', label: 'COMMUNITY', icon: MessageSquare },
+              { id: 'policy', label: 'POLICY', icon: ShieldCheck },
+              { id: 'words', label: 'WORDS', icon: FileText },
+              { id: 'analytics', label: 'ANALYTICS', icon: PieChart },
+              { id: 'polls', label: 'POLLS', icon: BarChart3 }
             ].map((tab) => (
               <button 
                 key={tab.id}
@@ -812,7 +812,7 @@ export default function Admin() {
           onClick={() => signOut(auth)}
           className="flex items-center gap-4 px-8 py-4 bg-red-500/5 border border-red-500/20 text-red-500 font-mono font-black uppercase tracking-[0.4em] text-[10px] hover:bg-red-500 hover:text-bg-page transition-all glow-pink/10"
         >
-          <LogOut size={16} /> TERMINATE_SESSION_CORE
+          <LogOut size={16} /> LOGOUT
         </button>
       </div>
 
@@ -831,9 +831,9 @@ export default function Admin() {
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
                   <div>
                     <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                       Input_New_Entry
+                       Create New Post
                     </h2>
-                    <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">DATA_INGESTION_MODULE</p>
+                    <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">Post Editor</p>
                   </div>
                   <div className="flex flex-wrap gap-4">
                     <button 
@@ -843,11 +843,11 @@ export default function Admin() {
                       className="btn-minimal px-6 py-3 font-mono text-[10px] flex items-center gap-3 transition-all active:scale-95"
                     >
                       <Zap size={14} className={cn("text-accent", aiLoading && "animate-pulse")} /> 
-                      {aiLoading ? 'SYNTHESIZING_CORE...' : 'AI_GENERATE_ENTRY'}
+                      {aiLoading ? 'GENERATING CONTENT...' : 'AI GENERATE POST'}
                     </button>
                     {success && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
-                          <CheckCircle2 size={14} /> COMMITTED.
+                          <CheckCircle2 size={14} /> PUBLISHED.
                         </motion.div>
                     )}
                   </div>
@@ -855,15 +855,15 @@ export default function Admin() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                  <div className="space-y-4">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Entry_Title</label>
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Post Title</label>
                     <input 
                        type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
-                       placeholder="SPECIFY_HEADER..."
+                       placeholder="Enter title..."
                     />
                  </div>
                  <div className="space-y-4">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Staged_Date</label>
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Publish Date</label>
                     <input 
                        type="date" required value={date} onChange={(e) => setDate(e.target.value)}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
@@ -872,29 +872,29 @@ export default function Admin() {
               </div>
 
               <div className="space-y-4">
-                 <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Operational_Abstract</label>
+                 <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Short Summary</label>
                  <textarea 
                     required value={summary} onChange={(e) => setSummary(e.target.value)} rows={3}
                     className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-display font-medium text-base resize-none uppercase tracking-tight leading-tight"
-                    placeholder="PROVIDE_BRIEF_OVERVIEW..."
+                    placeholder="Provide a brief overview..."
                  />
               </div>
 
               <div className="space-y-4">
                  <div className="flex justify-between items-center">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Core_Intelligence_Data</label>
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Full Article Content</label>
                     <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest">Mark_Syntax_Active</span>
                  </div>
                  <textarea 
                     required value={content} onChange={(e) => setContent(e.target.value)} rows={12}
                     className="w-full bg-surface border border-border p-6 outline-none focus:border-accent font-mono text-xs leading-relaxed resize-none"
-                    placeholder="DEPLOY_FULL_ANALYSIS_CONTENT..."
+                    placeholder="Write your article content here..."
                  />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pb-8 border-b border-border">
                  <div className="space-y-4">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Source_Author</label>
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Author Name</label>
                     <input 
                        type="text" required value={author} onChange={(e) => setAuthor(e.target.value)}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-display font-bold text-sm uppercase"
@@ -914,7 +914,7 @@ export default function Admin() {
                  disabled={submitting}
                  className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
                >
-                 {submitting ? 'COMMITTING_TRANSACTION...' : 'DEPLOY_ENTRY_TO_CORE'}
+                 {submitting ? 'PUBLISHING...' : 'PUBLISH POST'}
                </button>
             </form>
           ) : activeTab === 'news' ? (
@@ -923,24 +923,24 @@ export default function Admin() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
                   <div>
                     <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                       Inject_Curated_Intel
+                       Add News Item
                     </h2>
                     <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">EXTERNAL_FEED_MODULE</p>
                   </div>
                   {success && activeTab === 'news' && (
                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
-                        <CheckCircle2 size={14} /> ITEM_STAGED.
+                        <CheckCircle2 size={14} /> ITEM SAVED.
                       </motion.div>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-4">
-                      <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Intel_Headline</label>
+                      <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">News Headline</label>
                       <input 
                         type="text" required value={newsTitle} onChange={(e) => setNewsTitle(e.target.value)}
                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
-                        placeholder="SPECIFY_NEWS_HEADER..."
+                        placeholder="Enter headline..."
                       />
                   </div>
                   <div className="space-y-4">
@@ -949,10 +949,10 @@ export default function Admin() {
                         value={newsCategory} onChange={(e) => setNewsCategory(e.target.value)}
                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
                       >
-                        <option value="finance">SEC_FINANCE & MARKETS ({newsCounts.finance || 0})</option>
-                        <option value="politics">SEC_INDIAN_POLITICS ({newsCounts.politics || 0})</option>
-                        <option value="geopolitics">SEC_GEOPOLITICS ({newsCounts.geopolitics || 0})</option>
-                        <option value="tech">SEC_INDUSTRY & TECH ({newsCounts.tech || 0})</option>
+                        <option value="finance">FINANCE ({newsCounts.finance || 0})</option>
+                        <option value="politics">POLITICS ({newsCounts.politics || 0})</option>
+                        <option value="geopolitics">GEOPOLITICS ({newsCounts.geopolitics || 0})</option>
+                        <option value="tech">TECH ({newsCounts.tech || 0})</option>
                       </select>
                   </div>
                 </div>
@@ -989,7 +989,7 @@ export default function Admin() {
                   disabled={submitting}
                   className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
                 >
-                  {submitting ? 'STAGING_DATA...' : 'COMMIT_NEWS_TO_FEED'}
+                  {submitting ? 'SAVING...' : 'SAVE NEWS ITEM'}
                 </button>
               </form>
 
@@ -1010,7 +1010,7 @@ export default function Admin() {
                         className="flex items-center gap-3 text-red-500 hover:bg-red-500 hover:text-bg-page transition-all px-4 py-2 border border-red-500/20 text-[10px] uppercase font-mono font-bold tracking-widest"
                       >
                         <Trash2 size={14} />
-                        <span>PURGE</span>
+                        <span>DELETE</span>
                       </button>
                     </div>
                   ))}
@@ -1024,7 +1024,7 @@ export default function Admin() {
                 <div className="p-10 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
                       <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                         System_Registry
+                         User Directory
                       </h2>
                       <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-widest mt-2 opacity-50">AUTHORIZED_PERSONNEL & GUEST_LOG</p>
                     </div>
@@ -1032,7 +1032,7 @@ export default function Admin() {
                        <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" />
                        <input 
                          type="text" 
-                         placeholder="SCAN_IDENTITIES..."
+                         placeholder="Search users..."
                          value={userSearch}
                          onChange={(e) => setUserSearch(e.target.value)}
                          className="w-full bg-surface border border-border p-4 pl-12 text-[11px] font-mono font-bold uppercase tracking-widest outline-none focus:border-accent transition-all placeholder:opacity-30"
@@ -1044,10 +1044,10 @@ export default function Admin() {
                    <table className="w-full border-collapse">
                       <thead className="bg-surface text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary border-b border-border">
                          <tr>
-                            <th className="px-10 py-5 text-left">Entity_Identity</th>
-                            <th className="px-10 py-5 text-left">Auth_Level</th>
-                            <th className="px-10 py-5 text-left">Temporal_Logs</th>
-                            <th className="px-10 py-5 text-right">Directives</th>
+                            <th className="px-10 py-5 text-left">User Name</th>
+                            <th className="px-10 py-5 text-left">Account Type</th>
+                            <th className="px-10 py-5 text-left">Joined Date</th>
+                            <th className="px-10 py-5 text-right">Actions</th>
                          </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
@@ -1125,24 +1125,24 @@ export default function Admin() {
                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
                    <div>
                      <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                        Deploy_New_Survey
+                        Create New Poll
                      </h2>
-                     <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">OPINION_COLLECTION_MODULE</p>
+                     <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">Poll Editor</p>
                    </div>
                    {success && activeTab === 'polls' && (
                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
-                         <CheckCircle2 size={14} /> SURVEY_LIVE.
+                         <CheckCircle2 size={14} /> POLL LIVE.
                        </motion.div>
                    )}
                  </div>
 
                  <div className="space-y-8">
                    <div className="space-y-4">
-                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Survey_Question</label>
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Poll Question</label>
                      <input 
                        type="text" required value={pollQuestion} onChange={(e) => setPollQuestion(e.target.value)}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
-                       placeholder="WHAT_IS_YOUR_PERSPECTIVE_ON_..."
+                       placeholder="What is your perspective on..."
                      />
                    </div>
                    
@@ -1151,13 +1151,13 @@ export default function Admin() {
                      <input 
                        type="text" required value={pollOptions} onChange={(e) => setPollOptions(e.target.value)}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono text-sm uppercase"
-                       placeholder="AGREE, DISAGREE, NEUTRAL..."
+                       placeholder="Agree, Disagree, Neutral..."
                      />
                    </div>
 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                      <div className="space-y-4">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Deployment_Status</label>
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Poll Status</label>
                        <select 
                          value={pollStatus} onChange={(e) => setPollStatus(e.target.value as any)}
                          className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
@@ -1167,7 +1167,7 @@ export default function Admin() {
                        </select>
                      </div>
                      <div className="space-y-4">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Result_Transparency</label>
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Result Visibility</label>
                        <div className="flex items-center gap-4 bg-surface border border-border p-4">
                          <button 
                            type="button"
@@ -1177,7 +1177,7 @@ export default function Admin() {
                            {pollShowResults ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-text-secondary opacity-30" />}
                          </button>
                          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
-                           {pollShowResults ? 'PUBLIC_RECORDS_ENABLED' : 'PRIVATE_RECORDS_ONLY'}
+                           {pollShowResults ? 'PUBLIC RESULTS ENABLED' : 'PRIVATE RESULTS ONLY'}
                          </span>
                        </div>
                      </div>
@@ -1188,7 +1188,7 @@ export default function Admin() {
                    disabled={submitting}
                    className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
                  >
-                   {submitting ? 'COMMITTING_SURVEY...' : 'DEPLOY_OPINION_WIDGET'}
+                   {submitting ? 'CREATING...' : 'PUBLISH POLL'}
                  </button>
                </form>
 
@@ -1264,9 +1264,9 @@ export default function Admin() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
                      <div>
                        <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                          Growth_Marker_Ingestion
+                          Add Policy Update
                        </h2>
-                       <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">POLICY_MONITORING_MODULE</p>
+                       <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">Policy Track</p>
                      </div>
                      <div className="flex flex-wrap gap-4">
                        <button 
@@ -1299,7 +1299,7 @@ export default function Admin() {
                        </button>
                        {success && (
                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
-                             <CheckCircle2 size={14} /> COMMITTED_TO_TIMELINE.
+                             <CheckCircle2 size={14} /> UPDATED.
                            </motion.div>
                        )}
                      </div>
@@ -1307,7 +1307,7 @@ export default function Admin() {
 
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     <div className="space-y-4">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Strategic_Sector</label>
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Sector</label>
                        <select 
                           value={policySector} onChange={(e) => setPolicySector(e.target.value as any)}
                           className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
@@ -1320,15 +1320,15 @@ export default function Admin() {
                        </select>
                     </div>
                     <div className="space-y-4 lg:col-span-1">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Marker_Title</label>
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Policy Title</label>
                        <input 
                           type="text" required value={policyTitle} onChange={(e) => setPolicyTitle(e.target.value)}
                           className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
-                          placeholder="INITIATIVE_NAME..."
+                          placeholder="Policy title..."
                        />
                     </div>
                     <div className="space-y-4">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Occurrence_Date</label>
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Date</label>
                        <input 
                           type="date" required value={policyDate} onChange={(e) => setPolicyDate(e.target.value)}
                           className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
@@ -1337,12 +1337,12 @@ export default function Admin() {
                  </div>
 
                  <div className="space-y-4">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Technical_Description</label>
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Description</label>
                     <textarea 
                        required value={policyDesc} onChange={(e) => setPolicyDesc(e.target.value)}
                        rows={4}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-sm leading-relaxed"
-                       placeholder="SPECIFY_GROWTH_DYNAMICS..."
+                       placeholder="Describe the policy..."
                     />
                  </div>
 
@@ -1362,13 +1362,13 @@ export default function Admin() {
                    disabled={submitting}
                    className="btn-minimal-primary w-full py-6 text-xl font-display font-black uppercase tracking-tighter"
                  >
-                   {submitting ? 'RECORDING_POLICY...' : 'COMMIT_TO_GROWTH_TRACKER'}
+                   {submitting ? 'RECORDING...' : 'SAVE POLICY'}
                  </button>
                </form>
 
                <div className="space-y-8">
                   <h3 className="text-xl font-display font-black uppercase tracking-tighter border-l-4 border-accent pl-6">
-                     Strategic_Timeline_Ledger
+                     Recent Policy Updates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      {allPolicies.map((p) => (
@@ -1402,9 +1402,9 @@ export default function Admin() {
                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
                       <div>
                         <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
-                           Vocabulary_Asset_Deployment
+                           Add New Word
                         </h2>
-                        <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">LINGUISTIC_MAINTENANCE_MODULE</p>
+                        <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">Word Editor</p>
                       </div>
                       <div className="flex flex-wrap gap-4">
                         <button 
@@ -1412,11 +1412,11 @@ export default function Admin() {
                           onClick={handleSeedWordData}
                           className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                         >
-                          <Zap size={14} /> SEED_LEXICAL_DATASET
+                          <Zap size={14} /> Populate Sample Words
                         </button>
                         {success && activeTab === 'words' && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
-                              <CheckCircle2 size={14} /> LEXICON_UPDATED.
+                              <CheckCircle2 size={14} /> WORD SAVED.
                             </motion.div>
                         )}
                       </div>
@@ -1424,15 +1424,15 @@ export default function Admin() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                      <div className="space-y-4">
-                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Word_Asset</label>
+                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Word</label>
                         <input 
                            type="text" required value={wotdWord} onChange={(e) => setWotdWord(e.target.value)}
                            className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-lg font-display font-bold uppercase tracking-tight"
-                           placeholder="SPECIFY_WORD..."
+                           placeholder="Enter word..."
                         />
                      </div>
                      <div className="space-y-4">
-                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Activation_Date</label>
+                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Activation Date</label>
                         <input 
                            type="date" required value={wotdDate} onChange={(e) => setWotdDate(e.target.value)}
                            className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
@@ -1441,22 +1441,22 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-4">
-                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Operational_Definition</label>
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Definition</label>
                      <textarea 
                         required value={wotdDefinition} onChange={(e) => setWotdDefinition(e.target.value)}
                         rows={3}
                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-sm leading-relaxed"
-                        placeholder="DEFINE_SEMANTICS..."
+                        placeholder="Define the word..."
                      />
                   </div>
 
                   <div className="space-y-4">
-                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Contextual_Usage</label>
+                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Example Usage</label>
                      <textarea 
                         value={wotdUsage} onChange={(e) => setWotdUsage(e.target.value)}
                         rows={2}
                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent text-sm leading-relaxed"
-                        placeholder="DEMONSTRATE_APPLICATION..."
+                        placeholder="Use in a sentence..."
                      />
                   </div>
 
@@ -1470,7 +1470,7 @@ export default function Admin() {
 
                 <div className="space-y-8">
                    <h3 className="text-xl font-display font-black uppercase tracking-tighter border-l-4 border-accent pl-6">
-                      Lexical_History_Registry
+                      Word History
                    </h3>
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       {allWords.map((w) => (
@@ -1490,7 +1490,7 @@ export default function Admin() {
                   <div className="bg-bg-page border border-border p-10">
                      <h2 className="text-2xl font-display font-black mb-10 flex items-center gap-4 text-text-primary uppercase tracking-tighter">
                         <MessageSquare size={24} className="text-accent" />
-                        GLOBAL_DIALOGUE
+                        GLOBAL MESSAGES
                      </h2>
                      <div className="space-y-8 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
                         {allComments.map((comment: any) => (
@@ -1553,7 +1553,7 @@ export default function Admin() {
                <div className="bg-bg-page border border-border p-10">
                   <h2 className="text-2xl font-display font-black mb-10 flex items-center gap-4 text-text-primary uppercase tracking-tighter">
                      <MailIcon size={24} className="text-accent" />
-                     INCOMING_INTEL_MESSAGES
+                     Public Feedback
                   </h2>
                   <div className="space-y-6 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
                      {allMessages.map((msg: any) => (
@@ -1631,33 +1631,33 @@ export default function Admin() {
             <div className="bg-bg-page border border-border p-10">
                <div className="mb-16 border-b border-border pb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                   <div>
-                    <h2 className="text-4xl font-display font-black text-text-primary tracking-tighter uppercase leading-none">CORE_INTEL_METRICS</h2>
-                    <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-[0.3em] mt-3 opacity-40">OPERATIONAL_PERFORMANCE_AUDIT</p>
+                    <h2 className="text-4xl font-display font-black text-text-primary tracking-tighter uppercase leading-none">SYSTEM STATS</h2>
+                    <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-[0.3em] mt-3 opacity-40">PLATFORM PERFORMANCE OVERVIEW</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-widest">LIVE_TELEMETRY</span>
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-widest">LIVE STATS</span>
                   </div>
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-border">
                   <div className="p-10 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">USER_ENGAGEMENTS</p>
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">USER INTERACTIONS</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalSwipes}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_INTERACTIONS_COMMITTED</p>
+                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL INTERACTIONS RECORDED</p>
                   </div>
                   <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">OPINION_PENETRATION</p>
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">ARTICLE VIEWS</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalViews}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL_READ_EVENTS</p>
+                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL READ EVENTS</p>
                   </div>
                   <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">DATABASE_DEPTH</p>
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">ARCHIVE DEPTH</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalBlogs}</p>
                      <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">LIFETIME_OPINION_COUNT</p>
                   </div>
                   <div className="p-10 hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">NETWORK_NODES</p>
+                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">SUBSCRIBERS</p>
                      <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalSubscribers}</p>
                      <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">SUBSCRIBER_INDEX_COUNT</p>
                   </div>
@@ -1665,15 +1665,15 @@ export default function Admin() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-x border-b border-border">
                   <div className="p-12 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">CONSENSUS_GRADIENT</p>
+                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">SATISFACTION RATING</p>
                      <div className="flex items-baseline gap-3">
                         <p className="text-7xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.avgRating.toFixed(1)}</p>
                         <span className="text-2xl font-mono text-accent font-bold opacity-40">/5.0</span>
                      </div>
-                     <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">SYSTEM_SATISFACTION_INDEX</p>
+                     <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">USER SATISFACTION INDEX</p>
                   </div>
                   <div className="p-12 hover:bg-surface transition-all">
-                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">AUDIENCE_GROWTH</p>
+                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">AUDIENCE GROWTH</p>
                      <p className="text-7xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.totalSubscribers}</p>
                      <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">NETWORK_NODES_ACTIVE</p>
                   </div>
@@ -1800,8 +1800,8 @@ export default function Admin() {
                             <PieChart size={32} />
                          </div>
                          <div>
-                            <h3 className="text-3xl font-display font-black text-text-primary uppercase tracking-tighter">DEEP_ENGAGEMENT_AUDIT</h3>
-                            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-widest mt-1">SENTIMENT_ANALYSIS & VALIDATION_METRICS</p>
+                            <h3 className="text-3xl font-display font-black text-text-primary uppercase tracking-tighter">Engagement Overview</h3>
+                            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-widest mt-1">SENTIMENT & INTERACTION DATA</p>
                          </div>
                       </div>
 
@@ -1809,7 +1809,7 @@ export default function Admin() {
                          <div className="space-y-8">
                             <div className="flex items-center justify-between border-b border-border pb-4">
                                <h4 className="text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-accent flex items-center gap-3">
-                                  <CheckCircle2 size={16} /> HIGH_RECOGNITION
+                                  <CheckCircle2 size={16} /> POSITIVE FEEDBACK
                                </h4>
                                <span className="text-xl font-display font-black text-accent">{selectedBlogAnalysis.highRatings.length}</span>
                             </div>
@@ -1832,7 +1832,7 @@ export default function Admin() {
                          <div className="space-y-8">
                             <div className="flex items-center justify-between border-b border-border pb-4">
                                <h4 className="text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-red-500 flex items-center gap-3">
-                                  <ShieldAlert size={16} /> CRITICAL_SIGNALS
+                                  <ShieldAlert size={16} /> CRITICAL SIGNALS
                                </h4>
                                <span className="text-xl font-display font-black text-red-500">{selectedBlogAnalysis.lowRatings.length}</span>
                             </div>

@@ -61,17 +61,17 @@ export default function IndianPolicy() {
               className="inline-flex items-center gap-4 px-5 py-2 bg-accent/5 border border-accent/20 mb-10 glow-cyan/10"
             >
               <Zap size={16} className="text-secondary-accent animate-pulse" />
-              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.6em] text-accent">STRATEGIC_POLICY_INDEX_v1.0</span>
+              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.6em] text-accent">POLICY UPDATES</span>
             </motion.div>
             
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-16">
               <div className="max-w-4xl">
                 <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter uppercase leading-[0.85] mb-10 text-text-primary">
-                  INDIAN_POLICY <br />
-                  <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.3)]">GROWTH_ENGINE</span>
+                  INDIAN POLICY <br />
+                  <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.3)]">GROWTH TRACKER</span>
                 </h1>
                 <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-medium max-w-3xl border-l-2 border-border pl-8 opacity-90">
-                  REAL_TIME_MONITORING: SYSTEMATIC TRACKING OF STATE-LED STRATEGIC INITIATIVES DRIVING THE NATION'S INDUSTRIAL EVOLUTION.
+                  Latest updates on India's industrial and strategic policies.
                 </p>
               </div>
 
@@ -82,12 +82,12 @@ export default function IndianPolicy() {
                     </div>
                     <div className="text-[11px] font-mono font-bold text-accent uppercase tracking-widest mb-4 opacity-100 flex items-center gap-2">
                       <div className="w-1.5 h-1.5 bg-accent rounded-full animate-ping" />
-                      ACTIVE_NODES
+                      TOTAL UPDATES
                     </div>
                     <p className="text-6xl font-display font-black tracking-tighter text-text-primary">{updates.length}</p>
                  </div>
                  <div className="bg-surface/50 backdrop-blur-md border border-border p-8 min-w-[240px]">
-                    <p className="text-[11px] font-mono font-bold text-secondary-accent uppercase tracking-widest mb-4">LAST_INDEX_CMT</p>
+                    <p className="text-[11px] font-mono font-bold text-secondary-accent uppercase tracking-widest mb-4">LATEST UPDATE</p>
                     <p className="text-6xl font-display font-black tracking-tighter text-text-primary">
                       {updates.length > 0 ? new Date(updates[0].date).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }).toUpperCase() : '--'}
                     </p>
@@ -108,7 +108,7 @@ export default function IndianPolicy() {
                   )}
                 >
                    <sector.icon size={32} className={cn("mb-8 transition-all duration-500", sector.color, activeSector === sector.name ? "scale-110 drop-shadow-[0_0_8px_currentColor]" : "opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0")} />
-                   <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary mb-3">MODULE_ID</p>
+                   <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary mb-3">SECTOR</p>
                    <h3 className="text-2xl font-display font-black uppercase tracking-tighter text-text-primary transition-colors group-hover:text-accent">{sector.name}</h3>
                    
                    {activeSector === sector.name && (
@@ -127,7 +127,7 @@ export default function IndianPolicy() {
                 {loading ? (
                    Array(3).fill(0).map((_, i) => (
                       <div key={i} className="animate-pulse flex items-center justify-center p-24 border border-dashed border-border bg-surface/10">
-                         <div className="text-[11px] font-mono font-bold text-accent uppercase tracking-[0.6em] animate-pulse">INITIATING_TIMELINE_SEQUENCER...</div>
+                         <div className="text-[11px] font-mono font-bold text-accent uppercase tracking-[0.6em] animate-pulse">Loading timeline...</div>
                       </div>
                    ))
                 ) : filteredUpdates.length > 0 ? (
@@ -209,8 +209,8 @@ export default function IndianPolicy() {
                       <div className="w-24 h-24 bg-surface border border-border flex items-center justify-center mb-10 group rounded-full">
                          <Filter size={32} className="text-accent opacity-20 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <h3 className="text-4xl font-display font-black uppercase tracking-tighter mb-6 text-text-primary">NODES_NOT_FOUND</h3>
-                      <p className="text-[11px] font-mono text-text-secondary opacity-50 uppercase tracking-[0.4em] max-w-sm">REFINE TEMPORAL_FILTERS OR SECTOR_QUERIES TO RE-INDEX THE DATABASE.</p>
+                      <h3 className="text-4xl font-display font-black uppercase tracking-tighter mb-6 text-text-primary">NO UPDATES FOUND</h3>
+                      <p className="text-[11px] font-mono text-text-secondary opacity-50 uppercase tracking-[0.4em] max-w-sm text-center px-4">Try adjusting your filters to see more updates.</p>
                    </div>
                 )}
              </div>

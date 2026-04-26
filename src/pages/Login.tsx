@@ -65,9 +65,9 @@ export default function Login() {
            <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-accent" />
         </div>
         
-        <h1 className="text-4xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter">Initialize_Auth</h1>
+        <h1 className="text-4xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter">Login</h1>
         <p className="text-text-secondary mb-10 font-mono font-bold leading-relaxed text-[11px] uppercase tracking-widest opacity-60">
-          UPLINK REQUIRED TO ACCESS CORE MODULES, RATE ANALYTICS, AND PARTICIPATE IN SYNCHRONOUS POLLS.
+          PLEASE LOGIN TO ACCESS ALL FEATURES, RATE ARTICLES, AND PARTICIPATE IN POLLS.
         </p>
 
         <AnimatePresence>
@@ -79,7 +79,7 @@ export default function Login() {
             >
               <AlertTriangle size={16} className="shrink-0" />
               <div>
-                <p className="mb-1">SYSTEM_ERROR_CODE_0xEX</p>
+                <p className="mb-1">ERROR</p>
                 <p className="opacity-70 leading-relaxed">{error}</p>
               </div>
             </motion.div>
@@ -94,24 +94,24 @@ export default function Login() {
           {signingIn ? (
             <span className="flex items-center gap-3">
                <Cpu className="animate-spin" size={18} />
-               PROCESSING_HANDSHAKE...
+               SIGNING IN...
             </span>
           ) : (
             <>
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5 bg-white rounded-full p-0.5" referrerPolicy="no-referrer" />
-              IDENTIFY_VIA_GOOGLE
+              SIGN IN WITH GOOGLE
             </>
           )}
         </button>
 
         <div className="mt-10 flex items-center justify-center gap-3 opacity-30">
           <div className="h-[1px] flex-1 bg-border" />
-          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.5em]">SECURE_UPLINK</span>
+          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.5em]">SECURE ACCESS</span>
           <div className="h-[1px] flex-1 bg-border" />
         </div>
 
         <p className="mt-8 text-[9px] text-text-secondary font-mono font-bold uppercase tracking-[0.3em] leading-relaxed opacity-40">
-          BY PROCEEDING, YOU AGREE TO PROTOCOL GUIDELINES AND DATA ENCRYPTION STANDARDS.
+          BY PROCEEDING, YOU AGREE TO OUR TERMS AND PRIVACY POLICY.
         </p>
       </motion.div>
     </div>

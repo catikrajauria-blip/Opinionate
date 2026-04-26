@@ -22,7 +22,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-text-secondary text-[14px] leading-relaxed mb-8 font-sans font-medium max-w-xs opacity-70">
-              DECODING_REALITY: DAILY_INSIGHTS_ON_CULTURE_TECHNOLOGY_AND_THE_SYNTHETIC_FRONTIER.
+              DAILY INSIGHTS ON CULTURE, TECHNOLOGY, AND SOCIETY.
             </p>
           </div>
 
@@ -84,7 +84,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-4 text-accent/40">
              <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-             <span>DESIGN_SYSTEM_V4.0_STABLE</span>
+             <span>© 2026 Kartik Rajauria</span>
           </div>
         </div>
       </div>

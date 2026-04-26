@@ -28,21 +28,21 @@ export default function ExternalLinks() {
           <div className="space-y-8 uppercase font-bold text-sm tracking-tight">
             <section className="bg-surface p-8 border border-border">
               <h2 className="text-text-primary mb-4 flex items-center gap-3">
-                <span className="w-2 h-2 bg-accent" /> LIMITATION_OF_LIABILITY
+                <span className="w-2 h-2 bg-accent" /> LIABILITY
               </h2>
               <p>We do not control, endorse, or take responsibility for the content, accuracy, or privacy practices of any third-party websites.</p>
             </section>
 
             <section className="bg-surface p-8 border border-border">
               <h2 className="text-text-primary mb-4 flex items-center gap-3">
-                <span className="w-2 h-2 bg-accent" /> NAVIGATIONAL_PROTOCOL
+                <span className="w-2 h-2 bg-accent" /> EXTERNAL SITES
               </h2>
               <p>When users click on external links, they leave our website and are subject to the terms and policies of the respective third-party website.</p>
             </section>
 
             <section className="bg-accent/10 p-8 border border-accent/20">
               <h2 className="text-accent mb-4 flex items-center gap-3">
-                <span className="w-2 h-2 bg-accent animate-pulse" /> RECOMMENDED_ACTION
+                <span className="w-2 h-2 bg-accent animate-pulse" /> DISCLAIMER
               </h2>
               <p className="text-text-primary">We encourage users to review the terms and privacy policies of external websites before engaging with their content.</p>
             </section>

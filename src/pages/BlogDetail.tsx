@@ -119,7 +119,7 @@ export default function BlogDetail() {
         className="inline-flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-accent hover:text-text-primary transition-all mb-20 group"
       >
         <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
-        BACK_TO_ENTRIES[ARCHIVE]
+        BACK TO ARCHIVE
       </Link>
 
       <motion.article 
@@ -130,8 +130,8 @@ export default function BlogDetail() {
       >
         <header className="mb-24">
           <div className="flex items-center gap-6 mb-10">
-            <span className="px-4 py-1 bg-accent/10 border border-accent/30 text-accent text-[10px] font-mono font-black uppercase tracking-[0.3em] glow-cyan/10">DAILY_ANALYSIS</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">VOL_04_INDEX // {formatDate(blog.date)}</span>
+            <span className="px-4 py-1 bg-accent/10 border border-accent/30 text-accent text-[10px] font-mono font-black uppercase tracking-[0.3em] glow-cyan/10">ANALYSIS</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">PUBLISHED // {formatDate(blog.date)}</span>
           </div>
           
           <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] mb-16 tracking-tighter uppercase break-words text-text-primary drop-shadow-[0_0_25px_rgba(var(--color-accent),0.1)]">
@@ -140,19 +140,19 @@ export default function BlogDetail() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 border-y border-border bg-surface backdrop-blur-sm px-8">
             <div className="flex flex-col gap-3">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ORIGINATOR</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">AUTHOR</span>
               <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{blog.author}</span>
             </div>
             <div className="flex flex-col gap-3">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">METRICS_LOG</span>
-              <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{calculateReadingTime(blog.content)} MIN_SYNC &bull; {blog.viewsCount} ACCESS_NODES</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ARTICLE STATS</span>
+              <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{calculateReadingTime(blog.content)} MIN READ &bull; {blog.viewsCount} VIEWS</span>
             </div>
             <div className="flex flex-col gap-3 md:items-end">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ENGAGEMENT_SIG</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ENGAGEMENT</span>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <span className="text-secondary-accent font-display font-black text-2xl drop-shadow-[0_0_10px_rgba(255,0,255,0.3)]">{blog.ratingAverage.toFixed(1)}</span>
-                  <span className="text-[10px] font-mono opacity-30 uppercase tracking-widest">/V.5.0</span>
+                  <span className="text-[10px] font-mono opacity-30 uppercase tracking-widest">/ 5.0</span>
                 </div>
                 <button 
                   onClick={handleLike}
@@ -179,7 +179,7 @@ export default function BlogDetail() {
             <div className="absolute inset-0 bg-accent/5 mix-blend-multiply opacity-50 group-hover:opacity-0 transition-opacity duration-1000" />
             <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover transition-all duration-1000 border border-border" referrerPolicy="no-referrer" />
             <div className="absolute inset-0 border-[20px] border-bg-page/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
-            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.6em] mt-6 text-center opacity-40 group-hover:opacity-100 transition-opacity">VISUAL_ANCHOR: {blog.title}</p>
+            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.6em] mt-6 text-center opacity-40 group-hover:opacity-100 transition-opacity">ARTICLE IMAGE: {blog.title}</p>
           </motion.div>
         )}
 
@@ -202,7 +202,7 @@ export default function BlogDetail() {
                   )}
                 >
                    <Heart size={16} className={cn(hasLiked && "fill-bg-page")} />
-                   <span>{hasLiked ? 'OPINION_COMMITTED' : 'COMMIT_OPINION'}</span>
+                   <span>{hasLiked ? 'LIKED' : 'LIKE THIS'}</span>
                 </button>
   
                 <button 
@@ -218,14 +218,14 @@ export default function BlogDetail() {
              </div>
              
              <button className="flex items-center gap-4 px-8 py-4 bg-surface border border-border text-text-primary font-mono font-black uppercase tracking-[0.4em] text-[11px] hover:bg-accent hover:text-bg-page transition-all z-10">
-                <Share2 size={16} /> BROADCAST_ENTRY
+                <Share2 size={16} /> SHARE ARTICLE
              </button>
           </div>
   
           <section className="mb-32">
              <div className="flex items-center gap-6 mb-12">
                <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-border" />
-               <h3 className="text-[11px] font-mono font-black tracking-[0.6em] uppercase text-accent">CONSENSUS_MECHANISM</h3>
+               <h3 className="text-[11px] font-mono font-black tracking-[0.6em] uppercase text-accent">COMMUNITY RATING</h3>
                <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-border" />
              </div>
              <div className="bg-surface/30 backdrop-blur-md p-12 border border-border relative overflow-hidden group">

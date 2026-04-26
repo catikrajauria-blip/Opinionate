@@ -69,7 +69,7 @@ export default function PollWidget() {
         <div className="max-w-xl">
           <div className="flex items-center gap-4 mb-6">
              <div className="w-10 h-[2px] bg-accent glow-cyan"></div>
-             <p className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">INTEL_FEEDBACK_LOOP</p>
+             <p className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">COMMUNITY POLL</p>
           </div>
                       <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.95] text-text-primary mb-6">
                         {poll.question}
@@ -112,7 +112,7 @@ export default function PollWidget() {
                 >
                    <div className="flex items-center gap-3 mb-6 text-accent">
                       <CheckCircle2 size={18} className="animate-pulse" />
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] drop-shadow-[0_0_5px_rgba(0,238,255,0.4)]">METRIC_GATHERED_SUCCESSFULLY</span>
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] drop-shadow-[0_0_5px_rgba(0,238,255,0.4)]">VOTE RECORDED</span>
                    </div>
                    
                    {poll.options.map((option) => {
@@ -140,8 +140,8 @@ export default function PollWidget() {
                    })}
                    
                    <p className="text-[9px] font-mono text-text-secondary uppercase tracking-[0.4em] mt-8 pt-6 border-t border-border flex justify-between items-center">
-                     <span>OPERATIONAL_METRICS</span>
-                     <span className="text-accent">{poll.totalVotes} UNIT_LOAD</span>
+                     <span>POLL STATS</span>
+                     <span className="text-accent">{poll.totalVotes} TOTAL VOTES</span>
                    </p>
                 </motion.div>
               )}

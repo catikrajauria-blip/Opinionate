@@ -102,7 +102,7 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           isGrid ? "p-8 flex-grow" : "flex-grow pt-8 md:pt-0"
         )}>
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent drop-shadow-[0_0_5px_rgba(0,238,255,0.3)]">ANALYSIS::{formatDate(blog.date)}</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent drop-shadow-[0_0_5px_rgba(0,238,255,0.3)]">PUBLISHED // {formatDate(blog.date)}</span>
             <span className="h-[1px] flex-grow bg-accent/20" />
           </div>
           
@@ -125,8 +125,8 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
 
           <div className="mt-auto pt-8 border-t border-border/50 flex flex-wrap items-center gap-x-8 gap-y-4 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
              <div className="flex items-center gap-2">
-                <span className="opacity-80">METRIC:</span>
-                <span className="text-text-primary text-[11px]">{blog.viewsCount}_VIEWS</span>
+                <span className="opacity-80">VIEWS:</span>
+                <span className="text-text-primary text-[11px]">{blog.viewsCount}</span>
              </div>
              <button 
                 onClick={handleLike}
@@ -148,19 +148,19 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
                     hasLiked ? "fill-red-500 text-red-500" : "text-text-primary group-hover/like:text-red-500"
                   )} />
                 </motion.div>
-                <span className={cn("transition-colors duration-300", hasLiked ? "text-red-500" : "text-text-primary group-hover/like:text-red-500")}>{blog.likesCount}_ENDORS</span>
+                <span className={cn("transition-colors duration-300", hasLiked ? "text-red-500" : "text-text-primary group-hover/like:text-red-500")}>{blog.likesCount} LIKES</span>
              </button>
              {blog.ratingCount > 0 && (
                <div className="flex items-center gap-2">
-                  <span className="opacity-80">GRADE:</span>
-                  <span className="text-text-primary text-[11px]">{blog.ratingAverage.toFixed(1)}/5.0</span>
+                  <span className="opacity-80">RATING:</span>
+                  <span className="text-text-primary text-[11px]">{blog.ratingAverage.toFixed(1)}</span>
                </div>
              )}
              <Link 
                 to={`/blog/${blog.slug}`} 
                 className="ml-auto flex items-center gap-2 text-accent hover:translate-x-2 transition-all duration-300 font-bold"
              >
-                LOAD_DATA &rarr;
+                READ ARTICLE &rarr;
              </Link>
           </div>
         </div>

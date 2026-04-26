@@ -39,7 +39,7 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
            <input 
               type="email"
               required
-              placeholder="ENTER_EMAIL_FOR_SYNC..."
+              placeholder="ENTER EMAIL TO SUBSCRIBE..."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status === 'success'}
@@ -50,7 +50,7 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
           disabled={status === 'loading' || status === 'success'}
           className="w-full px-4 py-4 rounded-sm font-mono font-bold text-[12px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-2 hover:glow-cyan active:scale-95 bg-accent text-bg-page hover:bg-text-primary hover:text-bg-page"
         >
-          {status === 'loading' ? 'INITIATING_SYNC...' : 'JOIN_THE_NETWORK'}
+          {status === 'loading' ? 'SUBSCRIBING...' : 'JOIN NOW'}
         </button>
       </form>
       
