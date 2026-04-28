@@ -84,17 +84,31 @@ export const openPicker = async (): Promise<PickerResult | null> => {
       }
     };
 
-    const view = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES);
-    view.setIncludeFolders(true);
+    // View 1: A flat list of all images in the entire Drive (no folders)
+    const imagesView = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES)
+      .setMimeTypes('image/*')
+      .setIncludeFolders(false);
+
+    // View 2: Traditional My Drive navigation but filtered to images
+    const driveView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+      .setMimeTypes('image/*')
+      .setSelectableMimeTypes('image/*')
+      .setIncludeFolders(true);
+
+    // View 3: Direct upload tab
+    const uploadView = new google.picker.DocsUploadView();
 
     const picker = new google.picker.PickerBuilder()
       .enableFeature(google.picker.Feature.NAV_HIDDEN)
       .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
       .setAppId(CLIENT_ID)
       .setOAuthToken(token)
-      .addView(view)
+      .addView(imagesView) // Shows ALL images flattened
+      .addView(driveView)  // Shows folders if you need them
+      .addView(uploadView) // Allows uploading new files
       .setDeveloperKey(API_KEY)
       .setCallback(pickerCallback)
+      .setTitle('Select Post Image')
       .build();
 
     picker.setVisible(true);
