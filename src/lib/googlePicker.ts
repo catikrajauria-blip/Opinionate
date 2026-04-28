@@ -85,15 +85,13 @@ export const openPicker = async (): Promise<PickerResult | null> => {
     };
 
     // View 1: A flat list of all images in the entire Drive (no folders)
-    const imagesView = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES)
-      .setMimeTypes('image/*')
-      .setIncludeFolders(false);
+    const imagesView = new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES);
+    imagesView.setIncludeFolders(false);
 
     // View 2: Traditional My Drive navigation but filtered to images
-    const driveView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
-      .setMimeTypes('image/*')
-      .setSelectableMimeTypes('image/*')
-      .setIncludeFolders(true);
+    const driveView = new google.picker.DocsView(google.picker.ViewId.DOCS);
+    driveView.setMimeTypes('image/png,image/jpeg,image/jpg,image/webp');
+    driveView.setIncludeFolders(true);
 
     // View 3: Direct upload tab
     const uploadView = new google.picker.DocsUploadView();
