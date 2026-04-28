@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Blog } from '../types';
-import { formatDate, calculateReadingTime, generateUserId, cn } from '../lib/utils';
+import { formatDate, calculateReadingTime, generateUserId, cn, convertDriveLink } from '../lib/utils';
 import { Eye, Heart, MessageSquare, Clock, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { blogService } from '../lib/blogService';
@@ -90,7 +90,7 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           >
             <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 to-transparent z-10 pointer-events-none opacity-40 group-hover:opacity-0 transition-opacity" />
             <img 
-              src={blog.image} 
+              src={convertDriveLink(blog.image)} 
               alt={blog.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000"
               referrerPolicy="no-referrer"

@@ -6,7 +6,7 @@ import { Blog } from '../types';
 import RatingSystem from '../components/RatingSystem';
 import CommentSection from '../components/CommentSection';
 import NewsletterBox from '../components/NewsletterBox';
-import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
+import { calculateReadingTime, formatDate, generateUserId, cn, convertDriveLink } from '../lib/utils';
 import { Eye, Heart, Clock, Share2, Bookmark, BookmarkCheck, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../contexts/AuthContext';
@@ -177,7 +177,7 @@ export default function BlogDetail() {
             className="mb-24 relative group"
           >
             <div className="absolute inset-0 bg-accent/5 mix-blend-multiply opacity-50 group-hover:opacity-0 transition-opacity duration-1000" />
-            <img src={blog.image} alt={blog.title} className="w-full aspect-video object-cover transition-all duration-1000 border border-border" referrerPolicy="no-referrer" />
+            <img src={convertDriveLink(blog.image)} alt={blog.title} className="w-full aspect-video object-cover transition-all duration-1000 border border-border" referrerPolicy="no-referrer" />
             <div className="absolute inset-0 border-[20px] border-bg-page/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
             <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.6em] mt-6 text-center opacity-40 group-hover:opacity-100 transition-opacity">ARTICLE IMAGE: {blog.title}</p>
           </motion.div>

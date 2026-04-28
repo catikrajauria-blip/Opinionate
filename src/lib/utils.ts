@@ -54,3 +54,23 @@ export const generateUserId = () => {
   }
   return id;
 };
+
+export function convertDriveLink(link: string): string {
+  if (!link) return '';
+  
+  // If it's already using the direct thumbnail or uc format correctly, don't double-process it
+  // unless we specifically want to force the high-res thumbnail.
+  if (link.includes('drive.google.com/thumbnail') && link.includes('sz=w1600')) return link;
+
+  // Check if it's a Drive link
+  if (!link.includes('drive.google.com') && !link.includes('googleusercontent.com')) return link;
+  
+  // Extract file ID from various Drive link formats
+  const idMatch = link.match(/[-\w]{25,}/);
+  if (!idMatch) return link;
+  
+  const fileId = idMatch[0];
+  
+  // Using thumbnail endpoint which is very reliable for direct <img> src
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+}

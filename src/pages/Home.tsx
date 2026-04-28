@@ -9,7 +9,7 @@ import RatingSystem from '../components/RatingSystem';
 import CommentSection from '../components/CommentSection';
 import NewsletterBox from '../components/NewsletterBox';
 import PollWidget from '../components/PollWidget';
-import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
+import { calculateReadingTime, formatDate, generateUserId, cn, convertDriveLink } from '../lib/utils';
 import { Eye, Heart, MessageSquare, Clock, Share2, Bookmark, BookmarkCheck, Zap, ExternalLink, Newspaper as NewspaperIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../contexts/AuthContext';
@@ -216,7 +216,7 @@ export default function Home() {
                 )}>
                   {blog.image ? (
                     <img 
-                      src={blog.image} 
+                      src={convertDriveLink(blog.image)} 
                       alt={blog.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100" 
                       referrerPolicy="no-referrer" 

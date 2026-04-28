@@ -4,7 +4,7 @@ import { blogService } from '../lib/blogService';
 import { Blog } from '../types';
 import BlogCard from '../components/BlogCard';
 import { Search, Filter, Calendar, LayoutGrid, List as ListIcon, ChevronRight } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, convertDriveLink } from '../lib/utils';
 import { Link } from 'react-router-dom';
 
 export default function Archive() {
@@ -146,7 +146,7 @@ export default function Archive() {
                 <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity glow-cyan" />
                 <div className="w-full md:w-96 aspect-video overflow-hidden flex-shrink-0 border border-border saturate-50 group-hover:saturate-150 transition-all duration-1000 relative">
                   <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 to-transparent z-10 opacity-40" />
-                  <img src={blog.image || `https://picsum.photos/seed/${blog.slug}/800/500`} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000" referrerPolicy="no-referrer" />
+                  <img src={convertDriveLink(blog.image) || `https://picsum.photos/seed/${blog.slug}/800/500`} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000" referrerPolicy="no-referrer" />
                 </div>
                 <div className="flex flex-col justify-center gap-8 flex-grow">
                    <div className="flex items-center gap-6">
