@@ -1,8 +1,8 @@
 declare const google: any;
 declare const gapi: any;
 
-const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '973392524263-boe0vsvn8ovf0pfsiio6l69dbv95qhb2.apps.googleusercontent.com';
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyC_EzzGdMLhRkVcuWg-APJGeORgCI8Mqv8';
 const SCOPES = 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file';
 
 let accessToken: string | null = null;
