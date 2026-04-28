@@ -10,7 +10,7 @@ import {
   Search as SearchIcon, Mail as MailIcon, Clock, X,
   MessageSquare, Star, Copy, ExternalLink, User, Eye, Download,
   MousePointer2, BarChart3, ToggleLeft, ToggleRight, 
-  Factory, HardHat, ShieldCheck, Cpu, TrendingUp
+  Factory, Cloud, ShieldCheck, Cpu, TrendingUp
 } from 'lucide-react';
 import { generateSlug, cn, formatDate } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
@@ -21,6 +21,7 @@ import { statsService } from '../lib/statsService';
 import { pollService } from '../lib/pollService';
 import { policyService, PolicyUpdate } from '../lib/policyService';
 import { wordService, WordOfTheDay } from '../lib/wordService';
+import { openPicker, convertDriveLink } from '../lib/googlePicker';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
@@ -62,6 +63,17 @@ export default function Admin() {
   const [author, setAuthor] = useState('Kartik Rajauria');
   const [imageUrl, setImageUrl] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+
+  const handleDriveSelect = async () => {
+    try {
+      const result = await openPicker();
+      if (result) {
+        setImageUrl(result.downloadUrl);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error selecting image from Drive');
+    }
+  };
 
   // News Form State
   const [newsTitle, setNewsTitle] = useState('');
@@ -901,9 +913,20 @@ export default function Admin() {
                     />
                  </div>
                  <div className="space-y-4">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Visual_Asset_Uri</label>
+                    <div className="flex justify-between items-center">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Visual_Asset_Uri</label>
+                       <button 
+                         type="button"
+                         onClick={handleDriveSelect}
+                         className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:text-text-primary transition-colors"
+                       >
+                         <Cloud size={14} /> Browse from Drive
+                       </button>
+                    </div>
                     <input 
-                       type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
+                       type="url" 
+                       value={imageUrl} 
+                       onChange={(e) => setImageUrl(convertDriveLink(e.target.value))}
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono text-xs"
                        placeholder="https://assets.source.com/img.webp"
                     />
