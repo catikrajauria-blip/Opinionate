@@ -76,7 +76,7 @@ export const openPicker = async (): Promise<PickerResult | null> => {
           id: doc.id,
           name: doc.name,
           url: doc.url,
-          downloadUrl: `https://drive.google.com/thumbnail?id=${doc.id}&sz=w1600`,
+          downloadUrl: convertDriveLink(doc.url),
           thumbnailUrl: doc.thumbnails?.[0]?.url || ''
         });
       } else if (data.action === google.picker.Action.CANCEL) {
@@ -121,15 +121,28 @@ export const convertDriveLink = (link: string): string => {
   if (!link) return '';
   
   // If it's already a direct link we generated, return it
-  if (link.includes('drive.google.com/uc')) return link;
+  if (link.includes('lh3.googleusercontent.com/d/') || link.includes('drive.google.com/thumbnail')) {
+    // Ensure it has a size parameter if using lh3
+    if (link.includes('lh3.googleusercontent.com/d/') && !link.includes('=')) {
+      return `${link}=s1600`;
+    }
+    return link;
+  }
 
-  // Only convert if it looks like a Google Drive link
-  if (link.includes('drive.google.com') || link.includes('docs.google.com')) {
-    const idMatch = link.match(/[-\w]{25,}/);
-    if (idMatch) {
-      const fileId = idMatch[0];
-      // sz=w1600 provides a high-quality preview suitable for blog images
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+  // Extract file ID from various Drive link formats
+  // Handles: drive.google.com/file/d/ID/view, drive.google.com/open?id=ID, docs.google.com/viewer?id=ID
+  const idMatch = link.match(/[-\w]{25,50}/);
+  if (idMatch) {
+    const fileId = idMatch[0];
+    
+    // Check if it's actually a Drive/Docs link or just a random ID-like string
+    if (link.includes('drive.google.com') || link.includes('docs.google.com') || link.includes('googleusercontent.com')) {
+      return `https://lh3.googleusercontent.com/d/${fileId}=s1600`;
+    }
+    
+    // If it's just a raw ID (at least 25 chars), assume it's a Drive ID
+    if (link.length >= 25 && !link.includes('/') && !link.includes('http')) {
+      return `https://lh3.googleusercontent.com/d/${fileId}=s1600`;
     }
   }
   
