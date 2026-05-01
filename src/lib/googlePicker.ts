@@ -76,7 +76,7 @@ export const openPicker = async (): Promise<PickerResult | null> => {
           id: doc.id,
           name: doc.name,
           url: doc.url,
-          downloadUrl: `https://lh3.googleusercontent.com/d/${doc.id}`,
+          downloadUrl: `https://drive.google.com/thumbnail?id=${doc.id}&sz=w1600`,
           thumbnailUrl: doc.thumbnails?.[0]?.url || ''
         });
       } else if (data.action === google.picker.Action.CANCEL) {
@@ -128,7 +128,8 @@ export const convertDriveLink = (link: string): string => {
     const idMatch = link.match(/[-\w]{25,}/);
     if (idMatch) {
       const fileId = idMatch[0];
-      return `https://lh3.googleusercontent.com/d/${fileId}`;
+      // sz=w1600 provides a high-quality preview suitable for blog images
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
     }
   }
   

@@ -188,7 +188,21 @@ export default function BlogDetail() {
         <div className="max-w-3xl mx-auto relative">
           <div className="blog-content mb-32 relative">
              <div className="absolute -left-12 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent/50 via-accent/5 to-transparent h-40" />
-             <ReactMarkdown remarkPlugins={[remarkGfm]}>{blog.content}</ReactMarkdown>
+             <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  img: ({ ...props }) => (
+                    <img 
+                      {...props} 
+                      src={convertDriveLink(props.src || '')} 
+                      referrerPolicy="no-referrer" 
+                      className="max-w-full h-auto mx-auto border border-border my-12"
+                    />
+                  )
+                }}
+             >
+                {blog.content}
+             </ReactMarkdown>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-8 py-12 border-y border-border mb-32 relative overflow-hidden">

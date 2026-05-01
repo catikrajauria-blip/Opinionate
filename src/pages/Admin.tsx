@@ -1010,7 +1010,21 @@ export default function Admin() {
                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent block mb-6">Live Content Preview</label>
                        <div className="bg-surface/30 border border-border/50 p-10 overflow-hidden">
                           <div className="blog-content max-h-[600px] overflow-y-auto custom-scrollbar pr-4">
-                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                             <ReactMarkdown 
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                  img: ({ ...props }) => (
+                                    <img 
+                                      {...props} 
+                                      src={convertDriveLink(props.src || '')} 
+                                      referrerPolicy="no-referrer" 
+                                      className="max-w-full h-auto mx-auto border border-border my-8"
+                                    />
+                                  )
+                                }}
+                             >
+                                {content}
+                             </ReactMarkdown>
                           </div>
                        </div>
                     </div>
