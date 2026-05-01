@@ -1,5 +1,3 @@
-import { convertDriveLink } from './utils';
-
 declare const google: any;
 declare const gapi: any;
 
@@ -78,7 +76,7 @@ export const openPicker = async (): Promise<PickerResult | null> => {
           id: doc.id,
           name: doc.name,
           url: doc.url,
-          downloadUrl: convertDriveLink(doc.id),
+          downloadUrl: `https://drive.google.com/uc?export=view&id=${doc.id}`,
           thumbnailUrl: doc.thumbnails?.[0]?.url || ''
         });
       } else if (data.action === google.picker.Action.CANCEL) {
@@ -115,4 +113,19 @@ export const openPicker = async (): Promise<PickerResult | null> => {
   });
 };
 
-export { convertDriveLink };
+/**
+ * Converts a Google Drive share link to a direct link that works in <img> tags.
+ * Note: This only works effectively if the file is shared as "Anyone with the link can view".
+ */
+export const convertDriveLink = (link: string): string => {
+  if (!link) return '';
+  
+  // Extract file ID from various Drive link formats
+  const idMatch = link.match(/[-\w]{25,}/);
+  if (!idMatch) return link;
+  
+  const fileId = idMatch[0];
+  
+  // Option 1: The uc?id= format (most common for direct viewing)
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+};

@@ -22,6 +22,8 @@ import { pollService } from '../lib/pollService';
 import { policyService, PolicyUpdate } from '../lib/policyService';
 import { wordService, WordOfTheDay } from '../lib/wordService';
 import { openPicker, convertDriveLink } from '../lib/googlePicker';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
@@ -895,7 +897,7 @@ export default function Admin() {
               <div className="space-y-4">
                  <div className="flex justify-between items-center">
                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Full Article Content</label>
-                    <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest">Mark_Syntax_Active</span>
+                    <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest">Mark_Syntax_Active_Preview_Ready</span>
                  </div>
                  <textarea 
                     required value={content} onChange={(e) => setContent(e.target.value)} rows={12}
@@ -903,6 +905,17 @@ export default function Admin() {
                     placeholder="Write your article content here..."
                  />
               </div>
+
+                  {content && (
+                    <div className="mt-8 border-y border-border/20 py-12 mb-12">
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent block mb-6">Live Content Preview</label>
+                       <div className="bg-surface/30 border border-border/50 p-10 overflow-hidden">
+                          <div className="blog-content max-h-[600px] overflow-y-auto custom-scrollbar pr-4">
+                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                          </div>
+                       </div>
+                    </div>
+                  )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pb-8 border-b border-border">
                  <div className="space-y-4">
