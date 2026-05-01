@@ -197,8 +197,10 @@ service cloud.firestore {
 
     // Poll Responses
     match /poll_responses/{responseId} {
-      allow read: if isAdmin();
-      allow create: if isSignedIn() && !isBlocked() && incoming().userId == request.auth.uid;
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if (isSignedIn() && !isBlocked() && incoming().userId == request.auth.uid) || 
+                      (!isSignedIn() && isValidId(incoming().userId));
       allow delete: if isAdmin();
     }
 
