@@ -10,7 +10,8 @@ import {
   Search as SearchIcon, Mail as MailIcon, Clock, X,
   MessageSquare, Star, Copy, ExternalLink, User, Eye, Download,
   MousePointer2, BarChart3, ToggleLeft, ToggleRight, 
-  Factory, Cloud, ShieldCheck, Cpu, TrendingUp
+  Factory, Cloud, ShieldCheck, Cpu, TrendingUp,
+  Bold, Italic, List, ListOrdered, Heading1, Heading2, Heading3, Quote
 } from 'lucide-react';
 import { generateSlug, cn, formatDate } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
@@ -669,6 +670,65 @@ export default function Admin() {
     }
   };
 
+  const insertMarkdown = (type: string) => {
+    const textarea = document.getElementById('blog-content-editor') as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selection = content.substring(start, end);
+    const before = content.substring(0, start);
+    const after = content.substring(end);
+    let newText = selection;
+    let cursorOffset = 0;
+
+    switch (type) {
+      case 'bold':
+        newText = `**${selection || 'bold text'}**`;
+        cursorOffset = selection ? 0 : 2;
+        break;
+      case 'italic':
+        newText = `*${selection || 'italic text'}*`;
+        cursorOffset = selection ? 0 : 1;
+        break;
+      case 'h1':
+        newText = `\n# ${selection || 'Heading 1'}\n`;
+        break;
+      case 'h2':
+        newText = `\n## ${selection || 'Heading 2'}\n`;
+        break;
+      case 'h3':
+        newText = `\n### ${selection || 'Heading 3'}\n`;
+        break;
+      case 'list':
+        newText = `\n- ${selection || 'List item'}\n`;
+        break;
+      case 'numlist':
+        newText = `\n1. ${selection || 'List item'}\n`;
+        break;
+      case 'link':
+        newText = `[${selection || 'link text'}](https://)`;
+        cursorOffset = selection ? 1 : 1;
+        break;
+      case 'quote':
+        newText = `\n> ${selection || 'Quote'}\n`;
+        break;
+      case 'code':
+        newText = `\n\`\`\`\n${selection || 'code'}\n\`\`\`\n`;
+        break;
+    }
+
+    const finalContent = before + newText + after;
+    setContent(finalContent);
+
+    // Focus and restore selection
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + newText.length - cursorOffset;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
   const handleCreateNews = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isGlobalAdmin) return;
@@ -899,11 +959,50 @@ export default function Admin() {
                     <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Full Article Content</label>
                     <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest">Mark_Syntax_Active_Preview_Ready</span>
                  </div>
-                 <textarea 
-                    required value={content} onChange={(e) => setContent(e.target.value)} rows={12}
-                    className="w-full bg-surface border border-border p-6 outline-none focus:border-accent font-mono text-xs leading-relaxed resize-none"
-                    placeholder="Write your article content here..."
-                 />
+                 
+                 <div className="bg-surface border border-border">
+                    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border/50 bg-bg-page/50">
+                       <button type="button" onClick={() => insertMarkdown('bold')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Bold">
+                          <Bold size={14} />
+                       </button>
+                       <button type="button" onClick={() => insertMarkdown('italic')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Italic">
+                          <Italic size={14} />
+                       </button>
+                       <div className="w-[1px] h-4 bg-border/30 mx-1" />
+                       <button type="button" onClick={() => insertMarkdown('h1')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Heading 1">
+                          <Heading1 size={14} />
+                       </button>
+                       <button type="button" onClick={() => insertMarkdown('h2')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Heading 2">
+                          <Heading2 size={14} />
+                       </button>
+                       <button type="button" onClick={() => insertMarkdown('h3')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Heading 3">
+                          <Heading3 size={14} />
+                       </button>
+                       <div className="w-[1px] h-4 bg-border/30 mx-1" />
+                       <button type="button" onClick={() => insertMarkdown('list')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Bullet List">
+                          <List size={14} />
+                       </button>
+                       <button type="button" onClick={() => insertMarkdown('numlist')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Numbered List">
+                          <ListOrdered size={14} />
+                       </button>
+                       <div className="w-[1px] h-4 bg-border/30 mx-1" />
+                       <button type="button" onClick={() => insertMarkdown('link')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Insert Link">
+                          <LinkIcon size={14} />
+                       </button>
+                       <button type="button" onClick={() => insertMarkdown('quote')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Quote">
+                          <Quote size={14} />
+                       </button>
+                       <button type="button" onClick={() => insertMarkdown('code')} className="p-2 hover:bg-accent/10 text-text-secondary hover:text-accent transition-colors rounded" title="Code Block">
+                          <FileText size={14} />
+                       </button>
+                    </div>
+                    <textarea 
+                       id="blog-content-editor"
+                       required value={content} onChange={(e) => setContent(e.target.value)} rows={15}
+                       className="w-full bg-transparent p-6 outline-none font-mono text-xs leading-relaxed resize-none min-h-[400px]"
+                       placeholder="Write your article content here..."
+                    />
+                 </div>
               </div>
 
                   {content && (
