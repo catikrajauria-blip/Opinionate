@@ -76,7 +76,7 @@ export const openPicker = async (): Promise<PickerResult | null> => {
           id: doc.id,
           name: doc.name,
           url: doc.url,
-          downloadUrl: `https://drive.google.com/uc?export=view&id=${doc.id}`,
+          downloadUrl: `https://lh3.googleusercontent.com/d/${doc.id}`,
           thumbnailUrl: doc.thumbnails?.[0]?.url || ''
         });
       } else if (data.action === google.picker.Action.CANCEL) {
@@ -120,12 +120,17 @@ export const openPicker = async (): Promise<PickerResult | null> => {
 export const convertDriveLink = (link: string): string => {
   if (!link) return '';
   
-  // Extract file ID from various Drive link formats
-  const idMatch = link.match(/[-\w]{25,}/);
-  if (!idMatch) return link;
+  // If it's already a direct link we generated, return it
+  if (link.includes('drive.google.com/uc')) return link;
+
+  // Only convert if it looks like a Google Drive link
+  if (link.includes('drive.google.com') || link.includes('docs.google.com')) {
+    const idMatch = link.match(/[-\w]{25,}/);
+    if (idMatch) {
+      const fileId = idMatch[0];
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+  }
   
-  const fileId = idMatch[0];
-  
-  // Option 1: The uc?id= format (most common for direct viewing)
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  return link;
 };
