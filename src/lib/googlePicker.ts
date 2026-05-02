@@ -76,7 +76,7 @@ export const openPicker = async (): Promise<PickerResult | null> => {
           id: doc.id,
           name: doc.name,
           url: doc.url,
-          downloadUrl: convertDriveLink(doc.url),
+          downloadUrl: `https://drive.google.com/thumbnail?id=${doc.id}&sz=w1600`,
           thumbnailUrl: doc.thumbnails?.[0]?.url || ''
         });
       } else if (data.action === google.picker.Action.CANCEL) {
@@ -121,11 +121,7 @@ export const convertDriveLink = (link: string): string => {
   if (!link) return '';
   
   // If it's already a direct link we generated, return it
-  if (link.includes('lh3.googleusercontent.com/d/') || link.includes('drive.google.com/thumbnail')) {
-    // Ensure it has a size parameter if using lh3
-    if (link.includes('lh3.googleusercontent.com/d/') && !link.includes('=')) {
-      return `${link}=s1600`;
-    }
+  if (link.includes('drive.google.com/thumbnail') || link.includes('lh3.googleusercontent.com/d/')) {
     return link;
   }
 
@@ -137,12 +133,13 @@ export const convertDriveLink = (link: string): string => {
     
     // Check if it's actually a Drive/Docs link or just a random ID-like string
     if (link.includes('drive.google.com') || link.includes('docs.google.com') || link.includes('googleusercontent.com')) {
-      return `https://lh3.googleusercontent.com/d/${fileId}=s1600`;
+      // Using the thumbnail endpoint is often more robust across browsers than lh3
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
     }
     
     // If it's just a raw ID (at least 25 chars), assume it's a Drive ID
     if (link.length >= 25 && !link.includes('/') && !link.includes('http')) {
-      return `https://lh3.googleusercontent.com/d/${fileId}=s1600`;
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
     }
   }
   

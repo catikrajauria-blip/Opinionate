@@ -95,6 +95,8 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
               alt={blog.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000"
               referrerPolicy="no-referrer"
+              loading="lazy"
+              decoding="async"
             />
           </Link>
         )}

@@ -1018,6 +1018,8 @@ export default function Admin() {
                                       {...props} 
                                       src={convertDriveLink(props.src || '')} 
                                       referrerPolicy="no-referrer" 
+                                      loading="lazy"
+                                      decoding="async"
                                       className="max-w-full h-auto mx-auto border border-border my-8"
                                     />
                                   )

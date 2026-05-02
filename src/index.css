@@ -109,6 +109,14 @@
   animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Safari Support for Backdrop Blurs */
+.backdrop-blur-sm { -webkit-backdrop-filter: blur(4px); }
+.backdrop-blur-md { -webkit-backdrop-filter: blur(12px); }
+.backdrop-blur-lg { -webkit-backdrop-filter: blur(16px); }
+.backdrop-blur-xl { -webkit-backdrop-filter: blur(24px); }
+.backdrop-blur-2xl { -webkit-backdrop-filter: blur(40px); }
+.backdrop-blur-3xl { -webkit-backdrop-filter: blur(64px); }
+
 .blog-content {
   @apply prose prose-slate dark:prose-invert max-w-none font-sans text-xl leading-relaxed text-text-primary/90;
   @apply prose-headings:font-display prose-headings:tracking-tight prose-headings:uppercase prose-headings:font-black prose-headings:text-text-primary;

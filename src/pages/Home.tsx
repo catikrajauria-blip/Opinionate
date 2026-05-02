@@ -221,6 +221,8 @@ export default function Home() {
                       alt={blog.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100" 
                       referrerPolicy="no-referrer" 
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-full h-full bg-accent flex items-center justify-center">
