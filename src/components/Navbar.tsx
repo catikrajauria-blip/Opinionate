@@ -5,6 +5,8 @@ import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 
+import Logo from './Logo';
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -61,10 +63,8 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2 group relative">
-            <span className="font-display font-black text-2xl md:text-3xl tracking-tighter uppercase transition-all duration-300 group-hover:text-accent flex items-center gap-1">
-              OPINIO<span className="text-secondary-accent animate-pulse font-mono font-bold">[N]</span>ATE.
-            </span>
+          <Link to="/" className="group relative">
+            <Logo withText size={32} />
             <div className="absolute -bottom-1 left-0 w-full h-[1px] bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left glow-cyan" />
           </Link>
 

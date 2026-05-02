@@ -25,6 +25,7 @@ import { wordService, WordOfTheDay } from '../lib/wordService';
 import { openPicker, convertDriveLink } from '../lib/googlePicker';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Logo from '../components/Logo';
 
 export default function Admin() {
   const { user, profile, isAdmin: isGlobalAdmin, loading: authLoading } = useAuth();
@@ -844,8 +845,8 @@ export default function Admin() {
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-accent/0 via-accent/40 to-accent/0" />
         <div className="flex flex-col lg:flex-row lg:items-center gap-12 w-full xl:w-auto relative z-10">
           <div className="flex items-center gap-6 group">
-            <div className="p-4 bg-accent/5 border border-accent/20 glow-cyan transition-transform group-hover:scale-110">
-              <Shield className="text-accent animate-pulse" size={32} />
+            <div className="transition-transform group-hover:scale-110">
+              <Logo size={56} />
             </div>
             <div>
               <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none text-text-primary">Admin Panel</h1>

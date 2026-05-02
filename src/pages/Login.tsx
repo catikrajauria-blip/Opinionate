@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Settings, LogIn, AlertTriangle, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const { user, profile, signIn, loading } = useAuth();
@@ -59,10 +60,8 @@ export default function Login() {
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-accent/5 blur-3xl rounded-full group-hover:bg-accent/10 transition-colors" />
         
-        <div className="w-24 h-24 bg-accent/5 text-accent border border-accent/20 flex items-center justify-center mx-auto mb-10 glow-cyan/10 relative">
-           <LogIn size={48} className="animate-pulse" />
-           <div className="absolute -top-1 -left-1 w-2 h-2 bg-accent" />
-           <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-accent" />
+        <div className="flex justify-center mb-10">
+          <Logo size={80} />
         </div>
         
         <h1 className="text-4xl font-display font-black mb-4 text-text-primary uppercase tracking-tighter">Login</h1>

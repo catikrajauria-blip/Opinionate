@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Github, Twitter, Linkedin, Heart, Instagram, Facebook, ExternalLink } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Footer() {
   const socialLinks = [
@@ -17,9 +18,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-24">
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="inline-block mb-8 group">
-              <span className="font-display font-black text-3xl tracking-tighter uppercase group-hover:text-accent transition-colors">
-                OPINIO<span className="text-accent underline">N</span>ATE.
-              </span>
+              <Logo withText size={32} />
             </Link>
             <p className="text-text-secondary text-[14px] leading-relaxed mb-8 font-sans font-medium max-w-xs opacity-70">
               DAILY INSIGHTS ON CULTURE, TECHNOLOGY, AND SOCIETY.

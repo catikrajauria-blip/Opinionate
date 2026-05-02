@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'motion/react';
 import { statsService } from '../lib/statsService';
 import { Sparkles } from 'lucide-react';
+import Logo from './Logo';
 
 interface SplashScreenProps {
   onEnter: () => void;
@@ -42,9 +43,10 @@ export default function SplashScreen({ onEnter }: SplashScreenProps) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full text-center"
+              className="relative w-full flex flex-col items-center"
             >
-              <div className="text-[14vw] sm:text-[12vw] md:text-8xl lg:text-[12rem] font-display font-black tracking-tighter text-text-primary relative z-10 leading-[0.85] uppercase drop-shadow-2xl">
+              <Logo size={120} className="mb-12" />
+              <div className="text-[14vw] sm:text-[12vw] md:text-8xl lg:text-[12rem] font-display font-black tracking-tighter text-text-primary relative z-10 leading-[0.85] uppercase drop-shadow-2xl text-center">
                 Opinio<span className="text-accent italic">n</span>ate
               </div>
               
