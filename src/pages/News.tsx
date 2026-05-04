@@ -37,7 +37,8 @@ export default function News() {
       if (activeCategory === 'all') {
         const promises = CATEGORIES.slice(1).map(cat => blogService.getNewsByCategory(cat.id, 10));
         const allResults = await Promise.all(promises);
-        results = allResults.flat().sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+        const flattened = allResults.flat() as NewsItem[];
+        results = flattened.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
       } else {
         results = await blogService.getNewsByCategory(activeCategory, 20);
       }
@@ -90,102 +91,100 @@ export default function News() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-12 px-4 md:px-8">
+    <div className="max-w-7xl mx-auto py-24 px-4 md:px-8">
       {/* Header */}
-      <div className="mb-16">
+      <div className="mb-32">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-8"
         >
-          <div>
-            <h1 className="text-6xl md:text-8xl font-display font-black tracking-tighter uppercase leading-none mb-6">
-              Daily Ne<span className="text-accent italic">w</span>s.
+          <div className="flex-grow">
+            <h1 className="text-7xl md:text-9xl font-display font-black tracking-tighter uppercase leading-[0.8] mb-8">
+              Daily News.
             </h1>
-            <p className="text-text-secondary font-display font-medium text-lg max-w-xl">
-              Curated external reports and market updates analyzed through a critical lens.
+            <p className="text-text-secondary font-display font-medium text-xl md:text-2xl max-w-2xl">
+              Handpicked news reports explained clearly.
             </p>
           </div>
           
-          <div className="flex items-center gap-4 text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary">
-             <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-             LIVE FEED UPDATED: {new Date().toLocaleDateString('en-US', { hour: '2-digit', minute: '2-digit' })}
+          <div className="flex flex-col items-end gap-4">
+             <div className="flex items-center gap-3 px-4 py-2 glass rounded-full text-[10px] font-mono font-bold uppercase tracking-widest text-accent">
+                <div className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_var(--color-accent)]" />
+                Live News: Active
+             </div>
+             <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest opacity-60">Last Updated: {new Date().toLocaleTimeString()}</p>
           </div>
         </motion.div>
       </div>
 
       {/* Categories */}
-      <div className="flex flex-wrap gap-2 mb-12 border-b border-border pb-8">
+      <div className="flex flex-wrap gap-3 mb-20 pb-8 border-b border-border">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isActive = activeCategory === cat.id;
           return (
-            <button
+            <motion.button
               key={cat.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(cat.id)}
               className={cn(
-                "flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-mono font-bold uppercase tracking-widest transition-all",
+                "flex items-center gap-3 px-8 py-3 rounded-full text-[10px] font-display font-black uppercase tracking-widest transition-all",
                 isActive 
-                  ? "bg-accent text-bg-page glow-cyan" 
-                  : "bg-surface text-text-secondary hover:text-accent hover:bg-accent/5 border border-border/50"
+                  ? "btn-premium shadow-accent/20" 
+                  : "glass text-text-secondary hover:text-text-primary border-border"
               )}
             >
               <Icon size={14} />
               {cat.name}
-            </button>
+            </motion.button>
           );
         })}
       </div>
 
       {/* News Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <AnimatePresence mode="popLayout">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-surface rounded-sm border border-border/50 p-8 animate-pulse">
-                <div className="h-4 w-1/4 bg-border mb-6" />
-                <div className="h-8 w-full bg-border mb-4" />
-                <div className="h-4 w-2/3 bg-border" />
-              </div>
+              <div key={i} className="card-premium h-80 animate-pulse border-border bg-surface/30" />
             ))
           ) : news.length > 0 ? (
             news.map((item, index) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ delay: index * 0.05 }}
-                className="group bg-surface rounded-sm border border-border/50 hover:border-accent/40 transition-all p-8 flex flex-col h-full relative overflow-hidden"
+                className="group card-premium flex flex-col h-full relative overflow-hidden"
               >
-                {/* Visual Accent */}
-                <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowUpRight size={20} className="text-accent" />
-                </div>
-
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-[0.2em] px-3 py-1 bg-accent/5 border border-accent/20 rounded-full">
+                <div className="flex items-center justify-between mb-8">
+                  <span className="px-4 py-1 glass-vibrant rounded-full text-[9px] font-display font-black text-accent-vibrant uppercase tracking-widest border border-accent-vibrant/20">
                     {item.category}
                   </span>
                   <div className="flex items-center gap-2 text-[10px] font-mono text-text-secondary">
-                    <Clock size={12} />
+                    <Clock size={12} className="opacity-50" />
                     {formatDate(item.createdAt)}
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-4 group-hover:text-accent transition-colors leading-tight">
+                <h3 className="text-3xl font-display font-black uppercase tracking-tight mb-6 group-hover:text-accent transition-colors leading-[1.1]">
                   {item.title}
                 </h3>
 
-                <p className="text-text-secondary text-sm leading-relaxed mb-8 flex-grow">
+                <p className="text-text-secondary text-base leading-relaxed mb-10 flex-grow font-medium">
                   {item.summary}
                 </p>
 
-                <div className="mt-auto pt-8 border-t border-border/30 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="mt-auto pt-8 border-t border-border flex items-center justify-between">
+                  <div className="flex items-center gap-6">
                     <button 
                       onClick={() => handleLike(item.id)}
                       className={cn(
-                        "flex items-center gap-2 text-[10px] font-mono font-bold transition-colors",
+                        "flex items-center gap-2 text-[11px] font-mono font-bold transition-all hover-scale",
                         interactions[item.id] === 'like' ? "text-accent" : "text-text-secondary hover:text-accent"
                       )}
                     >
@@ -195,7 +194,7 @@ export default function News() {
                     <button 
                       onClick={() => handleDislike(item.id)}
                       className={cn(
-                        "flex items-center gap-2 text-[10px] font-mono font-bold transition-colors",
+                        "flex items-center gap-2 text-[11px] font-mono font-bold transition-all hover-scale",
                         interactions[item.id] === 'dislike' ? "text-accent" : "text-text-secondary hover:text-accent"
                       )}
                     >
@@ -208,18 +207,18 @@ export default function News() {
                     href={item.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-[10px] font-mono font-bold text-text-primary hover:text-accent transition-colors uppercase tracking-widest group/link"
+                    className="flex items-center gap-2 text-[10px] font-display font-black text-text-primary hover:text-accent transition-colors uppercase tracking-widest"
                   >
                     Source: {item.source}
-                    <ExternalLink size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                    <ArrowUpRight size={14} />
                   </a>
                 </div>
               </motion.div>
             ))
           ) : (
-            <div className="col-span-full py-20 text-center bg-surface rounded-sm border border-border border-dashed">
-              <NewsIcon size={48} className="mx-auto text-text-secondary opacity-20 mb-6" />
-              <p className="text-text-secondary font-display font-bold uppercase tracking-tight">No news reports found in this frequency.</p>
+            <div className="col-span-full py-32 text-center card-premium border-dashed border-border flex flex-col items-center justify-center">
+              <NewsIcon size={64} className="text-accent opacity-20 mb-8" />
+              <p className="text-text-secondary text-2xl font-display font-black uppercase tracking-tighter">No reports found at the moment.</p>
             </div>
           )}
         </AnimatePresence>

@@ -851,21 +851,21 @@ export default function Admin() {
             <div>
               <h1 className="text-4xl font-display font-black tracking-tighter uppercase leading-none text-text-primary">Admin Panel</h1>
               <p className="text-text-secondary flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] mt-2">
-                AUTH_STATUS: <span className="text-accent underline">SECURE ACCESS GRANTED</span>
+                Status: <span className="text-accent underline">Logged In</span>
               </p>
             </div>
           </div>
           
           <nav className="flex flex-wrap gap-2 md:border-l border-border md:pl-12">
             {[
-              { id: 'posts', label: 'POSTS', icon: FileText },
-              { id: 'news', label: 'NEWS', icon: Zap },
-              { id: 'users', label: 'USERS', icon: Users },
-              { id: 'community', label: 'COMMUNITY', icon: MessageSquare },
-              { id: 'policy', label: 'POLICY', icon: ShieldCheck },
-              { id: 'words', label: 'WORDS', icon: FileText },
-              { id: 'analytics', label: 'ANALYTICS', icon: PieChart },
-              { id: 'polls', label: 'POLLS', icon: BarChart3 }
+              { id: 'posts', label: 'Blogs', icon: FileText },
+              { id: 'news', label: 'News', icon: Zap },
+              { id: 'users', label: 'Users', icon: Users },
+              { id: 'community', label: 'Talk', icon: MessageSquare },
+              { id: 'policy', label: 'Policy', icon: ShieldCheck },
+              { id: 'words', label: 'Words', icon: FileText },
+              { id: 'analytics', label: 'Data', icon: PieChart },
+              { id: 'polls', label: 'Polls', icon: BarChart3 }
             ].map((tab) => (
               <button 
                 key={tab.id}
@@ -918,7 +918,7 @@ export default function Admin() {
                       className="btn-minimal px-6 py-3 font-mono text-[10px] flex items-center gap-3 transition-all active:scale-95"
                     >
                       <Zap size={14} className={cn("text-accent", aiLoading && "animate-pulse")} /> 
-                      {aiLoading ? 'GENERATING CONTENT...' : 'AI GENERATE POST'}
+                      {aiLoading ? 'Thinking...' : 'AI Help Writing'}
                     </button>
                     {success && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
@@ -1043,7 +1043,7 @@ export default function Admin() {
                  </div>
                  <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Visual_Asset_Uri</label>
+                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Image URL</label>
                        <button 
                          type="button"
                          onClick={handleDriveSelect}
@@ -1077,7 +1077,7 @@ export default function Admin() {
                     <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
                        Add News Item
                     </h2>
-                    <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">EXTERNAL_FEED_MODULE</p>
+                    <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">News Feed Update</p>
                   </div>
                   {success && activeTab === 'news' && (
                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
@@ -1119,17 +1119,17 @@ export default function Admin() {
                       />
                   </div>
                   <div className="space-y-4">
-                      <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Intelligence_Origin</label>
+                      <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">News Source</label>
                       <input 
                         type="text" required value={newsSource} onChange={(e) => setNewsSource(e.target.value)}
                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-display font-bold text-sm uppercase"
-                        placeholder="REUTERS / FT / MINT..."
+                        placeholder="Reuters / FT / Mint..."
                       />
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Analytical_Summary</label>
+                    <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Short Summary</label>
                     <textarea 
                       required value={newsSummary} onChange={(e) => setNewsSummary(e.target.value)} rows={4}
                       className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-display font-medium text-base resize-none uppercase tracking-tight leading-tight"
@@ -1178,7 +1178,7 @@ export default function Admin() {
                       <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
                          User Directory
                       </h2>
-                      <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-widest mt-2 opacity-50">AUTHORIZED_PERSONNEL & GUEST_LOG</p>
+                      <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-widest mt-2 opacity-50">Manage Users and Permissions</p>
                     </div>
                     <div className="relative w-full md:w-80">
                        <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" />
@@ -1192,8 +1192,8 @@ export default function Admin() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                   <table className="w-full border-collapse">
+                <div className="overflow-x-auto custom-scrollbar pb-4">
+                   <table className="w-full border-collapse min-w-[800px]">
                       <thead className="bg-surface text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary border-b border-border">
                          <tr>
                             <th className="px-10 py-5 text-left">User Name</th>
@@ -1231,16 +1231,16 @@ export default function Admin() {
                                   "text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-widest border",
                                   u.role === 'admin' ? "border-accent text-accent bg-accent/5" : "border-border text-text-secondary"
                                 )}>
-                                   {u.role}_SEC
+                                   {u.role}
                                 </span>
                              </td>
                              <td className="px-10 py-8">
                                 <div className="space-y-2">
                                    <p className="text-[10px] font-mono text-text-secondary flex items-center gap-2">
-                                      <span className="opacity-30 uppercase tracking-tighter">REG:</span> <span className="text-text-primary">{formatDate(u.createdAt)}</span>
+                                      <span className="opacity-30 uppercase tracking-tighter">Registered:</span> <span className="text-text-primary">{formatDate(u.createdAt)}</span>
                                    </p>
                                    <p className="text-[10px] font-mono text-text-secondary flex items-center gap-2">
-                                      <span className="opacity-30 uppercase tracking-tighter">ACT:</span> <span className="text-text-primary">{formatDate(u.lastLogin)}</span>
+                                      <span className="opacity-30 uppercase tracking-tighter">Last Active:</span> <span className="text-text-primary">{formatDate(u.lastLogin)}</span>
                                    </p>
                                 </div>
                              </td>
@@ -1248,7 +1248,7 @@ export default function Admin() {
                                 <div className="flex items-center justify-end gap-3">
                                    <button 
                                      onClick={() => handleToggleBlock(u)}
-                                     title={u.isBlocked ? "RESTORE_ACCESS" : "REVOKE_ACCESS"}
+                                     title={u.isBlocked ? "Allow Access" : "Block Access"}
                                      className={cn(
                                        "p-3 border transition-all",
                                        u.isBlocked ? "border-green-500/20 text-green-500 hover:bg-green-500 hover:text-bg-page" : "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-bg-page"
@@ -1314,8 +1314,8 @@ export default function Admin() {
                          value={pollStatus} onChange={(e) => setPollStatus(e.target.value as any)}
                          className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono font-bold text-xs uppercase"
                        >
-                         <option value="active">STAGED_ACTIVE</option>
-                         <option value="archived">ARCHIVED_RECORD</option>
+                         <option value="active">Active</option>
+                         <option value="archived">Archived</option>
                        </select>
                      </div>
                      <div className="space-y-4">
@@ -1329,7 +1329,7 @@ export default function Admin() {
                            {pollShowResults ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-text-secondary opacity-30" />}
                          </button>
                          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
-                           {pollShowResults ? 'PUBLIC RESULTS ENABLED' : 'PRIVATE RESULTS ONLY'}
+                           {pollShowResults ? 'Visible to Everyone' : 'Only I can see'}
                          </span>
                        </div>
                      </div>
@@ -1426,28 +1426,28 @@ export default function Admin() {
                          onClick={handleSeedInfraData}
                          className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                        >
-                         <Zap size={14} /> SEED_INFRA_DATASET
+                         <Zap size={14} /> Add Infrastructure Data
                        </button>
                        <button 
                          type="button"
                          onClick={handleSeedDefenceData}
                          className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                        >
-                         <ShieldCheck size={14} /> SEED_DEFENCE_DATASET
+                         <ShieldCheck size={14} /> Add Defence Data
                        </button>
                        <button 
                          type="button"
                          onClick={handleSeedTechData}
                          className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                        >
-                         <Cpu size={14} /> SEED_TECH_DATASET
+                         <Cpu size={14} /> Add Tech Data
                        </button>
                        <button 
                          type="button"
                          onClick={handleSeedEconomyData}
                          className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                        >
-                         <TrendingUp size={14} /> SEED_ECONOMY_DATASET
+                         <TrendingUp size={14} /> Add Economy Data
                        </button>
                        {success && (
                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5">
@@ -1544,7 +1544,7 @@ export default function Admin() {
                            </div>
                         </div>
                      ))}
-                     {allPolicies.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20 border border-border border-dashed">Strategic timeline is currently empty.</p>}
+                     {allPolicies.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20 border border-border border-dashed">No policy updates found.</p>}
                   </div>
                </div>
              </div>
@@ -1556,7 +1556,7 @@ export default function Admin() {
                         <h2 className="text-3xl font-display font-black tracking-tighter uppercase leading-none">
                            Add New Word
                         </h2>
-                        <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">Word Editor</p>
+                        <p className="text-[10px] font-mono font-bold text-text-secondary mt-2 tracking-widest opacity-50 uppercase">Word List</p>
                       </div>
                       <div className="flex flex-wrap gap-4">
                         <button 
@@ -1564,7 +1564,7 @@ export default function Admin() {
                           onClick={handleSeedWordData}
                           className="flex items-center gap-2 px-4 py-2 border border-accent/20 bg-accent/5 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:bg-accent hover:text-bg-page transition-all"
                         >
-                          <Zap size={14} /> Populate Sample Words
+                          <Zap size={14} /> Add Sample Words
                         </button>
                         {success && activeTab === 'words' && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-green-500 font-mono font-bold text-[10px] uppercase tracking-widest px-4 border border-green-500/20 bg-green-500/5 py-2">
@@ -1776,59 +1776,49 @@ export default function Admin() {
                         </div>
                      ))}
                      {allSubscribers.length === 0 && <p className="text-[10px] font-mono text-text-secondary uppercase opacity-40 col-span-full text-center py-20">No subscriber data found in network registry.</p>}
-                  </div>
-               </div>
-            </div>
+                   </div>
+                </div>
+             </div>
           ) : (
-            <div className="bg-bg-page border border-border p-10">
-               <div className="mb-16 border-b border-border pb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                  <div>
-                    <h2 className="text-4xl font-display font-black text-text-primary tracking-tighter uppercase leading-none">SYSTEM STATS</h2>
-                    <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-[0.3em] mt-3 opacity-40">PLATFORM PERFORMANCE OVERVIEW</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-widest">LIVE STATS</span>
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-border">
-                  <div className="p-10 border-b lg:border-b-0 lg:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">USER INTERACTIONS</p>
-                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalSwipes}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL INTERACTIONS RECORDED</p>
-                  </div>
-                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">ARTICLE VIEWS</p>
-                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalViews}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">TOTAL READ EVENTS</p>
-                  </div>
-                  <div className="p-10 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">ARCHIVE DEPTH</p>
-                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalBlogs}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">LIFETIME_OPINION_COUNT</p>
-                  </div>
-                  <div className="p-10 hover:bg-surface transition-all group">
-                     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6 group-hover:translate-x-1 transition-transform">SUBSCRIBERS</p>
-                     <p className="text-5xl font-display font-black text-text-primary tracking-tighter">{stats.totalSubscribers}</p>
-                     <p className="text-[9px] font-mono font-bold uppercase text-text-secondary mt-3 opacity-30">SUBSCRIBER_INDEX_COUNT</p>
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-x border-b border-border">
-                  <div className="p-12 border-b md:border-b-0 md:border-r border-border hover:bg-surface transition-all">
-                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">SATISFACTION RATING</p>
-                     <div className="flex items-baseline gap-3">
-                        <p className="text-7xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.avgRating.toFixed(1)}</p>
-                        <span className="text-2xl font-mono text-accent font-bold opacity-40">/5.0</span>
+            <>
+               <div className="bg-bg-page border border-border p-10 mb-10">
+                  <div className="mb-16 border-b border-border pb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                     <div>
+                       <h2 className="text-4xl font-display font-black text-text-primary tracking-tighter uppercase leading-none">SYSTEM STATS</h2>
+                       <p className="text-[10px] text-text-secondary uppercase font-mono font-bold tracking-[0.3em] mt-3 opacity-40">PLATFORM PERFORMANCE OVERVIEW</p>
                      </div>
-                     <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">USER SATISFACTION INDEX</p>
+                     <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                       <span className="text-[9px] font-mono font-bold uppercase tracking-widest">LIVE STATS</span>
+                     </div>
                   </div>
-                  <div className="p-12 hover:bg-surface transition-all">
-                     <p className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-accent mb-6">AUDIENCE GROWTH</p>
-                     <p className="text-7xl font-display font-black text-text-primary tracking-tighter leading-none">{stats.totalSubscribers}</p>
-                     <p className="text-[10px] font-mono font-bold uppercase text-text-secondary mt-4 tracking-widest opacity-30">NETWORK_NODES_ACTIVE</p>
-                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center gap-8 p-6 bg-surface border border-border">
+                    <div className="text-center">
+                       <p className="text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-accent mb-1">INTERACTIONS</p>
+                       <p className="text-2xl font-display font-black text-text-primary">{stats.totalSwipes}</p>
+                    </div>
+                    <div className="w-px h-8 bg-border hidden md:block" />
+                    <div className="text-center">
+                       <p className="text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-accent mb-1">VIEWS</p>
+                       <p className="text-2xl font-display font-black text-text-primary">{stats.totalViews}</p>
+                    </div>
+                    <div className="w-px h-8 bg-border hidden md:block" />
+                    <div className="text-center">
+                       <p className="text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-accent mb-1">BLOGS</p>
+                       <p className="text-2xl font-display font-black text-text-primary">{stats.totalBlogs}</p>
+                    </div>
+                    <div className="w-px h-8 bg-border hidden md:block" />
+                    <div className="text-center">
+                       <p className="text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-accent mb-1">READERS</p>
+                       <p className="text-2xl font-display font-black text-text-primary">{stats.totalSubscribers}</p>
+                    </div>
+                    <div className="w-px h-8 bg-border hidden md:block" />
+                    <div className="text-center">
+                       <p className="text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-accent mb-1">RATING</p>
+                       <p className="text-2xl font-display font-black text-text-primary">{stats.avgRating.toFixed(1)}</p>
+                    </div>
+                 </div>
                </div>
                
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -1941,10 +1931,10 @@ export default function Admin() {
                      className="mt-16 p-12 bg-surface border-2 border-accent/30 relative overflow-hidden"
                    >
                       <button 
-                        onClick={() => setSelectedBlogAnalysis(null)}
-                        className="absolute top-6 right-6 text-text-secondary hover:text-accent transition-colors z-10"
+                         onClick={() => setSelectedBlogAnalysis(null)}
+                         className="absolute top-6 right-6 text-text-secondary hover:text-accent transition-colors z-10"
                       >
-                        <X size={32} />
+                         <X size={32} />
                       </button>
 
                       <div className="flex items-center gap-6 mb-12 border-b border-border pb-8">
@@ -2007,11 +1997,11 @@ export default function Admin() {
                    </motion.div>
                  )}
                </AnimatePresence>
-            </div>
+            </>
           )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
 
         <div className="space-y-12">
            <button 

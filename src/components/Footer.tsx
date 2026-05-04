@@ -12,30 +12,33 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-bg-page border-t border-accent/20 pt-24 pb-12 overflow-hidden relative">
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-      <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-24">
-          <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="inline-block mb-8 group">
+    <footer className="bg-bg-page border-t border-border pt-32 pb-12 overflow-hidden relative">
+      {/* Background Decor */}
+      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-accent-vibrant/5 to-transparent pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-accent-pink/10 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-[1400px] mx-auto px-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
+          <div className="md:col-span-4">
+            <Link to="/" className="inline-block mb-10 group">
               <Logo withText size={32} />
             </Link>
-            <p className="text-text-secondary text-[14px] leading-relaxed mb-8 font-sans font-medium max-w-xs opacity-70">
-              DAILY INSIGHTS ON CULTURE, TECHNOLOGY, AND SOCIETY.
+            <p className="text-text-secondary text-lg leading-relaxed font-display font-medium max-w-sm">
+              Analyzing the intersection of culture, technology, and global policy through a critical lens.
             </p>
           </div>
 
-          <div>
-             <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8">INDEX_CORE</h4>
-             <ul className="space-y-4">
+          <div className="md:col-span-2">
+             <h4 className="text-[10px] uppercase tracking-[0.4em] font-black text-accent mb-10">Navigation</h4>
+             <ul className="space-y-5">
                {[
-                 { name: 'Home', path: '/' },
+                 { name: 'Daily Blog', path: '/' },
                  { name: 'Archive', path: '/archive' },
-                 { name: 'Reading List', path: '/saved' },
-                 { name: 'Newsletter', path: '/newsletter' }
+                 { name: 'Indian Policy', path: '/indian-policy' },
+                 { name: 'Daily News', path: '/news' }
                ].map((item) => (
                  <li key={item.name}>
-                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
+                   <Link to={item.path} className="group flex items-center text-[11px] font-display font-black uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
                      <span className="w-0 group-hover:w-4 h-[1px] bg-accent transition-all duration-300 mr-0 group-hover:mr-3"></span>
                      {item.name}
                    </Link>
@@ -44,15 +47,15 @@ export default function Footer() {
              </ul>
           </div>
 
-          <div>
-             <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8">SYSTEM_SPECS</h4>
-              <ul className="space-y-4">
+          <div className="md:col-span-2">
+             <h4 className="text-[10px] uppercase tracking-[0.4em] font-black text-accent mb-10">Company</h4>
+              <ul className="space-y-5">
                {[
-                 { name: 'About', path: '/about' },
-                 { name: 'Contact', path: '/contact' }
+                 { name: 'Identity', path: '/about' },
+                 { name: 'Communications', path: '/contact' }
                ].map((item) => (
                  <li key={item.name}>
-                   <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
+                   <Link to={item.path} className="group flex items-center text-[11px] font-display font-black uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
                      <span className="w-0 group-hover:w-4 h-[1px] bg-accent transition-all duration-300 mr-0 group-hover:mr-3"></span>
                      {item.name}
                    </Link>
@@ -61,12 +64,18 @@ export default function Footer() {
              </ul>
           </div>
 
-          <div>
-             <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8 text-right md:text-left">NETWORK_UPLINK</h4>
-             <div className="flex flex-wrap justify-end md:justify-start gap-3">
+          <div className="md:col-span-4 flex flex-col items-end md:items-start lg:items-end">
+             <h4 className="text-[10px] uppercase tracking-[0.4em] font-black text-accent mb-10">Global_Uplink</h4>
+             <div className="flex flex-wrap gap-4 justify-end md:justify-start lg:justify-end">
                 {socialLinks.map((social, idx) => (
-                  <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="p-4 border border-border bg-surface text-text-secondary hover:text-accent hover:border-accent hover:scale-105 transition-all hover:glow-cyan">
-                    <social.icon size={18} />
+                  <a 
+                    key={idx} 
+                    href={social.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-14 h-14 glass rounded-2xl flex items-center justify-center text-text-secondary hover:text-accent hover:border-accent hover-scale transition-all"
+                  >
+                    <social.icon size={20} />
                   </a>
                 ))}
              </div>
@@ -74,16 +83,16 @@ export default function Footer() {
           
         </div>
 
-        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-8 text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-10">
-            <p className="text-text-primary">&copy; {new Date().getFullYear()} OPINIONATE_RESERVED.</p>
+        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-10 text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-text-secondary/50">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-8">
+            <p className="text-text-primary/60">&copy; {new Date().getFullYear()} OPINIONATE_PROTOCOL</p>
             <Link to="/disclaimer" className="hover:text-accent transition-colors">DISCLAIMER</Link>
-            <Link to="/copyright" className="hover:text-accent transition-colors">FAIR_USE</Link>
-            <Link to="/terms" className="hover:text-accent transition-colors">PROTOCOL_TERMS</Link>
+            <Link to="/copyright" className="hover:text-accent transition-colors">INTELLECTUAL_RIGHTS</Link>
+            <Link to="/terms" className="hover:text-accent transition-colors">USER_PROTOCOL</Link>
           </div>
-          <div className="flex items-center gap-4 text-accent/40">
-             <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-             <span>© 2026 Kartik Rajauria</span>
+          <div className="flex items-center gap-4">
+             <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_var(--color-accent)]" />
+             <span className="text-text-primary/40">Architect: Kartik Rajauria</span>
           </div>
         </div>
       </div>

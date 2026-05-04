@@ -55,132 +55,161 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-border bg-bg-page/95 backdrop-blur-md py-4'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+        isScrolled ? 'py-2' : 'py-6'
       )}
     >
-      <div className="max-w-[1800px] mx-auto px-6 md:px-10 flex justify-between items-center">
-        <Link to="/" className="group flex items-center shrink-0">
-          <Logo withText size={28} textClassName="text-xl md:text-2xl lg:text-3xl" />
-        </Link>
+      <div className="max-w-[1400px] mx-auto px-6">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className={cn(
+            'flex justify-between items-center px-8 py-3 rounded-full transition-all duration-500 glass-vibrant',
+            isScrolled ? 'shadow-2xl' : 'bg-transparent border-transparent backdrop-blur-none shadow-none'
+          )}
+        >
+          <Link to="/" className="group flex items-center shrink-0">
+            <Logo withText size={28} textClassName="text-xl md:text-2xl" />
+          </Link>
 
-        {/* Desktop Nav & Actions Grouped Right */}
-        <div className="hidden md:flex items-center gap-10 ml-auto">
-          <div className="flex items-center gap-8 mr-4">
-            {navLinks.map((link) => (
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link, idx) => (
               <NavLink
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
                   cn(
-                    'text-[11px] font-display font-black uppercase tracking-[0.2em] transition-all py-1 relative group block',
+                    'px-5 py-2 text-[10px] font-display font-black uppercase tracking-[0.2em] transition-all relative group rounded-full',
                     isActive ? 'text-accent' : 'text-text-secondary hover:text-text-primary'
                   )
                 }
               >
-                {link.name}
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 * idx }}
+                >
+                  {link.name}
+                </motion.span>
                 <span className={cn(
-                  "absolute -bottom-1 left-0 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-full",
-                  "glow-cyan"
+                  "absolute inset-0 bg-accent/5 rounded-full scale-0 transition-transform duration-300 group-hover:scale-100",
                 )} />
               </NavLink>
             ))}
           </div>
 
-          <div className="flex items-center gap-4 border-l border-border pl-10">
-            <button 
+          {/* Actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <motion.button 
+              whileHover={{ rotate: 180, scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={toggleDarkMode}
-              className="p-2.5 hover:bg-surface rounded-lg transition-colors text-text-secondary hover:text-accent border border-border/50"
+              className="p-2.5 rounded-full glass hover:bg-accent/10 text-text-secondary hover:text-accent transition-all duration-300"
               aria-label="Toggle dark mode"
             >
               {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            </motion.button>
             
+            <div className="h-6 w-[1px] bg-border mx-1" />
+
             {profile ? (
                 <div className="relative">
-                  <button 
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center gap-2 btn-minimal p-1 pr-3"
+                    className="flex items-center gap-3 py-1 pr-4 pl-1 rounded-full glass transition-all"
                   >
                     {profile.photoURL ? (
-                      <img src={profile.photoURL} alt="" className="w-8 h-8 rounded-full border border-border" referrerPolicy="no-referrer" />
+                      <img src={profile.photoURL} alt="" className="w-8 h-8 rounded-full ring-2 ring-accent/20" referrerPolicy="no-referrer" />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-accent text-bg-page flex items-center justify-center font-bold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent-vibrant text-white flex items-center justify-center font-bold text-xs ring-2 ring-accent/20">
                         {profile.displayName.charAt(0)}
                       </div>
                     )}
-                    <ChevronDown size={14} className={cn("transition-transform", showProfileMenu && "rotate-180")} />
-                  </button>
+                    <span className="text-[10px] font-display font-black uppercase tracking-widest hidden sm:block">{profile.displayName.split(' ')[0]}</span>
+                    <ChevronDown size={12} className={cn("transition-transform opacity-40", showProfileMenu && "rotate-180")} />
+                  </motion.button>
 
                   <AnimatePresence>
                     {showProfileMenu && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-2 w-48 bg-surface border border-border rounded-xl shadow-xl py-2 overflow-hidden"
-                      >
-                        <div className="px-4 py-2 border-b border-border mb-2">
-                          <p className="text-xs font-bold text-text-primary truncate">{profile.displayName}</p>
-                          <p className="text-[10px] text-text-secondary truncate">{profile.email}</p>
-                        </div>
-                        
-                        {isUserAdmin && (
-                          <Link 
-                            to="/admin" 
-                            onClick={() => setShowProfileMenu(false)}
-                            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-text-primary hover:bg-bg-page transition-colors"
-                          >
-                            <Settings size={14} /> Admin Dashboard
-                          </Link>
-                        )}
-                        
-                        <Link 
-                          to="/saved" 
-                          onClick={() => setShowProfileMenu(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-text-primary hover:bg-bg-page transition-colors"
+                        <motion.div 
+                          initial={{ opacity: 0, y: 15, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 15, scale: 0.9 }}
+                          className="absolute right-0 mt-4 w-60 glass rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] py-3 overflow-hidden backdrop-blur-2xl z-[60]"
                         >
-                          <Bookmark size={14} /> Reading List
-                        </Link>
+                          <div className="px-6 py-4 border-b border-border mb-2 bg-surface/30">
+                            <p className="text-[10px] font-display font-black tracking-widest uppercase text-accent mb-1">User Profile</p>
+                            <p className="text-sm font-display font-black text-text-primary truncate">{profile.displayName}</p>
+                            <p className="text-[10px] font-mono text-text-secondary truncate">{profile.email}</p>
+                          </div>
+                          
+                          <div className="px-2 space-y-1">
+                            {isUserAdmin && (
+                              <Link 
+                                to="/admin" 
+                                onClick={() => setShowProfileMenu(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-[11px] font-display font-black uppercase tracking-widest text-text-secondary hover:text-accent hover:bg-accent/10 rounded-2xl transition-all"
+                              >
+                                <Settings size={14} /> Admin Panel
+                              </Link>
+                            )}
+                            
+                            <Link 
+                              to="/saved" 
+                              onClick={() => setShowProfileMenu(false)}
+                              className="flex items-center gap-3 px-4 py-3 text-[11px] font-display font-black uppercase tracking-widest text-text-secondary hover:text-accent hover:bg-accent/10 rounded-2xl transition-all"
+                            >
+                              <Bookmark size={14} /> Saved Posts
+                            </Link>
+                          </div>
 
-                        <button 
-                          onClick={() => {
-                            signOut();
-                            setShowProfileMenu(false);
-                          }}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors"
-                        >
-                          <LogOut size={14} /> Sign Out
-                        </button>
-                      </motion.div>
+                          <div className="mt-3 pt-3 border-t border-border px-2">
+                            <button 
+                              onClick={() => {
+                                signOut();
+                                setShowProfileMenu(false);
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-display font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 rounded-2xl transition-all"
+                            >
+                              <LogOut size={14} /> Logout
+                            </button>
+                          </div>
+                        </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
                 <Link 
                   to="/login" 
-                  className="btn-minimal px-4 py-2 text-xs font-bold flex items-center gap-2"
+                  className="btn-premium px-6 py-2 rounded-full text-[10px]"
                 >
-                  <User size={14} /> Sign In
+                  <User size={14} /> Connect
                 </Link>
               )}
             </div>
-          </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-4">
-            <button 
-              onClick={toggleDarkMode}
-              className="p-2 hover:bg-surface rounded-full transition-colors"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 hover:bg-surface rounded-full transition-colors"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden flex items-center gap-4">
+              <motion.button 
+                whileHover={{ rotate: 180, scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={toggleDarkMode}
+                className="p-2.5 rounded-full glass hover:bg-accent/10 text-text-secondary hover:text-accent transition-all duration-300"
+              >
+                {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+              </motion.button>
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 text-text-secondary hover:text-accent transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </motion.div>
         </div>
 
       {/* Mobile Nav */}

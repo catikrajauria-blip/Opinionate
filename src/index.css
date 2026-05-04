@@ -1,42 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Outfit", sans-serif;
   
-  --color-border: #1e293b;
-  --color-surface: #0f172a;
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
-  --color-accent: #00eeff;
-  --color-secondary-accent: #ff00ff;
-  --color-bg-page: #020617;
+  /* Dark Mode Defaults (Modern Cyber) */
+  --color-bg-page: #355C7D;
+  --color-surface: rgba(42, 67, 92, 0.7);
+  --color-border: rgba(248, 177, 149, 0.1);
+  --color-text-primary: #FEF2E8;
+  --color-text-secondary: rgba(254, 242, 232, 0.6);
+  --color-accent: #F8B195; /* Peach */
+  --color-accent-vibrant: #F67280; /* Pink */
+  --color-accent-pink: #C06C84; /* Rose */
+}
+
+@utility glass {
+  @apply bg-surface backdrop-blur-xl border border-border shadow-2xl;
+}
+
+@utility glass-vibrant {
+  @apply bg-white/10 dark:bg-black/20 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
 }
 
 @layer base {
   :root {
-    --color-border: #cbd5e1;
-    --color-surface: #f1f5f9;
-    --color-text-primary: #020617;
-    --color-text-secondary: #334155;
-    --color-accent: #0284c7;
-    --color-secondary-accent: #c026d3;
-    --color-bg-page: #f8fafc;
+    /* Light Mode (Image 1 Palette - Warm) */
+    --color-bg-page: #FEF2E8;
+    --color-surface: rgba(255, 255, 255, 0.8);
+    --color-border: rgba(108, 91, 123, 0.15);
+    --color-text-primary: #355C7D;
+    --color-text-secondary: rgba(53, 92, 125, 0.6);
+    --color-accent: #F67280; /* Pink */
+    --color-accent-vibrant: #C06C84; /* Rose */
+    --color-accent-pink: #F8B195; /* Peach */
     
     color-scheme: light;
   }
 
   .dark {
-    --color-border: #1e293b;
-    --color-surface: #0f172a;
-    --color-text-primary: #f8fafc;
-    --color-text-secondary: #94a3b8;
-    --color-accent: #00eeff;
-    --color-secondary-accent: #ff00ff;
-    --color-bg-page: #020617;
+    --color-bg-page: #355C7D;
+    --color-surface: rgba(42, 67, 92, 0.7);
+    --color-border: rgba(248, 177, 149, 0.15);
+    --color-text-primary: #FEF2E8;
+    --color-text-secondary: rgba(254, 242, 232, 0.6);
+    --color-accent: #F8B195;
+    --color-accent-vibrant: #F67280;
+    --color-accent-pink: #C06C84;
     
     color-scheme: dark;
   }
@@ -46,110 +59,108 @@
   }
   
   body {
-    @apply bg-bg-page text-text-primary font-sans font-normal text-base leading-relaxed transition-colors duration-300 overflow-x-hidden;
+    @apply bg-bg-page text-text-primary font-sans font-normal text-base transition-colors duration-500 overflow-x-hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
-  /* Cyber Grid Background */
-  body::after {
-    content: "";
-    @apply fixed inset-0 z-[-1] pointer-events-none opacity-[0.2] dark:opacity-[0.4];
-    background-image: 
-      radial-gradient(circle at 2px 2px, var(--color-border) 1px, transparent 0);
-    background-size: 50px 50px;
+  * {
+    @apply border-border;
   }
 
-  /* Static Noise overlay */
+  p, h1, h2, h3, h4, h5, h6, span, a, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Vibrant Mesh Backgrounds */
   body::before {
     content: "";
-    @apply fixed inset-0 z-[100] pointer-events-none opacity-[0.01] dark:opacity-[0.02];
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    @apply fixed inset-0 z-[-2] pointer-events-none;
+    background: 
+      radial-gradient(circle at 0% 0%, var(--color-accent-vibrant) 0%, transparent 40%),
+      radial-gradient(circle at 100% 100%, var(--color-accent-pink) 0%, transparent 40%);
+    opacity: 0.05;
+  }
+
+  .dark body::before {
+    opacity: 0.15;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(112, 0, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(255, 0, 221, 0.15) 0%, transparent 50%);
   }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-bg-page;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-surface border border-accent/20 rounded-full transition-colors;
+    @apply bg-border rounded-full border-4 border-bg-page transition-colors;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-accent/50;
+    @apply bg-accent/40;
   }
   
   h1 {
-    @apply font-display tracking-tighter leading-[1] font-bold text-5xl md:text-7xl lg:text-8xl p-2;
-    text-shadow: 0 0 20px rgba(0, 238, 255, 0.2);
-  }
-
-  .dark h1 {
-    text-shadow: 0 0 20px rgba(0, 238, 255, 0.3);
+    @apply font-display font-black tracking-tighter leading-[0.9] text-5xl md:text-8xl lg:text-9xl;
   }
 
   h2 {
-    @apply font-display tracking-tight leading-[1.1] font-bold text-4xl md:text-6xl;
+    @apply font-display font-extrabold tracking-tight leading-[1] text-4xl md:text-6xl;
   }
 
   h3 {
-    @apply font-display tracking-tight leading-[1.2] font-bold text-2xl md:text-4xl;
+    @apply font-display font-bold tracking-tight leading-[1.1] text-2xl md:text-4xl;
   }
 }
 
-@utility glow-cyan {
-  box-shadow: 0 0 15px rgba(0, 238, 255, 0.4);
-}
-@utility glow-pink {
-  box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
-}
-@utility animate-pulse-slow {
-  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@utility glow-accent {
+  box-shadow: 0 0 20px var(--color-accent);
 }
 
-/* Safari Support for Backdrop Blurs */
-.backdrop-blur-sm { -webkit-backdrop-filter: blur(4px); }
-.backdrop-blur-md { -webkit-backdrop-filter: blur(12px); }
-.backdrop-blur-lg { -webkit-backdrop-filter: blur(16px); }
-.backdrop-blur-xl { -webkit-backdrop-filter: blur(24px); }
-.backdrop-blur-2xl { -webkit-backdrop-filter: blur(40px); }
-.backdrop-blur-3xl { -webkit-backdrop-filter: blur(64px); }
-
-.blog-content {
-  @apply prose prose-slate dark:prose-invert max-w-none font-sans text-xl leading-relaxed text-text-primary/90;
-  @apply prose-headings:font-display prose-headings:tracking-tight prose-headings:uppercase prose-headings:font-black prose-headings:text-text-primary;
-  @apply prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:mb-8;
-  @apply prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-l-4 prose-h2:border-accent prose-h2:pl-6;
-  @apply prose-h3:text-xl md:prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4;
-  @apply prose-p:mb-6;
-  @apply prose-ul:list-disc prose-ul:pl-8 prose-ul:mb-8 prose-ul:marker:text-accent;
-  @apply prose-ol:list-decimal prose-ol:pl-8 prose-ol:mb-8 prose-ol:marker:text-accent;
-  @apply prose-li:mb-2;
-  @apply prose-strong:text-accent prose-strong:font-black;
-  @apply prose-blockquote:border-l-4 prose-blockquote:border-secondary-accent prose-blockquote:bg-surface/50 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:italic prose-blockquote:my-8;
-  @apply prose-code:text-accent prose-code:bg-accent/10 prose-code:px-2 prose-code:py-1 prose-code:rounded-sm prose-code:before:content-none prose-code:after:content-none;
-  @apply prose-pre:bg-surface prose-pre:border prose-pre:border-border prose-pre:p-6 prose-pre:rounded-none;
-  @apply prose-a:text-accent prose-a:underline hover:prose-a:text-text-primary transition-colors;
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-accent via-accent-vibrant to-accent-pink;
 }
 
-.badge-minimal {
-  @apply inline-block uppercase text-[10px] tracking-[0.3em] bg-accent/10 px-3 py-1 font-mono font-bold mb-4 text-accent border border-accent/20 rounded-sm;
+@utility hover-scale {
+  @apply transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98];
 }
 
-.btn-minimal {
-  @apply flex items-center gap-2 px-6 py-3 border border-accent/30 bg-transparent text-accent text-[11px] font-mono font-bold uppercase tracking-widest transition-all hover:bg-accent/10 hover:border-accent hover:glow-cyan;
+@layer components {
+  .btn-premium {
+    @apply flex items-center justify-center gap-3 px-8 py-4 rounded-full font-display font-bold uppercase tracking-widest transition-all duration-300 relative overflow-hidden active:scale-95;
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-vibrant) 100%);
+    color: white;
+  }
+
+  .btn-premium::after {
+    content: "";
+    @apply absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300;
+  }
+
+  .btn-premium:hover::after {
+    @apply opacity-100;
+  }
+
+  .btn-glass {
+    @apply flex items-center justify-center gap-3 px-8 py-4 rounded-full font-display font-bold uppercase tracking-widest transition-all duration-300 glass hover:bg-surface/90 hover-scale;
+  }
+
+  .card-premium {
+    @apply glass rounded-3xl p-8 hover-scale transition-all duration-500 hover:border-accent/40 hover:shadow-accent/5;
+  }
+
+  .blog-content {
+    @apply prose prose-lg dark:prose-invert max-w-none font-sans leading-relaxed text-text-primary/95;
+    @apply prose-headings:font-display prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-text-primary;
+    @apply prose-p:text-lg md:text-xl;
+    @apply prose-strong:text-accent-vibrant;
+    @apply prose-blockquote:border-l-8 prose-blockquote:border-accent-vibrant prose-blockquote:bg-accent-vibrant/5 prose-blockquote:rounded-r-2xl;
+  }
 }
 
-.btn-minimal-primary {
-  @apply flex items-center gap-2 px-8 py-4 bg-accent text-bg-page border border-accent text-[12px] font-mono font-bold uppercase tracking-widest transition-all hover:bg-transparent hover:text-accent hover:glow-cyan glow-cyan active:scale-95;
-}
-
-.section-grid {
-  @apply grid border border-border divide-x divide-border overflow-hidden bg-surface/50 backdrop-blur-sm;
-}
-
-.grid-cell {
-  @apply p-8 hover:bg-accent/5 transition-all cursor-pointer border-r border-border;
-}
