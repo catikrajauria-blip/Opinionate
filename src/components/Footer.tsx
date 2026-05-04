@@ -48,8 +48,8 @@ export default function Footer() {
              <h4 className="text-[11px] uppercase tracking-[0.4em] font-black text-accent mb-8">SYSTEM_SPECS</h4>
               <ul className="space-y-4">
                {[
-                 { name: 'Mission_Log', path: '/about' },
-                 { name: 'Contact_Port', path: '/contact' }
+                 { name: 'About', path: '/about' },
+                 { name: 'Contact', path: '/contact' }
                ].map((item) => (
                  <li key={item.name}>
                    <Link to={item.path} className="group flex items-center text-[12px] font-mono font-bold uppercase tracking-widest text-text-secondary hover:text-accent transition-all">
