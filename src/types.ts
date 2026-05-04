@@ -101,3 +101,15 @@ export interface Newspaper {
   pdfUrl?: string;
   createdAt: Timestamp;
 }
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  url: string;
+  summary: string;
+  category: 'finance' | 'politics' | 'geopolitics' | 'tech';
+  source: string;
+  likesCount: number;
+  dislikesCount: number;
+  createdAt: Timestamp;
+}

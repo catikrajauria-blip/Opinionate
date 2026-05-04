@@ -11,6 +11,7 @@ import Newsletter from './pages/Newsletter';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import IndianPolicy from './pages/IndianPolicy';
+import News from './pages/News';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Disclaimer from './pages/legal/Disclaimer';
@@ -50,6 +51,7 @@ function AnimatedRoutes({ showSplash, handleEnter }: { showSplash: boolean, hand
           <Route path="blog/:slug" element={<BlogDetail />} />
           <Route path="saved" element={<SavedBlogs />} />
           <Route path="newsletter" element={<Newsletter />} />
+          <Route path="news" element={<News />} />
           <Route path="indian-policy" element={<IndianPolicy />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />

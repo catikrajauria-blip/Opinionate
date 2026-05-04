@@ -46,7 +46,7 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Home', path: '/' },
+    { name: 'Daily News', path: '/news' },
     { name: 'Archive', path: '/archive' },
     { name: 'Saved', path: '/saved' },
     { name: 'Indian Policy', path: '/indian-policy' },
@@ -63,41 +63,39 @@ export default function Navbar() {
           <Logo withText size={28} textClassName="text-xl md:text-2xl lg:text-3xl" />
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10 ml-12">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.name}
-              to={link.path}
-              className={({ isActive }) =>
-                cn(
-                  'text-[11px] font-display font-black uppercase tracking-[0.2em] transition-all py-1 relative group block',
-                  isActive ? 'text-accent' : 'text-text-secondary hover:text-text-primary'
-                )
-              }
+        {/* Desktop Nav & Actions Grouped Right */}
+        <div className="hidden md:flex items-center gap-10 ml-auto">
+          <div className="flex items-center gap-8 mr-4">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.name}
+                to={link.path}
+                className={({ isActive }) =>
+                  cn(
+                    'text-[11px] font-display font-black uppercase tracking-[0.2em] transition-all py-1 relative group block',
+                    isActive ? 'text-accent' : 'text-text-secondary hover:text-text-primary'
+                  )
+                }
+              >
+                {link.name}
+                <span className={cn(
+                  "absolute -bottom-1 left-0 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-full",
+                  "glow-cyan"
+                )} />
+              </NavLink>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4 border-l border-border pl-10">
+            <button 
+              onClick={toggleDarkMode}
+              className="p-2.5 hover:bg-surface rounded-lg transition-colors text-text-secondary hover:text-accent border border-border/50"
+              aria-label="Toggle dark mode"
             >
-              {link.name}
-              <span className={cn(
-                "absolute -bottom-1 left-0 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-full",
-                "glow-cyan"
-              )} />
-            </NavLink>
-          ))}
-        </div>
-
-        {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-4 ml-auto">
-          <button 
-            onClick={toggleDarkMode}
-            className="p-2.5 hover:bg-surface rounded-lg transition-colors text-text-secondary hover:text-accent border border-border/50"
-            aria-label="Toggle dark mode"
-          >
-            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-          
-          <div className="h-8 w-[1px] bg-border mx-2" />
-
-          {profile ? (
+              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            
+            {profile ? (
                 <div className="relative">
                   <button 
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -166,6 +164,7 @@ export default function Navbar() {
                 </Link>
               )}
             </div>
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-4">

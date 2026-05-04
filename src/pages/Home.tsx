@@ -26,10 +26,14 @@ export default function Home() {
   useEffect(() => {
     async function loadTodayData() {
       try {
-        const [todayBlogs, latestWord] = await Promise.all([
-          blogService.getTodayBlogs(),
-          wordService.getLatestWord()
-        ]);
+        let todayBlogs = await blogService.getTodayBlogs();
+        
+        // Fallback: If no blogs today, get latest 3 for "Daily News" context
+        if (todayBlogs.length === 0) {
+          todayBlogs = await blogService.getLatestBlogs(3);
+        }
+        
+        const latestWord = await wordService.getLatestWord();
         
         setBlogs(todayBlogs);
         setWotd(latestWord);
@@ -88,13 +92,18 @@ export default function Home() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-surface rounded-3xl p-12 border border-border"
-        >
-          <h2 className="text-3xl font-display font-black text-text-secondary mb-4 italic">Today's opinion coming soon</h2>
-          <p className="text-text-secondary mb-8 font-display font-bold uppercase tracking-tight">Check back later or browse our archive for previous deep dives.</p>
-        </motion.div>
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="bg-surface rounded-3xl p-12 border border-border"
+         >
+           <NewspaperIcon className="mx-auto text-accent mb-6 opacity-40" size={48} />
+           <h2 className="text-3xl font-display font-black text-text-primary mb-4 uppercase tracking-tighter">Daily News Incoming</h2>
+           <p className="text-text-secondary mb-8 font-display font-bold uppercase tracking-tight max-w-md mx-auto opacity-70">Our editors are finalizing today's reports. In the meantime, explore our deep-dive archive or latest policy briefs.</p>
+           <div className="flex justify-center gap-4">
+             <Link to="/archive" className="btn-minimal px-8 py-3">Browse Archive</Link>
+             <Link to="/indian-policy" className="btn-minimal px-8 py-3 border-accent/20 text-accent">Indian Policy</Link>
+           </div>
+         </motion.div>
       </div>
     );
   }
@@ -140,7 +149,7 @@ export default function Home() {
            <motion.h1 
              className="text-[15vw] md:text-9xl lg:text-[13rem] font-display font-black mb-8 tracking-tighter leading-none uppercase"
            >
-             The Briefin<span className="text-accent italic drop-shadow-[0_0_30px_rgba(0,238,255,0.5)]">g</span>.
+             Blogs and mor<span className="text-accent italic drop-shadow-[0_0_30px_rgba(0,238,255,0.5)]">e</span>.
            </motion.h1>
          </motion.div>
          
@@ -152,7 +161,7 @@ export default function Home() {
          >
            <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-accent to-transparent" />
            <p className="text-text-secondary font-mono text-[11px] md:text-sm font-bold uppercase tracking-[0.8em]">
-             <span className="text-accent underline underline-offset-8">EDITION {new Date().getFullYear()}</span> &bull; VOL 04
+             <span className="text-accent underline underline-offset-8"></span>
            </p>
          </motion.div>
       </header>
