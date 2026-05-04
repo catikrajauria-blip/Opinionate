@@ -64,6 +64,9 @@
     -moz-osx-font-smoothing: grayscale;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    /* iOS notch and home indicator padding */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   * {

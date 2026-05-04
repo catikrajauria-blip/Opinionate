@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
+import PWAGuide from './PWAGuide';
 
 export default function Layout() {
   const location = useLocation();
@@ -12,7 +13,7 @@ export default function Layout() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="flex-grow pt-20 flex flex-col lg:flex-row overflow-x-hidden pb-16 lg:pb-0">
+      <div className="flex-grow pt-20 flex flex-col lg:flex-row overflow-x-hidden pb-24 lg:pb-0">
         <main className="flex-grow bg-bg-page py-8 px-4 md:py-12 md:px-12 lg:px-16 overflow-y-auto border-r border-border">
           <AnimatePresence mode="wait">
              <motion.div
@@ -31,6 +32,7 @@ export default function Layout() {
         </div>
       </div>
       <BottomNav />
+      <PWAGuide />
       <Footer />
     </div>
   );

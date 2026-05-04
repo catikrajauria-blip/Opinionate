@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Sun, Moon, Search, Bookmark, Mail, User, LogOut, ChevronDown, Settings } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Bookmark, Mail, User, LogOut, ChevronDown, Settings, Download } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,11 +11,31 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showInstall, setShowInstall] = useState(false);
 
   const { profile, signOut, isAdmin: isUserAdmin } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+      || (navigator as any).standalone;
+    
+    const handlePrompt = (e: any) => {
+      e.preventDefault();
+      setShowInstall(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handlePrompt);
+    
+    // Also show for iOS if not standalone
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    if (isIOS && !isStandalone) {
+      setShowInstall(true);
+    }
+
     // Initial theme check
     const isDark = document.documentElement.classList.contains('dark') || 
                   (!('light' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -26,11 +46,10 @@ export default function Navbar() {
       document.documentElement.classList.add('dark');
     }
 
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('beforeinstallprompt', handlePrompt);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleDarkMode = () => {
@@ -101,6 +120,18 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="hidden md:flex items-center gap-3">
+            {showInstall && (
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.dispatchEvent(new CustomEvent('toggle-pwa-guide'))}
+                className="flex items-center gap-2 px-4 py-2 rounded-full glass border-accent/20 text-[9px] font-display font-black uppercase tracking-widest text-accent hover:bg-accent/10 transition-all animate-pulse"
+              >
+                <Download size={14} />
+                <span className="hidden lg:inline">Download App</span>
+              </motion.button>
+            )}
+
             <motion.button 
               whileHover={{ rotate: 180, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}

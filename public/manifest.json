@@ -1,0 +1,31 @@
+{
+  "name": "Opinionate Protocol",
+  "short_name": "Opinionate",
+  "description": "Analyzing the intersection of culture, technology, and global policy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#355C7D",
+  "theme_color": "#355C7D",
+  "orientation": "portrait",
+  "categories": ["news", "education", "politics"],
+  "icons": [
+    {
+      "src": "https://api.iconify.design/lucide:zap.svg?color=%23f8b195",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://api.iconify.design/lucide:zap.svg?color=%23f8b195",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://api.iconify.design/lucide:zap.svg?color=%23f8b195",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

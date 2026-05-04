@@ -272,6 +272,7 @@ export default function Home() {
                         alt={blog.title} 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 brightness-75 group-hover:brightness-100" 
                         referrerPolicy="no-referrer" 
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-accent/20 to-accent-vibrant/20 flex items-center justify-center">
