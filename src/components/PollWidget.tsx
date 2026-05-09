@@ -57,18 +57,18 @@ export default function PollWidget() {
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-accent/5 border-y md:border-x md:border-t-0 border-accent/20 py-16 px-8 md:px-16 relative overflow-hidden group"
+      className="bg-accent/5 dark:bg-accent/[0.02] border-y md:border-x md:border-t-0 border-border py-16 px-8 md:px-16 relative overflow-hidden group"
     >
       {/* Background Decorative Pattern */}
-      <div className="absolute top-1/2 left-0 w-full h-[1px] bg-accent/10 -translate-y-1/2" />
+      <div className="absolute top-1/2 left-0 w-full h-[1px] bg-border/30 -translate-y-1/2" />
       <div className="absolute top-0 right-0 p-12 opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform duration-1000">
-        <BarChart3 size={200} className="text-secondary-accent" />
+        <BarChart3 size={200} className="text-accent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16">
         <div className="max-w-xl">
           <div className="flex items-center gap-4 mb-6">
-             <div className="w-10 h-[2px] bg-accent glow-cyan"></div>
+             <div className="w-10 h-[2px] bg-accent"></div>
              <p className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">COMMUNITY POLL</p>
           </div>
                       <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.95] text-text-primary mb-6">
@@ -92,7 +92,7 @@ export default function PollWidget() {
                       key={option}
                       onClick={() => handleVote(option)}
                       disabled={voting}
-                      className="group w-full flex items-center justify-between p-5 bg-surface/50 backdrop-blur-md border border-accent/10 hover:border-accent hover:glow-cyan transition-all text-left relative overflow-hidden"
+                      className="group w-full flex items-center justify-between p-5 bg-surface border border-border hover:border-accent transition-all text-left relative overflow-hidden rounded-xl shadow-sm hover-lift"
                     >
                       <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/5 transition-colors" />
                       <span className="text-sm font-mono font-bold uppercase tracking-widest text-text-secondary group-hover:text-accent transition-colors relative z-10 flex items-center gap-3">
@@ -108,11 +108,11 @@ export default function PollWidget() {
                   key="vote-results"
                   initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="space-y-5 bg-surface/80 backdrop-blur-xl p-8 border border-accent/30 glow-pink"
+                  className="space-y-5 bg-surface p-8 border border-accent/20 rounded-2xl shadow-xl"
                 >
-                   <div className="flex items-center gap-3 mb-6 text-accent">
+                   <div className="flex items-center gap-3 mb-6 text-success">
                       <CheckCircle2 size={18} className="animate-pulse" />
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] drop-shadow-[0_0_5px_rgba(0,238,255,0.4)]">VOTE RECORDED</span>
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em]">VOTE RECORDED</span>
                    </div>
                    
                    {poll.options.map((option) => {
@@ -127,12 +127,12 @@ export default function PollWidget() {
                            </span>
                            <span className="text-accent">{percentage}%</span>
                          </div>
-                         <div className="h-1.5 bg-bg-page/50 relative rounded-full overflow-hidden">
+                         <div className="h-1.5 bg-bg-page/50 relative rounded-full overflow-hidden border border-border/50">
                             <motion.div 
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}
                               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                              className="absolute top-0 left-0 h-full bg-gradient-to-r from-accent to-secondary-accent glow-cyan"
+                              className="absolute top-0 left-0 h-full bg-accent"
                             />
                          </div>
                        </div>

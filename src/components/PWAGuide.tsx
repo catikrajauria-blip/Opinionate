@@ -69,55 +69,56 @@ export default function PWAGuide() {
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-24 left-4 right-4 z-[200] lg:hidden"
         >
-          <div className="glass-vibrant p-5 border border-white/20 shadow-2xl rounded-3xl relative overflow-hidden">
+          <div className="bg-surface p-5 border border-border shadow-2xl rounded-3xl relative overflow-hidden">
             <button 
               onClick={handleDismiss}
-              className="absolute top-3 right-3 text-text-secondary hover:text-text-primary"
+              className="absolute top-4 right-4 text-text-secondary hover:text-text-primary z-20"
             >
               <X size={18} />
             </button>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-bg-page animate-pulse">
+            <div className="flex flex-col gap-5 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-accent/10 border border-accent/20 rounded-2xl flex items-center justify-center text-accent">
                   {isIOS ? <PlusSquare size={24} /> : <Download size={24} />}
                 </div>
                 <div>
-                  <h3 className="font-display font-black text-sm uppercase tracking-wider text-text-primary">Install Opinionate</h3>
-                  <p className="text-[10px] font-mono text-text-secondary opacity-70">
-                    {isIOS ? 'ADD TO HOME SCREEN FOR FULL ACCESS' : 'GET THE APP FOR A BETTER EXPERIENCE'}
+                  <h3 className="font-display font-black text-base uppercase tracking-tight text-text-primary">Install Opinionate</h3>
+                  <p className="text-[10px] font-mono font-bold text-accent uppercase tracking-widest">
+                    {isIOS ? 'LINK TO HOME SCREEN' : 'OPTIMIZED MOBILE APP'}
                   </p>
                 </div>
               </div>
 
               {isIOS ? (
-                <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold">1</div>
-                    <p className="text-xs text-text-secondary flex items-center gap-2">
-                      Tap the <Share size={16} className="text-accent" /> button below
+                <div className="space-y-4 bg-accent/5 p-5 rounded-2xl border border-accent/10">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-white dark:bg-bg-page border border-border flex items-center justify-center text-[11px] font-black text-text-primary">1</div>
+                    <p className="text-xs font-medium text-text-secondary flex items-center gap-2">
+                      Tap the <Share size={18} className="text-accent" /> button below
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold">2</div>
-                    <p className="text-xs text-text-secondary flex items-center gap-2">
-                      Select <span className="font-bold text-text-primary">'Add to Home Screen'</span>
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-white dark:bg-bg-page border border-border flex items-center justify-center text-[11px] font-black text-text-primary">2</div>
+                    <p className="text-xs font-medium text-text-secondary flex items-center gap-2">
+                      Select <span className="font-black text-text-primary uppercase tracking-tight">'Add to Home Screen'</span>
                     </p>
                   </div>
                 </div>
               ) : (
                 <button 
                   onClick={handleInstallClick}
-                  className="w-full bg-accent text-bg-page font-display font-black uppercase tracking-widest py-3 rounded-2xl hover:brightness-110 flex items-center justify-center gap-2 transition-all active:scale-95"
+                  className="btn-primary w-full py-4 text-xs"
                 >
                   <Download size={18} />
-                  Install Now
+                  INSTALL NOW
                 </button>
               )}
             </div>
             
-            {/* Subtle progress indicator */}
-            <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-accent via-accent-vibrant to-accent-pink w-full opacity-30" />
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-3xl -mr-8 -mt-8" />
+            <div className="absolute bottom-0 left-0 h-1 bg-accent w-full opacity-20" />
           </div>
         </motion.div>
       )}

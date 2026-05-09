@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { cn } from '../lib/utils';
 import { motion } from 'motion/react';
 
@@ -15,119 +15,88 @@ export default function Logo({
   withText = false,
   textClassName
 }: LogoProps) {
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          setIsDark(document.documentElement.classList.contains('dark'));
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-    setIsDark(document.documentElement.classList.contains('dark'));
-
-    return () => observer.disconnect();
-  }, []);
   return (
     <div className={cn("flex items-center gap-4", className)}>
       <motion.div 
-        whileHover={{ scale: 1.1, rotate: 5 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         className="relative flex items-center justify-center shrink-0"
         style={{ width: size, height: size }}
       >
-        {/* Animated Glow Backing */}
-        <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full animate-pulse" />
-        
+        {/* Hexagon Frame */}
         <svg 
-          viewBox="0 0 40 40" 
+          viewBox="0 0 100 100" 
           fill="none" 
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="http://www.w3.org/2000/svg" 
           className="w-full h-full relative z-10"
         >
           <defs>
-            <linearGradient id="logo-hyper-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="opinionate-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="var(--color-accent)" />
-              <stop offset="50%" stopColor="var(--color-accent-vibrant)" />
-              <stop offset="100%" stopColor="var(--color-accent-pink)" />
+              <stop offset="100%" stopColor="var(--color-accent-violet)" />
             </linearGradient>
-            <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="1.5" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            
+            <filter id="ultra-glow" x="-20%" y="-20%" width="140%" height="140%">
+               <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+               <feMerge>
+                   <feMergeNode in="coloredBlur"/>
+                   <feMergeNode in="SourceGraphic"/>
+               </feMerge>
             </filter>
           </defs>
           
-          {/* Different Logo Shapes per Theme */}
-          {isDark ? (
-            <>
-              {/* Futuristic Hexagon Frame for Dark Mode */}
-              <path 
-                d="M20 4L34 12V28L20 36L6 28V12L20 4Z" 
-                stroke="url(#logo-hyper-gradient)" 
-                strokeWidth="3" 
-                strokeLinejoin="round"
-                fill="transparent"
-                filter="url(#neon-glow)"
-              />
-              
-              {/* Inner Core */}
-              <rect 
-                x="18" 
-                y="12" 
-                width="4" 
-                height="16" 
-                rx="2"
-                fill="url(#logo-hyper-gradient)" 
-              />
-              
-              {/* Data Pulse Lines */}
-              <motion.rect 
-                animate={{ opacity: [0.2, 1, 0.2] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                x="10" y="18" width="8" height="2" fill="url(#logo-hyper-gradient)" 
-              />
-              <motion.rect 
-                animate={{ opacity: [1, 0.2, 1] }}
-                transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
-                x="22" y="20" width="8" height="2" fill="url(#logo-hyper-gradient)" 
-              />
-            </>
-          ) : (
-            <>
-              {/* Dynamic Circle/Orbit for Light Mode */}
-              <circle 
-                cx="20" cy="20" r="16" 
-                stroke="url(#logo-hyper-gradient)" 
-                strokeWidth="3"
-                strokeDasharray="10 5"
-                className="animate-spin-slow"
-              />
-              <circle 
-                cx="20" cy="20" r="10" 
-                fill="url(#logo-hyper-gradient)"
-              />
-              <motion.path 
-                d="M20 5V10M20 30V35M5 20H10M30 20H35" 
-                stroke="url(#logo-hyper-gradient)" 
-                strokeWidth="2" 
-                strokeLinecap="round"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
-              />
-            </>
-          )}
+          <motion.path 
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 2, ease: "circOut" }}
+            d="M50 5L90 28V72L50 95L10 72V28L50 5Z" 
+            stroke="url(#opinionate-logo-grad)" 
+            strokeWidth="3.5" 
+            strokeLinejoin="round"
+            filter="url(#ultra-glow)"
+          />
+          
+          <motion.path 
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 0.6 }}
+            transition={{ delay: 0.5, duration: 2, ease: "circOut" }}
+            d="M50 15L82 33V67L50 85L18 67V33L50 15Z" 
+            stroke="var(--color-accent)" 
+            strokeWidth="1" 
+            className="opacity-40"
+          />
+          
+          {/* Inner Node */}
+          <motion.path 
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: [0.1, 0.4, 0.1], scale: [0.8, 1.1, 0.8] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            d="M50 35L63 42.5V57.5L50 65L37 57.5V42.5L50 35Z" 
+            fill="var(--color-accent-violet)" 
+          />
+          
+          <motion.circle 
+            cx="50" cy="50" r="6" 
+            className="fill-white"
+            animate={{ 
+              scale: [1, 1.4, 1],
+              opacity: [0.8, 1, 0.8],
+              filter: ['blur(0px)', 'blur(2px)', 'blur(0px)']
+            }}
+            transition={{ repeat: Infinity, duration: 3 }}
+          />
         </svg>
+
+        {/* Subtle Glow */}
+        <div className="absolute inset-0 bg-accent/10 blur-xl rounded-full" />
       </motion.div>
       
       {withText && (
         <span className={cn(
-          "font-display font-black tracking-tighter uppercase leading-none text-text-primary",
-          textClassName || "text-2xl md:text-3xl"
+          "font-display font-black tracking-[-0.05em] uppercase leading-none text-text-primary",
+          textClassName || "text-xl md:text-2xl"
         )}>
-          OPINIO<span className="text-accent underline decoration-accent-vibrant/30 underline-offset-4">N</span>ATE
+          OPINIONATE
         </span>
       )}
     </div>

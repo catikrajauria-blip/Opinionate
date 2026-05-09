@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Blog } from '../types';
 import { formatDate, calculateReadingTime, generateUserId, cn } from '../lib/utils';
 import { convertDriveLink } from '../lib/googlePicker';
-import { Eye, Heart, MessageSquare, Clock, Star } from 'lucide-react';
+import { Eye, Heart, ArrowUpRight, Zap, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { blogService } from '../lib/blogService';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 interface BlogCardProps {
   blog: Blog;
@@ -19,7 +18,6 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
   const { user } = useAuth();
   const navigate = useNavigate();
   const [blog, setBlog] = useState(initialBlog);
-  const [userId] = useState(() => user?.uid || generateUserId());
   const [isLiking, setIsLiking] = useState(false);
   const [hasLiked, setHasLiked] = useState(() => {
     const key = user ? `liked_${user.uid}` : 'liked_blogs';
@@ -30,12 +28,10 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
     if (!user) {
       navigate('/login');
       return;
     }
-    
     if (isLiking || hasLiked) return;
     
     setIsLiking(true);
@@ -57,114 +53,105 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={isGrid ? { 
-        y: -15, 
-        borderColor: "var(--color-accent)",
-      } : {}}
+      viewport={{ once: true, margin: "-100px" }}
       transition={{ 
         delay: index * 0.05,
-        duration: 0.6,
-        ease: [0.16, 1, 0.3, 1],
-        y: { type: "spring", stiffness: 300, damping: 20 }
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1]
       }}
-      className={cn(
-        "group h-full bg-surface/30 transition-all duration-500 backdrop-blur-sm hover:glow-cyan",
-        isGrid 
-          ? "flex flex-col border border-border relative z-0 hover:z-10 rounded-sm overflow-hidden" 
-          : "pb-16 mb-16 border-b border-border last:border-b-0"
-      )}
+      className="h-full"
     >
-      <div className={cn(
-        "flex",
-        isGrid ? "flex-col h-full" : "flex-col md:flex-row md:gap-12"
-      )}>
-        {blog.image && (
-          <Link 
-            to={`/blog/${blog.slug}`} 
-            className={cn(
-               "overflow-hidden flex-shrink-0 bg-slate-900 saturate-50 hover:saturate-150 transition-all duration-1000 relative",
-               isGrid ? "w-full aspect-[16/10] border-b border-border" : "w-full md:w-96 aspect-video border border-border"
-            )}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 to-transparent z-10 pointer-events-none opacity-40 group-hover:opacity-0 transition-opacity" />
-            <img 
-              src={convertDriveLink(blog.image)} 
-              alt={blog.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000"
-              referrerPolicy="no-referrer"
-              loading="lazy"
-              decoding="async"
-            />
-          </Link>
+      <div 
+        className={cn(
+          "group block h-full transition-all duration-1000 relative",
+          isGrid ? "glass-card glass-card-hover" : "pb-24 mb-24 border-b border-white/5 last:border-b-0"
         )}
+      >
+        {/* Main link overlay */}
+        <Link 
+          to={`/blog/${blog.slug}`} 
+          className="absolute inset-0 z-0"
+          aria-label={blog.title}
+        />
+
         <div className={cn(
-          "flex flex-col",
-          isGrid ? "p-8 flex-grow" : "flex-grow pt-8 md:pt-0"
+          "flex relative z-10 pointer-events-none",
+          isGrid ? "flex-col h-full" : "flex-col lg:flex-row lg:gap-16 items-center"
         )}>
-          <div className="flex items-center gap-4 mb-6">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent drop-shadow-[0_0_5px_rgba(0,238,255,0.3)]">PUBLISHED // {formatDate(blog.date)}</span>
-            <span className="h-[1px] flex-grow bg-accent/20" />
-          </div>
-          
-          <Link to={`/blog/${blog.slug}`} className="mb-6 block relative group/title">
+          {blog.image && (
+            <div className={cn(
+              "overflow-hidden flex-shrink-0 relative glass border-border rounded-[2.5rem]",
+              isGrid ? "w-full aspect-[16/10]" : "w-full lg:w-[45%] aspect-video border"
+            )}>
+              <img 
+                src={convertDriveLink(blog.image)} 
+                alt={blog.title}
+                className="w-full h-full object-cover grayscale-[0.4] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-page/40 to-transparent opacity-60 group-hover:opacity-0 transition-opacity" />
+              <div className="absolute top-6 left-6">
+                <span className="px-4 py-1.5 glass rounded-full text-[9px] font-display font-black uppercase tracking-widest text-accent border border-accent/20">
+                  NODE_{blog.id.slice(0, 4)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className={cn(
+            "flex flex-col w-full",
+            isGrid ? "p-10 lg:p-12 flex-grow" : "flex-grow pt-10 lg:pt-0"
+          )}>
+            {!isGrid && (
+              <div className="flex items-center gap-6 mb-10">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent">TIMESTAMP // {formatDate(blog.date)}</span>
+                <div className="h-[1px] flex-grow bg-border" />
+              </div>
+            )}
+            
             <h3 className={cn(
-               "font-display font-black leading-[1] uppercase tracking-tighter transition-all group-hover:text-accent",
-               isGrid ? "text-2xl md:text-3xl" : "text-4xl md:text-7xl lg:text-8xl"
+               "font-display font-black leading-none uppercase tracking-tightest transition-all group-hover:text-accent mb-8",
+               isGrid ? "text-2xl sm:text-3xl lg:text-4xl" : "text-4xl sm:text-6xl md:text-8xl lg:text-9xl"
             )}>
               {blog.title}
             </h3>
-            {!isGrid && <div className="absolute -bottom-2 left-0 w-0 h-1 bg-accent group-hover/title:w-full transition-all duration-500 glow-cyan" />}
-          </Link>
-          
-          <p className={cn(
-            "font-sans font-medium text-text-secondary leading-relaxed mb-10 opacity-80",
-            isGrid ? "text-[13px] line-clamp-3" : "text-xl md:text-2xl max-w-3xl border-l border-border pl-6"
-          )}>
-            "{blog.summary}"
-          </p>
+            
+            <p className={cn(
+              "font-display font-medium text-text-secondary leading-relaxed mb-10 opacity-70",
+              isGrid ? "text-base line-clamp-3" : "text-lg md:text-2xl max-w-4xl border-l-[1px] border-accent/30 pl-8"
+            )}>
+              {blog.summary}
+            </p>
 
-          <div className="mt-auto pt-8 border-t border-border/50 flex flex-wrap items-center gap-x-8 gap-y-4 text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">
-             <div className="flex items-center gap-2">
-                <span className="opacity-80">VIEWS:</span>
-                <span className="text-text-primary text-[11px]">{blog.viewsCount}</span>
-             </div>
-             <button 
-                onClick={handleLike}
-                disabled={isLiking}
-                className={cn(
-                  "group/like flex items-center gap-2 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95",
-                  hasLiked ? "text-red-500" : "hover:text-red-500"
-                )}
-             >
-                <motion.div
-                  animate={hasLiked ? { scale: [1, 1.4, 1], rotate: [0, -15, 0] } : { scale: 1 }}
-                   whileHover={{ scale: 1.2 }}
-                   whileTap={{ scale: 0.8 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                >
-                  <Heart size={12} className={cn(
-                    "transition-all duration-300",
-                    isLiking ? "animate-pulse" : "",
-                    hasLiked ? "fill-red-500 text-red-500" : "text-text-primary group-hover/like:text-red-500"
-                  )} />
-                </motion.div>
-                <span className={cn("transition-colors duration-300", hasLiked ? "text-red-500" : "text-text-primary group-hover/like:text-red-500")}>{blog.likesCount} LIKES</span>
-             </button>
-             {blog.ratingCount > 0 && (
-               <div className="flex items-center gap-2">
-                  <span className="opacity-80">RATING:</span>
-                  <span className="text-text-primary text-[11px]">{blog.ratingAverage.toFixed(1)}</span>
+            <div className="mt-auto pt-10 border-t border-border flex flex-wrap items-center gap-x-10 gap-y-6 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-muted pointer-events-auto">
+               <div className="flex items-center gap-3">
+                  <Eye size={14} className="text-accent/40" />
+                  <span className="text-text-primary/80">{blog.viewsCount}</span>
                </div>
-             )}
-             <Link 
-                to={`/blog/${blog.slug}`} 
-                className="ml-auto flex items-center gap-2 text-accent hover:translate-x-2 transition-all duration-300 font-bold"
-             >
-                READ ARTICLE &rarr;
-             </Link>
+               <button 
+                  onClick={handleLike}
+                  disabled={isLiking}
+                  className={cn(
+                    "flex items-center gap-3 transition-all relative z-20",
+                    hasLiked ? "text-accent" : "hover:text-accent"
+                  )}
+               >
+                  <Heart size={14} className={cn(hasLiked && "fill-current")} />
+                  <span className="text-text-primary/80">{blog.likesCount}</span>
+               </button>
+               {!isGrid && (
+                 <div className="flex items-center gap-3">
+                    <Clock size={14} className="text-accent/40" />
+                    <span className="text-white/80">{calculateReadingTime(blog.content)} MIN READ</span>
+                 </div>
+               )}
+               <div className="ml-auto flex items-center gap-2 text-accent font-display font-black uppercase tracking-widest text-[9px] group-hover:translate-x-2 transition-transform">
+                  Process Node
+                  <ArrowUpRight size={14} />
+               </div>
+            </div>
           </div>
         </div>
       </div>

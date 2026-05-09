@@ -43,12 +43,12 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status === 'success'}
-              className="w-full pl-12 pr-4 py-4 rounded-sm outline-none border border-border bg-surface focus:border-accent text-text-primary transition-all text-[13px] font-mono font-bold uppercase tracking-widest placeholder:text-text-secondary/40"
+              className="w-full pl-12 pr-4 py-4 rounded-xl outline-none border border-border bg-surface focus:border-accent focus:ring-1 focus:ring-accent text-text-primary transition-all text-[13px] font-mono font-bold uppercase tracking-widest placeholder:text-text-secondary/40 shadow-sm"
            />
         </div>
         <button 
           disabled={status === 'loading' || status === 'success'}
-          className="w-full px-4 py-4 rounded-sm font-mono font-bold text-[12px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-2 hover:glow-cyan active:scale-95 bg-accent text-bg-page hover:bg-text-primary hover:text-bg-page"
+          className="btn-primary w-full py-4 text-[12px]"
         >
           {status === 'loading' ? 'SUBSCRIBING...' : 'JOIN NOW'}
         </button>
@@ -59,7 +59,7 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[11px] font-bold uppercase tracking-widest text-green-500 mt-3"
+            className="text-[11px] font-bold uppercase tracking-widest text-success mt-3"
           >
             Successfully Subscribed!
           </motion.p>
@@ -68,7 +68,7 @@ export default function NewsletterBox({ variant = 'light' }: NewsletterBoxProps)
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[11px] font-bold uppercase tracking-widest text-red-500 mt-3"
+            className="text-[11px] font-bold uppercase tracking-widest text-error mt-3"
           >
             Something went wrong.
           </motion.p>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate, Link } from 'react-router-dom';
+import { useParams, Navigate, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { blogService } from '../lib/blogService';
 import { Blog } from '../types';
@@ -8,16 +8,15 @@ import CommentSection from '../components/CommentSection';
 import NewsletterBox from '../components/NewsletterBox';
 import { calculateReadingTime, formatDate, generateUserId, cn } from '../lib/utils';
 import { convertDriveLink } from '../lib/googlePicker';
-import { Eye, Heart, Clock, Share2, Bookmark, BookmarkCheck, ArrowLeft } from 'lucide-react';
+import { Eye, Heart, Share2, Bookmark, BookmarkCheck, ArrowLeft, Clock, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 export default function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,19 +35,13 @@ export default function BlogDetail() {
           if (user) {
             try {
               await blogService.incrementViews(data.id, user.uid);
-            } catch (viewError) {
-              console.warn('Failed to increment views:', viewError);
-            }
-            
+            } catch (err) {}
             const savedIds = await blogService.getSavedBlogIds(user.uid);
             setIsSaved(savedIds.includes(data.id));
-
-            // We can also check if liked by looking up the likes collection
-            // But for now, we'll keep the local check + server increment attempt
-            const liked = JSON.parse(localStorage.getItem(`liked_${user.uid}`) || '[]');
+            const likedKey = `liked_${user.uid}`;
+            const liked = JSON.parse(localStorage.getItem(likedKey) || '[]');
             setHasLiked(liked.includes(data.id));
           } else {
-            // Anonymous view
             try {
               await blogService.incrementViews(data.id, userId);
             } catch (err) {}
@@ -69,7 +62,6 @@ export default function BlogDetail() {
       return;
     }
     if (!blog) return;
-    
     try {
       const saved = await blogService.toggleSaveBlog(user.uid, blog.id);
       setIsSaved(saved);
@@ -84,7 +76,6 @@ export default function BlogDetail() {
       return;
     }
     if (!blog || hasLiked) return;
-    
     try {
       const success = await blogService.incrementLikes(blog.id, user.uid);
       if (success) {
@@ -93,13 +84,6 @@ export default function BlogDetail() {
         const likedKey = `liked_${user.uid}`;
         const liked = JSON.parse(localStorage.getItem(likedKey) || '[]');
         localStorage.setItem(likedKey, JSON.stringify([...liked, blog.id]));
-      } else {
-        setHasLiked(true);
-        const likedKey = `liked_${user.uid}`;
-        const liked = JSON.parse(localStorage.getItem(likedKey) || '[]');
-        if (!liked.includes(blog.id)) {
-          localStorage.setItem(likedKey, JSON.stringify([...liked, blog.id]));
-        }
       }
     } catch (err) {
       console.error('Error liking blog:', err);
@@ -107,7 +91,11 @@ export default function BlogDetail() {
   };
 
   if (loading) {
-    return <div className="py-20 flex justify-center"><div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-[1px] border-accent/20 border-t-accent rounded-full animate-spin pulse-glow" />
+      </div>
+    );
   }
 
   if (!blog) {
@@ -115,86 +103,69 @@ export default function BlogDetail() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6 py-20 text-text-primary">
+    <div className="max-w-6xl mx-auto px-6 py-32 text-text-primary">
       <Link 
         to="/archive" 
-        className="inline-flex items-center gap-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-accent hover:text-text-primary transition-all mb-20 group"
+        className="inline-flex items-center gap-4 text-[10px] font-mono font-bold uppercase tracking-[0.6em] text-accent hover:text-white transition-all mb-20 group"
       >
         <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
-        BACK TO ARCHIVE
+        BACK_TO_ARCHIVE
       </Link>
 
       <motion.article 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-32 relative"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="mb-40"
       >
-        <header className="mb-24">
-          <div className="flex items-center gap-6 mb-10">
-            <span className="px-4 py-1 bg-accent/10 border border-accent/30 text-accent text-[10px] font-mono font-black uppercase tracking-[0.3em] glow-cyan/10">ANALYSIS</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-50">PUBLISHED // {formatDate(blog.date)}</span>
+        <header className="mb-24 space-y-12">
+          <div className="flex flex-wrap items-center gap-6">
+            <span className="px-5 py-2 glass border-accent/30 text-accent text-[10px] font-display font-black uppercase tracking-[0.4em]">NODE_{blog.id.slice(0, 4)}</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40">TIMESTAMP // {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] mb-16 tracking-tighter uppercase break-words text-text-primary drop-shadow-[0_0_25px_rgba(var(--color-accent),0.1)]">
+          <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] tracking-tightest uppercase text-white">
             {blog.title}
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 border-y border-border bg-surface backdrop-blur-sm px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-12 border-y border-white/5 bg-white/5 px-10 rounded-3xl backdrop-blur-sm">
             <div className="flex flex-col gap-3">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">AUTHOR</span>
-              <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{blog.author}</span>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">SOURCE_ID</span>
+              <span className="text-xl font-display font-black uppercase text-white">{blog.author}</span>
             </div>
-            <div className="flex flex-col gap-3">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ARTICLE STATS</span>
-              <span className="text-xl font-display font-black uppercase tracking-tight text-text-primary">{calculateReadingTime(blog.content)} MIN READ &bull; {blog.viewsCount} VIEWS</span>
+            <div className="flex flex-col gap-3 border-white/5 md:border-x md:px-10">
+              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">PROCESS_METRICS</span>
+              <div className="flex items-center gap-4 text-sm font-mono font-bold text-white/90">
+                <span className="flex items-center gap-2"><Clock size={14} /> {calculateReadingTime(blog.content)}M</span>
+                <span className="flex items-center gap-2"><Eye size={14} /> {blog.viewsCount}</span>
+              </div>
             </div>
             <div className="flex flex-col gap-3 md:items-end">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent opacity-70">ENGAGEMENT</span>
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <span className="text-secondary-accent font-display font-black text-2xl drop-shadow-[0_0_10px_rgba(255,0,255,0.3)]">{blog.ratingAverage.toFixed(1)}</span>
-                  <span className="text-[10px] font-mono opacity-30 uppercase tracking-widest">/ 5.0</span>
-                </div>
-                <button 
-                  onClick={handleLike}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 border transition-all",
-                    hasLiked ? "text-secondary-accent border-secondary-accent/40 bg-secondary-accent/10 glow-pink/10" : "text-text-secondary border-border hover:text-text-primary hover:border-accent"
-                  )}
-                >
-                  <Heart size={16} className={hasLiked ? "fill-secondary-accent" : ""} />
-                  <span className="text-xs font-mono font-black uppercase">{blog.likesCount}</span>
-                </button>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">USER_RATING</span>
+              <div className="flex items-center gap-6 text-2xl font-display font-black text-accent">
+                {blog.ratingAverage.toFixed(1)}
               </div>
             </div>
           </div>
         </header>
 
         {blog.image && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mb-24 relative group"
-          >
-            <div className="absolute inset-0 bg-accent/5 mix-blend-multiply opacity-50 group-hover:opacity-0 transition-opacity duration-1000" />
+          <div className="mb-32 relative group rounded-3xl overflow-hidden glass shadow-[0_0_100px_-30px_rgba(0,210,255,0.15)]">
             <img 
               src={convertDriveLink(blog.image)} 
               alt={blog.title} 
-              className="w-full aspect-video object-cover transition-all duration-1000 border border-border" 
+              className="w-full aspect-[21/9] object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-1000 grayscale-[0.5] group-hover:grayscale-0" 
               referrerPolicy="no-referrer"
-              loading="eager"
-              decoding="async"
             />
-            <div className="absolute inset-0 border-[20px] border-bg-page/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
-            <p className="text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.6em] mt-6 text-center opacity-40 group-hover:opacity-100 transition-opacity">ARTICLE IMAGE: {blog.title}</p>
-          </motion.div>
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-page via-transparent to-transparent opacity-60" />
+            <div className="absolute bottom-8 left-8">
+              <p className="text-[10px] font-mono font-bold text-accent/40 uppercase tracking-[0.8em]">VISUAL_DATA: {blog.slug.toUpperCase()}</p>
+            </div>
+          </div>
         )}
 
-        <div className="max-w-3xl mx-auto relative">
-          <div className="blog-content mb-32 relative">
-             <div className="absolute -left-12 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent/50 via-accent/5 to-transparent h-40" />
+        <div className="max-w-3xl mx-auto">
+          <div className="blog-content mb-32">
              <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -203,65 +174,64 @@ export default function BlogDetail() {
                       {...props} 
                       src={convertDriveLink(props.src || '')} 
                       referrerPolicy="no-referrer" 
-                      loading="lazy"
-                      decoding="async"
-                      className="max-w-full h-auto mx-auto border border-border my-12"
+                      className="rounded-3xl border border-white/10 my-16 shadow-2xl"
                     />
-                  )
+                  ),
+                  p: ({ children }) => <p className="mb-8">{children}</p>,
+                  h2: ({ children }) => <h2 className="text-4xl mt-20 mb-8">{children}</h2>,
+                  h3: ({ children }) => <h3 className="text-2xl mt-12 mb-6">{children}</h3>,
                 }}
              >
                 {blog.content}
              </ReactMarkdown>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-8 py-12 border-y border-border mb-32 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                <Share2 size={120} />
-             </div>
-             <div className="flex items-center gap-4 z-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-8 py-14 border-y border-white/5 mb-40">
+             <div className="flex items-center gap-5">
                 <button 
                   onClick={handleLike}
                   className={cn(
-                    "flex items-center gap-3 px-8 py-4 border font-mono font-black uppercase tracking-[0.3em] text-[11px] transition-all",
-                    hasLiked ? "bg-secondary-accent text-bg-page border-secondary-accent glow-pink" : "border-border hover:border-accent hover:text-accent"
+                    "flex items-center gap-4 px-10 py-5 rounded-2xl font-display font-black uppercase tracking-[0.3em] text-[10px] transition-all border",
+                    hasLiked ? "bg-accent text-bg-page border-accent" : "border-white/10 hover:border-accent hover:text-accent"
                   )}
                 >
-                   <Heart size={16} className={cn(hasLiked && "fill-bg-page")} />
-                   <span>{hasLiked ? 'LIKED' : 'LIKE THIS'}</span>
+                   <Heart size={18} className={cn(hasLiked && "fill-current")} />
+                   {hasLiked ? 'VERIFIED' : 'AUTHENTICATE'}
                 </button>
   
                 <button 
                   onClick={toggleSave}
                   className={cn(
-                    "p-4 border transition-all",
-                    isSaved ? "bg-accent text-bg-page border-accent glow-cyan" : "border-border hover:border-accent hover:text-accent"
+                    "p-5 rounded-2xl border transition-all",
+                    isSaved ? "bg-white/10 border-white/20 text-accent" : "border-white/10 hover:border-accent hover:text-accent"
                   )}
-                  title="Archive for later"
                 >
-                   {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                   {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
                 </button>
              </div>
              
-             <button className="flex items-center gap-4 px-8 py-4 bg-surface border border-border text-text-primary font-mono font-black uppercase tracking-[0.4em] text-[11px] hover:bg-accent hover:text-bg-page transition-all z-10">
-                <Share2 size={16} /> SHARE ARTICLE
+             <button className="btn-premium px-10 py-5 text-[10px]">
+                <Share2 size={16} /> BROADCAST_SIGNAL
              </button>
           </div>
-  
-          <section className="mb-32">
-             <div className="flex items-center gap-6 mb-12">
-               <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-border" />
-               <h3 className="text-[11px] font-mono font-black tracking-[0.6em] uppercase text-accent">COMMUNITY RATING</h3>
-               <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-border" />
+   
+          <section className="mb-40 space-y-16">
+             <div className="flex items-center gap-10">
+                <h3 className="text-[12px] font-display font-black tracking-[0.8em] uppercase text-accent/40 whitespace-nowrap">FEEDBACK_LOOP</h3>
+                <div className="h-[1px] flex-grow bg-white/5" />
              </div>
-             <div className="bg-surface/30 backdrop-blur-md p-12 border border-border relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-[2px] h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity" />
+             <div>
                 <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
              </div>
           </section>
-  
+   
           <CommentSection blogId={blog.id} />
         </div>
       </motion.article>
+
+      <section className="mt-40">
+        <NewsletterBox />
+      </section>
     </div>
   );
 }

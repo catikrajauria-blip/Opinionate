@@ -14,8 +14,8 @@ export default function Footer() {
   return (
     <footer className="bg-bg-page border-t border-border pt-32 pb-12 overflow-hidden relative">
       {/* Background Decor */}
-      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-accent-vibrant/5 to-transparent pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-accent-pink/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-gradient-to-t from-accent/5 to-transparent pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-[1400px] mx-auto px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
@@ -65,7 +65,7 @@ export default function Footer() {
           </div>
 
           <div className="md:col-span-4 flex flex-col items-end md:items-start lg:items-end">
-             <h4 className="text-[10px] uppercase tracking-[0.4em] font-black text-accent mb-10">Global_Uplink</h4>
+             <h4 className="text-[10px] uppercase tracking-[0.4em] font-black text-accent mb-10">Social</h4>
              <div className="flex flex-wrap gap-4 justify-end md:justify-start lg:justify-end">
                 {socialLinks.map((social, idx) => (
                   <a 
@@ -85,14 +85,13 @@ export default function Footer() {
 
         <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-10 text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-text-secondary/50">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-8">
-            <p className="text-text-primary/60">&copy; {new Date().getFullYear()} OPINIONATE_PROTOCOL</p>
+            <p className="text-text-primary/60">&copy; {new Date().getFullYear()} OPINIONATE</p>
             <Link to="/disclaimer" className="hover:text-accent transition-colors">DISCLAIMER</Link>
-            <Link to="/copyright" className="hover:text-accent transition-colors">INTELLECTUAL_RIGHTS</Link>
-            <Link to="/terms" className="hover:text-accent transition-colors">USER_PROTOCOL</Link>
+            <Link to="/copyright" className="hover:text-accent transition-colors">COPYRIGHT</Link>
+            <Link to="/terms" className="hover:text-accent transition-colors">TERMS OF USE</Link>
           </div>
           <div className="flex items-center gap-4">
-             <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_var(--color-accent)]" />
-             <span className="text-text-primary/40">Architect: Kartik Rajauria</span>
+             <span className="text-text-primary/40">Editor: Kartik Rajauria</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Mail, Github, Linkedin, Instagram, Facebook, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function About() {
   return (
@@ -59,12 +60,12 @@ export default function About() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-10">
-               <a href="/contact" className="btn-minimal-primary px-10">
+               <Link to="/contact" className="btn-minimal-primary px-10">
                   Contact Me
-               </a>
-               <a href="/archive" className="btn-minimal px-10">
+               </Link>
+               <Link to="/archive" className="btn-minimal px-10">
                   The Archive
-               </a>
+               </Link>
             </div>
           </div>
         </div>

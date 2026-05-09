@@ -132,8 +132,8 @@ export default function News() {
               className={cn(
                 "flex items-center gap-3 px-8 py-3 rounded-full text-[10px] font-display font-black uppercase tracking-widest transition-all",
                 isActive 
-                  ? "btn-premium shadow-accent/20" 
-                  : "glass text-text-secondary hover:text-text-primary border-border"
+                  ? "btn-primary shadow-lg shadow-accent/20" 
+                  : "bg-surface text-text-secondary hover:text-text-primary border border-border"
               )}
             >
               <Icon size={14} />
@@ -162,7 +162,13 @@ export default function News() {
                 className="group card-premium flex flex-col h-full relative overflow-hidden"
               >
                 <div className="flex items-center justify-between mb-8">
-                  <span className="px-4 py-1 glass-vibrant rounded-full text-[9px] font-display font-black text-accent-vibrant uppercase tracking-widest border border-accent-vibrant/20">
+                  <span className={cn(
+                    "px-4 py-1 rounded-full text-[9px] font-display font-black uppercase tracking-widest border",
+                    item.category.toLowerCase() === 'finance' ? "bg-success/10 text-success border-success/20" :
+                    item.category.toLowerCase() === 'politics' ? "bg-warning/10 text-warning border-warning/20" :
+                    item.category.toLowerCase() === 'geopolitics' ? "bg-accent/10 text-accent border-accent/20" :
+                    "bg-accent/10 text-accent border-accent/20"
+                  )}>
                     {item.category}
                   </span>
                   <div className="flex items-center gap-2 text-[10px] font-mono text-text-secondary">

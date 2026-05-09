@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Newspaper, ShieldCheck, Archive, Zap, Download } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { motion } from 'motion/react';
 
 export default function BottomNav() {
   const location = useLocation();
@@ -45,16 +46,27 @@ export default function BottomNav() {
             key={item.path} 
             to={item.path}
             className={cn(
-              "flex flex-col items-center justify-center gap-1 transition-all",
-              isActive ? "text-accent" : "text-text-secondary opacity-60 hover:opacity-100"
+              "relative flex flex-col items-center justify-center gap-1 group active:scale-75 transition-transform duration-200",
+              isActive ? "text-accent" : "text-text-secondary opacity-40 hover:opacity-100"
             )}
           >
-            <Icon size={20} className={cn(isActive && "animate-pulse")} />
-            <span className="text-[9px] font-display font-black uppercase tracking-widest">
+            <motion.div
+              animate={isActive ? { y: -2 } : { y: 0 }}
+              className="transition-all duration-300"
+            >
+              <Icon size={20} className={cn(isActive && "animate-pulse")} />
+            </motion.div>
+            <span className={cn(
+              "text-[9px] font-display font-black uppercase tracking-widest transition-all",
+               isActive ? "scale-110" : ""
+            )}>
               {item.name}
             </span>
             {isActive && (
-              <div className="absolute bottom-1 w-1 h-1 bg-accent rounded-full" />
+              <motion.div 
+                layoutId="bottom-nav-active" 
+                className="absolute -top-4 w-5 h-1 bg-accent rounded-full blur-[2px]" 
+              />
             )}
           </Link>
         );

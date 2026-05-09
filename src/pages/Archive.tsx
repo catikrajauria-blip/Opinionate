@@ -42,14 +42,14 @@ export default function Archive() {
     <div className="max-w-7xl mx-auto px-6 md:px-10 py-12">
       <header className="mb-32">
         <div className="flex items-center gap-6 mb-12">
-          <div className="w-16 h-[2px] bg-accent glow-cyan"></div>
+          <div className="w-16 h-[2px] bg-accent"></div>
           <span className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">ARCHIVE DATABASE</span>
         </div>
         
         <h1 className="text-6xl md:text-9xl font-display font-black mb-12 tracking-tighter uppercase leading-[0.85] text-text-primary">
-          THE <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.4)]">ARCHIVE</span>
+          THE <span className="text-accent italic">ARCHIVE</span>
         </h1>
-        <p className="text-text-secondary max-w-3xl mb-24 font-sans font-medium text-xl md:text-2xl leading-relaxed opacity-70 border-l-2 border-accent/30 pl-8">
+        <p className="text-text-secondary max-w-3xl mb-24 font-sans font-medium text-xl md:text-2xl leading-relaxed border-l-2 border-accent/20 pl-8">
           A collection of all published opinions and deep dives, tracking culture and policy over time.
         </p>
 
@@ -85,7 +85,7 @@ export default function Archive() {
             </div>
             <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-6 tracking-[0.2em] flex items-center justify-between gap-4">
               <span className="opacity-40">DATE FILTER</span>
-              <span className="text-secondary-accent">{filteredBlogs.length} RESULTS FOUND</span>
+              <span className="text-success">{filteredBlogs.length} RESULTS FOUND</span>
             </div>
           </div>
 
@@ -93,22 +93,22 @@ export default function Archive() {
             <button 
               onClick={() => setViewMode('grid')}
               className={cn(
-                "p-5 border transition-all duration-300 relative group",
-                viewMode === 'grid' ? "bg-accent border-accent text-bg-page glow-cyan" : "border-border text-text-secondary hover:border-accent/50"
+                "p-5 border transition-all duration-300 relative group rounded-lg",
+                viewMode === 'grid' ? "bg-accent border-accent text-white shadow-lg" : "border-border text-text-secondary hover:border-accent/50"
               )}
             >
               <LayoutGrid size={22} />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-success rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
             <button 
               onClick={() => setViewMode('list')}
               className={cn(
-                "p-5 border transition-all duration-300 relative group",
-                viewMode === 'list' ? "bg-accent border-accent text-bg-page glow-cyan" : "border-border text-text-secondary hover:border-accent/50"
+                "p-5 border transition-all duration-300 relative group rounded-lg",
+                viewMode === 'list' ? "bg-accent border-accent text-white shadow-lg" : "border-border text-text-secondary hover:border-accent/50"
               )}
             >
               <ListIcon size={22} />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-success rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </div>
         </div>
@@ -144,9 +144,9 @@ export default function Archive() {
                 transition={{ delay: idx * 0.05, duration: 0.8 }}
                 className="group bg-surface/30 backdrop-blur-sm border border-border p-8 md:p-12 flex flex-col md:flex-row gap-12 hover:border-accent/30 transition-all relative overflow-hidden"
               >
-                <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity glow-cyan" />
-                <div className="w-full md:w-96 aspect-video overflow-hidden flex-shrink-0 border border-border saturate-50 group-hover:saturate-150 transition-all duration-1000 relative">
-                  <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 to-transparent z-10 opacity-40" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-full md:w-96 aspect-video overflow-hidden flex-shrink-0 border border-border rounded-xl saturate-50 group-hover:saturate-150 transition-all duration-1000 relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-bg-page/40 to-transparent z-10 opacity-40" />
                   <img 
                     src={convertDriveLink(blog.image) || `https://picsum.photos/seed/${blog.slug}/800/500`} 
                     alt={blog.title} 
@@ -158,7 +158,7 @@ export default function Archive() {
                 </div>
                 <div className="flex flex-col justify-center gap-8 flex-grow">
                    <div className="flex items-center gap-6">
-                     <span className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-accent drop-shadow-[0_0_5px_rgba(0,238,255,0.3)]">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}</span>
+                     <span className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-accent">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}</span>
                      <div className="h-[1px] flex-grow bg-border" />
                    </div>
                    <h3 className="text-4xl md:text-6xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter text-text-primary">{blog.title}</h3>

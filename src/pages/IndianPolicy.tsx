@@ -19,11 +19,11 @@ import { policyService, PolicyUpdate } from '../lib/policyService';
 import { cn } from '../lib/utils';
 
 const SECTORS = [
-  { name: 'Manufacturing', icon: Factory, color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
-  { name: 'Infrastructure', icon: HardHat, iconName: 'HardHat', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-  { name: 'Defence', icon: ShieldCheck, color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20' },
-  { name: 'Tech', icon: Cpu, color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { name: 'Economy', icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/20' },
+  { name: 'Manufacturing', icon: Factory, color: 'text-accent', bg: 'bg-accent/10', border: 'border-accent/20' },
+  { name: 'Infrastructure', icon: HardHat, iconName: 'HardHat', color: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/20' },
+  { name: 'Defence', icon: ShieldCheck, color: 'text-error', bg: 'bg-error/10', border: 'border-error/20' },
+  { name: 'Tech', icon: Cpu, color: 'text-accent', bg: 'bg-accent/10', border: 'border-accent/20' },
+  { name: 'Economy', icon: TrendingUp, color: 'text-success', bg: 'bg-success/10', border: 'border-success/20' },
 ] as const;
 
 export default function IndianPolicy() {
@@ -58,9 +58,9 @@ export default function IndianPolicy() {
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-4 px-5 py-2 bg-accent/5 border border-accent/20 mb-10 glow-cyan/10"
+              className="inline-flex items-center gap-4 px-5 py-2 bg-accent/5 border border-accent/10 mb-10"
             >
-              <Zap size={16} className="text-secondary-accent animate-pulse" />
+              <Zap size={16} className="text-warning animate-pulse" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.6em] text-accent">POLICY UPDATES</span>
             </motion.div>
             
@@ -68,15 +68,15 @@ export default function IndianPolicy() {
               <div className="max-w-4xl">
                 <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter uppercase leading-[0.85] mb-10 text-text-primary">
                   INDIAN POLICY <br />
-                  <span className="text-accent italic drop-shadow-[0_0_15px_rgba(0,238,255,0.3)]">GROWTH TRACKER</span>
+                  <span className="text-accent italic">GROWTH TRACKER</span>
                 </h1>
-                <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-medium max-w-3xl border-l-2 border-border pl-8 opacity-90">
+                <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-medium max-w-3xl border-l-2 border-accent/20 pl-8">
                   Latest updates on India's industrial and strategic policies.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-6">
-                 <div className="bg-surface/50 backdrop-blur-md border border-border p-8 min-w-[240px] relative group overflow-hidden">
+                 <div className="bg-surface border border-border p-8 min-w-[240px] relative group overflow-hidden rounded-2xl shadow-sm">
                     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-40 transition-opacity">
                       <Target size={60} />
                     </div>
@@ -86,8 +86,8 @@ export default function IndianPolicy() {
                     </div>
                     <p className="text-6xl font-display font-black tracking-tighter text-text-primary">{updates.length}</p>
                  </div>
-                 <div className="bg-surface/50 backdrop-blur-md border border-border p-8 min-w-[240px]">
-                    <p className="text-[11px] font-mono font-bold text-secondary-accent uppercase tracking-widest mb-4">LATEST UPDATE</p>
+                 <div className="bg-surface border border-border p-8 min-w-[240px] rounded-2xl shadow-sm">
+                    <p className="text-[11px] font-mono font-bold text-success uppercase tracking-widest mb-4">LATEST UPDATE</p>
                     <p className="text-6xl font-display font-black tracking-tighter text-text-primary">
                       {updates.length > 0 ? new Date(updates[0].date).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }).toUpperCase() : '--'}
                     </p>
@@ -104,15 +104,15 @@ export default function IndianPolicy() {
                   onClick={() => setActiveSector(activeSector === sector.name ? null : sector.name)}
                   className={cn(
                     "flex flex-col items-start p-10 transition-all relative overflow-hidden group border-border border-r border-b lg:border-b-0 last:border-r-0",
-                    activeSector === sector.name ? "bg-accent/5 border-accent" : "hover:bg-surface/50"
+                    activeSector === sector.name ? "bg-accent/[0.03] border-accent" : "hover:bg-accent/[0.02]"
                   )}
                 >
-                   <sector.icon size={32} className={cn("mb-8 transition-all duration-500", sector.color, activeSector === sector.name ? "scale-110 drop-shadow-[0_0_8px_currentColor]" : "opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0")} />
+                   <sector.icon size={32} className={cn("mb-8 transition-all duration-500", sector.color, activeSector === sector.name ? "scale-110" : "opacity-40 grayscale group-hover:opacity-100 group-hover:grayscale-0")} />
                    <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary mb-3">SECTOR</p>
                    <h3 className="text-2xl font-display font-black uppercase tracking-tighter text-text-primary transition-colors group-hover:text-accent">{sector.name}</h3>
                    
                    {activeSector === sector.name && (
-                      <motion.div layoutId="sector-highlight" className="absolute bottom-0 left-0 w-full h-1 bg-accent glow-cyan" />
+                      <motion.div layoutId="sector-highlight" className="absolute bottom-0 left-0 w-full h-1 bg-accent" />
                    )}
                 </button>
              ))}
@@ -148,11 +148,11 @@ export default function IndianPolicy() {
                           )}
                         >
                            {/* Timeline Node */}
-                           <div className="absolute left-0 md:left-1/2 top-0 md:top-1/2 w-4 h-4 bg-accent border-4 border-bg-page rounded-full -translate-x-1/2 -translate-y-1/2 z-10 hidden md:block glow-cyan" />
+                           <div className="absolute left-0 md:left-1/2 top-0 md:top-1/2 w-4 h-4 bg-accent border-4 border-bg-page rounded-full -translate-x-1/2 -translate-y-1/2 z-10 hidden md:block" />
 
                            {/* Content Card */}
                            <div className={cn(
-                             "w-full md:w-[46%] bg-surface/40 backdrop-blur-md border border-border p-12 hover:border-accent/30 transition-all group relative overflow-hidden",
+                             "w-full md:w-[46%] bg-surface border border-border p-12 hover:border-accent/30 transition-all group relative overflow-hidden rounded-2xl shadow-sm hover-lift",
                              isLeft ? "md:text-left" : "md:text-right"
                            )}>
                               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
