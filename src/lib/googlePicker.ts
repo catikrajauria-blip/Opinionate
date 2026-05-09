@@ -27,6 +27,10 @@ export const getAccessToken = (): Promise<string> => {
     }
 
     try {
+      if (typeof google === 'undefined') {
+        throw new Error('Google Identity Services script not loaded. Check your internet connection.');
+      }
+      
       const client = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
@@ -35,12 +39,26 @@ export const getAccessToken = (): Promise<string> => {
             accessToken = response.access_token;
             resolve(response.access_token);
           } else {
-            reject(new Error('Failed to get access token: ' + (response.error || 'Unknown error')));
+            console.error('OAuth Callback Error:', response);
+            if (response.error === 'idpiframe_initialization_failed') {
+               reject(new Error('Google Auth Failed: origin_mismatch. You must add the current URL to authorized origins in Google Cloud Console.'));
+            } else {
+               reject(new Error('Failed to get access token: ' + (response.error || 'Unknown error')));
+            }
           }
         },
+        error_callback: (err: any) => {
+          console.error('OAuth Token Client Error:', err);
+          if (err.type === 'origin_mismatch') {
+            reject(new Error(`ORIGIN_MISMATCH: The domain ${window.location.origin} is not whitelisted in your Google Cloud Console for this Client ID.`));
+          } else {
+            reject(new Error(`OAuth Error: ${err.message || 'Check Browser Console for details'}`));
+          }
+        }
       });
       client.requestAccessToken();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('OAuth Initialization Error:', error);
       reject(error);
     }
   });

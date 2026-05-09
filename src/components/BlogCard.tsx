@@ -90,6 +90,11 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
                 alt={blog.title}
                 className="w-full h-full object-cover grayscale-[0.4] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop`;
+                  target.onerror = null;
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-bg-page/40 to-transparent opacity-60 group-hover:opacity-0 transition-opacity" />
               <div className="absolute top-6 left-6">

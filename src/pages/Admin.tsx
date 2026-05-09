@@ -67,6 +67,7 @@ export default function Admin() {
   const [author, setAuthor] = useState('Kartik Rajauria');
   const [imageUrl, setImageUrl] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [imageKeywords, setImageKeywords] = useState('');
 
   const handleDriveSelect = async () => {
     try {
@@ -75,8 +76,30 @@ export default function Admin() {
         setImageUrl(result.downloadUrl);
       }
     } catch (err: any) {
-      alert(err.message || 'Error selecting image from Drive');
+      console.error('Picker Error:', err);
+      const isOriginMismatch = err.message.includes('ORIGIN_MISMATCH') || err.message.includes('origin_mismatch');
+      if (isOriginMismatch) {
+        setError(`SECURITY_ALERT: Domain mismatch. Please add ${window.location.origin} to Authorized JavaScript Origins in your Google Cloud Console.`);
+      } else {
+        setError(err.message || 'Error selecting image from Drive');
+      }
+      setTimeout(() => setError(null), 10000);
     }
+  };
+
+  const handleGenerateVisual = () => {
+    if (!title) {
+       alert("Please enter a title first to generate relevant visuals.");
+       return;
+    }
+    const keywords = title.split(' ').slice(0, 3).join(',');
+    const randomSeed = Math.floor(Math.random() * 1000);
+    // Use images.unsplash.com which is the standard production API
+    const baseUrl = "https://images.unsplash.com/photo-1518770660439-4636190af475";
+    const params = `?auto=format&fit=crop&q=80&w=1600&seed=${randomSeed}&q=${encodeURIComponent(keywords)}`;
+    setImageUrl(baseUrl + params);
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 2000);
   };
 
   // News Form State
@@ -585,7 +608,7 @@ export default function Admin() {
         Style: Clean Minimalism.
         Audience: Sophisticated readers seeking deep insights.
         
-        Return the result as a valid JSON object with keys: title, summary, content.
+        Return the result as a valid JSON object with keys: title, summary, content, imageKeywords.
         Do not include markdown code blocks around the JSON.
       `;
 
@@ -602,6 +625,15 @@ export default function Admin() {
       setTitle(data.title || title);
       setSummary(data.summary || summary);
       setContent(data.content || content);
+      
+      if (data.imageKeywords) {
+        setImageKeywords(data.imageKeywords);
+        // Automatically suggest an unsplash image based on keywords
+        const randomSeed = Math.floor(Math.random() * 1000);
+        // Using a more reliable way to get high-quality topical images from Unsplash
+        const keywords = data.imageKeywords.split(',').map((k: string) => k.trim()).join(',');
+        setImageUrl(`https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80&sig=${randomSeed}&${encodeURIComponent(keywords)}`);
+      }
     } catch (err: any) {
       console.error('AI Generation Error Detail:', err);
       const msg = err.message || "Unknown error";
@@ -1041,24 +1073,40 @@ export default function Admin() {
                        className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-display font-bold text-sm uppercase"
                     />
                  </div>
-                 <div className="space-y-4">
+                  <div className="space-y-4">
                     <div className="flex justify-between items-center">
                        <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Image URL</label>
-                       <button 
-                         type="button"
-                         onClick={handleDriveSelect}
-                         className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:text-text-primary transition-colors"
-                       >
-                         <Cloud size={14} /> Browse from Drive
-                       </button>
+                       <div className="flex items-center gap-6">
+                         <button 
+                           type="button"
+                           onClick={handleGenerateVisual}
+                           className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:text-text-primary transition-colors"
+                         >
+                           <Zap size={14} /> Generate Visual Asset
+                         </button>
+                         <button 
+                           type="button"
+                           onClick={handleDriveSelect}
+                           className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-accent hover:text-text-primary transition-colors"
+                         >
+                           <Cloud size={14} /> Browse from Drive
+                         </button>
+                       </div>
                     </div>
-                    <input 
-                       type="url" 
-                       value={imageUrl} 
-                       onChange={(e) => setImageUrl(convertDriveLink(e.target.value))}
-                       className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono text-xs"
-                       placeholder="https://assets.source.com/img.webp"
-                    />
+                    <div className="relative">
+                      <input 
+                         type="url" 
+                         value={imageUrl} 
+                         onChange={(e) => setImageUrl(convertDriveLink(e.target.value))}
+                         className="w-full bg-surface border border-border p-5 outline-none focus:border-accent font-mono text-xs pr-20"
+                         placeholder="HTTPS://DRIVE.GOOGLE.COM/FILE/..."
+                      />
+                      {imageUrl && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 border border-border overflow-hidden bg-surface">
+                           <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        </div>
+                      )}
+                    </div>
                  </div>
               </div>
 

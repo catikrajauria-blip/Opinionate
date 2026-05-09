@@ -150,15 +150,20 @@ export default function BlogDetail() {
         </header>
 
         {blog.image && (
-          <div className="mb-32 relative group rounded-3xl overflow-hidden glass shadow-[0_0_100px_-30px_rgba(0,210,255,0.15)]">
+          <div className="mb-32 relative group rounded-3xl overflow-hidden glass shadow-[0_0_100px_-30px_rgba(0,210,255,0.15)] bg-surface/20">
             <img 
               src={convertDriveLink(blog.image)} 
               alt={blog.title} 
               className="w-full aspect-[21/9] object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-1000 grayscale-[0.5] group-hover:grayscale-0" 
               referrerPolicy="no-referrer"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = `https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop`;
+                target.onerror = null; // Prevent infinite fallback loop
+              }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-page via-transparent to-transparent opacity-60" />
-            <div className="absolute bottom-8 left-8">
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-page via-transparent to-transparent opacity-60 pointer-events-none" />
+            <div className="absolute bottom-8 left-8 pointer-events-none">
               <p className="text-[10px] font-mono font-bold text-accent/40 uppercase tracking-[0.8em]">VISUAL_DATA: {blog.slug.toUpperCase()}</p>
             </div>
           </div>

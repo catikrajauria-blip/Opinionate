@@ -148,12 +148,17 @@ export default function Archive() {
                 <div className="w-full md:w-96 aspect-video overflow-hidden flex-shrink-0 border border-border rounded-xl saturate-50 group-hover:saturate-150 transition-all duration-1000 relative">
                   <div className="absolute inset-0 bg-gradient-to-t from-bg-page/40 to-transparent z-10 opacity-40" />
                   <img 
-                    src={convertDriveLink(blog.image) || `https://picsum.photos/seed/${blog.slug}/800/500`} 
+                    src={convertDriveLink(blog.image) || `https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop`} 
                     alt={blog.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000" 
                     referrerPolicy="no-referrer" 
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop`;
+                      target.onerror = null;
+                    }}
                   />
                 </div>
                 <div className="flex flex-col justify-center gap-8 flex-grow">
