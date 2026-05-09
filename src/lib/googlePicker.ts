@@ -94,7 +94,7 @@ export const openPicker = async (): Promise<PickerResult | null> => {
           id: doc.id,
           name: doc.name,
           url: doc.url,
-          downloadUrl: `https://drive.google.com/thumbnail?id=${doc.id}&sz=w1600`,
+          downloadUrl: `https://lh3.googleusercontent.com/u/0/d/${doc.id}=w1600`,
           thumbnailUrl: doc.thumbnails?.[0]?.url || ''
         });
       } else if (data.action === google.picker.Action.CANCEL) {
@@ -139,7 +139,7 @@ export const convertDriveLink = (link: string): string => {
   if (!link) return '';
   
   // If it's already a direct link we generated, return it
-  if (link.includes('drive.google.com/thumbnail') || link.includes('lh3.googleusercontent.com/d/')) {
+  if (link.includes('drive.google.com/thumbnail') || link.includes('lh3.googleusercontent.com/')) {
     return link;
   }
 
@@ -151,13 +151,14 @@ export const convertDriveLink = (link: string): string => {
     
     // Check if it's actually a Drive/Docs link or just a random ID-like string
     if (link.includes('drive.google.com') || link.includes('docs.google.com') || link.includes('googleusercontent.com')) {
-      // Using the thumbnail endpoint is often more robust across browsers than lh3
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+      // Using the usercontent link with export=view/display is another common way
+      // But lh3 with =w1600 is usually cleanest. We can try the 'u/0/d' format which is often better for multiple accounts.
+      return `https://lh3.googleusercontent.com/u/0/d/${fileId}=w1600`;
     }
     
-    // If it's just a raw ID (at least 25 chars), assume it's a Drive ID
+    // If it's just a raw ID, assume it's a Drive ID
     if (link.length >= 25 && !link.includes('/') && !link.includes('http')) {
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+      return `https://lh3.googleusercontent.com/u/0/d/${fileId}=w1600`;
     }
   }
   

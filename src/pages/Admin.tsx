@@ -1075,7 +1075,10 @@ export default function Admin() {
                  </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                       <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Image URL</label>
+                       <div className="flex flex-col gap-1">
+                          <label className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-text-secondary opacity-50">Image URL</label>
+                          <p className="text-[9px] font-mono text-accent/60 uppercase">Important: Share as "Anyone with link" in Drive.</p>
+                       </div>
                        <div className="flex items-center gap-6">
                          <button 
                            type="button"
