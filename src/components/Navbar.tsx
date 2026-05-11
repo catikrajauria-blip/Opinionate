@@ -50,10 +50,10 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: 'News', path: '/news' },
+    { name: 'Daily News', path: '/news' },
     { name: 'Archive', path: '/archive' },
     { name: 'Saved', path: '/saved' },
-    { name: 'Policy', path: '/indian-policy' },
+    { name: 'Indian Policy', path: '/indian-policy' },
   ];
 
   return (

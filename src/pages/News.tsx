@@ -11,23 +11,39 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { cn, formatDate } from '../lib/utils';
 
+import { useSearchParams } from 'react-router-dom';
+
 const CATEGORIES = [
   { id: 'all', name: 'All News', icon: NewsIcon },
   { id: 'finance', name: 'Finance', icon: TrendingUp },
-  { id: 'politics', name: 'Politics', icon: Globe2 },
-  { id: 'geopolitics', name: 'Geopolitics', icon: Globe2 },
+  { id: 'indian-politics', name: 'Indian Politics', icon: Globe2 },
   { id: 'tech', name: 'Tech', icon: Cpu },
+  { id: 'geopolitics', name: 'Geopolitics', icon: Globe2 },
 ];
 
 export default function News() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlCategory = searchParams.get('category');
+  
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState(urlCategory || 'all');
   const [loading, setLoading] = useState(true);
   const [interactions, setInteractions] = useState<Record<string, 'like' | 'dislike' | null>>({});
 
   useEffect(() => {
+    if (urlCategory && urlCategory !== activeCategory) {
+      setActiveCategory(urlCategory);
+    }
+  }, [urlCategory]);
+
+  useEffect(() => {
     fetchNews();
+    if (activeCategory === 'all') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category: activeCategory });
+    }
   }, [activeCategory]);
 
   const fetchNews = async () => {

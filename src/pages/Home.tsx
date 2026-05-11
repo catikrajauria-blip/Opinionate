@@ -8,6 +8,8 @@ import { convertDriveLink } from '../lib/googlePicker';
 import { Eye, Heart, Zap, ArrowUpRight, ShieldCheck, Cpu, Globe } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import BlogCard from '../components/BlogCard';
+import WordWidget from '../components/WordWidget';
+import PollWidget from '../components/PollWidget';
 
 export default function Home() {
   const { user } = useAuth();
@@ -109,28 +111,72 @@ export default function Home() {
           </motion.div>
         </header>
 
+        {/* News Ticker */}
+        <div className="flex items-center justify-between border-b border-border py-4 mb-20">
+           <div className="flex items-center gap-6 overflow-hidden">
+              <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-[0.2em] whitespace-nowrap shrink-0">LATEST_INTEL:</span>
+              <div className="flex gap-10 animate-marquee whitespace-nowrap">
+                {[...blogs, ...blogs].map((b, bIdx) => (
+                  <Link key={`${b.id}-${bIdx}`} to={`/blog/${b.slug}`} className="text-[10px] font-mono text-text-secondary hover:text-accent uppercase tracking-widest transition-colors">
+                    {b.title} //
+                  </Link>
+                ))}
+              </div>
+           </div>
+           <div className="flex items-center gap-3 shrink-0 ml-10">
+              <span className="text-[9px] font-mono text-text-muted uppercase tracking-widest">UPDATED:</span>
+              <span className="text-[10px] font-mono font-black text-text-primary">{new Date().toLocaleTimeString('en-GB')}</span>
+           </div>
+        </div>
+
+        {/* Live Pulse Section */}
+        <section className="pb-32">
+          <div className="flex items-center gap-4 mb-12">
+            <div className="h-[1px] flex-grow bg-border opacity-50"></div>
+            <h2 className="text-[10px] font-mono font-bold uppercase tracking-[0.6em] text-accent">Pulse Feed</h2>
+            <div className="h-[1px] flex-grow bg-border opacity-50"></div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div className="lg:col-span-1">
+              <WordWidget />
+            </div>
+            <div className="lg:col-span-2">
+              <PollWidget />
+            </div>
+          </div>
+        </section>
+
         {/* Feature Highlights */}
-        <section className="py-40 grid grid-cols-1 md:grid-cols-3 gap-10 mb-20">
+        <section className="py-40 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-20">
            {[
-             { icon: ShieldCheck, title: "Financial", desc: "Deep dives into the volatile worlds of crypto and global markets.", color: "from-accent/30" },
-             { icon: Cpu, title: "Market", desc: "Analyzing high-frequency trading and disruptive fintech innovations.", color: "from-accent-violet/30" },
-             { icon: Globe, title: "Geopolitics", desc: "Unpacking the complex chess moves of international diplomacy.", color: "from-accent-magenta/30" }
+             { id: 'finance', icon: ShieldCheck, title: "Finance", desc: "Global markets, crypto evolution, and fiscal policies.", color: "from-accent/30" },
+             { id: 'tech', icon: Cpu, title: "Tech", desc: "AI, high-frequency trading, and disruptive tech innovations.", color: "from-accent-violet/30" },
+             { id: 'indian-politics', icon: Globe, title: "Indian Politics", desc: "Analyzing the complex landscape of Indian governance.", color: "from-orange-500/20" },
+             { id: 'geopolitics', icon: Globe, title: "Geopolitics", desc: "Unpacking chess moves of international diplomacy.", color: "from-accent-magenta/30" }
            ].map((feature, idx) => (
              <motion.div 
                key={idx}
                initial={{ opacity: 0, y: 50 }}
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true }}
-               transition={{ delay: idx * 0.2, duration: 1 }}
-               className="glass-card glass-card-hover p-14 flex flex-col items-start group relative h-full"
+               transition={{ delay: idx * 0.1, duration: 0.8 }}
+               className="h-full"
              >
-                <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${feature.color} to-transparent flex items-center justify-center mb-12 border border-white/10 group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-700 shadow-xl`}>
-                   <feature.icon className="text-accent" size={32} />
-                </div>
-                <h3 className="text-3xl font-display font-black uppercase mb-10 tracking-widest text-text-primary group-hover:text-accent transition-colors">{feature.title}</h3>
-                <p className="text-text-secondary font-medium leading-[2] uppercase text-[12px] tracking-[0.2em] opacity-80 group-hover:opacity-100 transition-opacity">
-                   {feature.desc}
-                </p>
+                <Link 
+                  to={`/news?category=${feature.id}`}
+                  className="glass-card glass-card-hover p-10 flex flex-col items-start group relative h-full block"
+                >
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} to-transparent flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-700 shadow-xl`}>
+                     <feature.icon className="text-accent" size={24} />
+                  </div>
+                  <h3 className="text-2xl font-display font-black uppercase mb-6 tracking-widest text-text-primary group-hover:text-accent transition-colors">{feature.title}</h3>
+                  <p className="text-text-secondary font-medium leading-[1.8] uppercase text-[10px] tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
+                     {feature.desc}
+                  </p>
+                  <div className="mt-auto pt-6 flex items-center gap-2 text-[8px] font-mono font-bold text-accent opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                    OPEN NEWS <ArrowUpRight size={12} />
+                  </div>
+                </Link>
              </motion.div>
            ))}
         </section>

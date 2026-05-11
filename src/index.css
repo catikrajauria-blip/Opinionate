@@ -37,6 +37,20 @@
   --color-accent-violet: #7c3aed;
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  display: flex;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
 @utility glass {
   @apply backdrop-blur-[20px] border border-white/5 shadow-xl;
   background-color: var(--color-surface);
