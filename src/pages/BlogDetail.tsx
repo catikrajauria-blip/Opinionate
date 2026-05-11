@@ -118,17 +118,17 @@ export default function BlogDetail() {
         transition={{ duration: 1 }}
         className="mb-40"
       >
-        <header className="mb-24 space-y-12">
-          <div className="flex flex-wrap items-center gap-6">
-            <span className="px-5 py-2 glass border-accent/30 text-accent text-[10px] font-display font-black uppercase tracking-[0.4em]">NODE_{blog.id.slice(0, 4)}</span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40">TIMESTAMP // {formatDate(blog.date)}</span>
+        <header className="mb-24 flex flex-col items-center text-center">
+          <div className="flex flex-wrap items-center justify-center gap-6 mb-12">
+            <span className="px-5 py-2 glass border-accent/30 text-accent text-[9px] font-display font-black uppercase tracking-[0.4em]">NODE_{blog.id.slice(0, 4)}</span>
+            <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40">TIMESTAMP // {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] tracking-tightest uppercase text-white">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1] tracking-tightest uppercase text-white mb-16 max-w-5xl">
             {blog.title}
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-12 border-y border-white/5 bg-white/5 px-10 rounded-3xl backdrop-blur-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-white/5 bg-white/5 px-10 rounded-3xl backdrop-blur-sm w-full">
             <div className="flex flex-col gap-3">
               <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">SOURCE_ID</span>
               <span className="text-xl font-display font-black uppercase text-white">{blog.author}</span>

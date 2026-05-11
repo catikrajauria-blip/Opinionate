@@ -118,7 +118,7 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
             
             <h3 className={cn(
                "font-display font-black leading-none uppercase tracking-tightest transition-all group-hover:text-accent mb-8",
-               isGrid ? "text-2xl sm:text-3xl lg:text-4xl" : "text-4xl sm:text-6xl md:text-8xl lg:text-9xl"
+               isGrid ? "text-2xl sm:text-3xl lg:text-4xl" : "text-3xl sm:text-5xl md:text-6xl lg:text-7xl"
             )}>
               {blog.title}
             </h3>

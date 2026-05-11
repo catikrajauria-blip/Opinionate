@@ -54,41 +54,41 @@ export default function IndianPolicy() {
     <div className="pt-40 pb-24">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         {/* Header Section */}
-          <div className="mb-32">
+          <div className="mb-32 text-center">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-4 px-5 py-2 bg-accent/5 border border-accent/10 mb-10"
+              className="inline-flex items-center gap-4 px-5 py-2 bg-accent/5 border border-accent/10 mb-12"
             >
-              <Zap size={16} className="text-warning animate-pulse" />
-              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.6em] text-accent">POLICY UPDATES</span>
+              <Zap size={14} className="text-warning animate-pulse" />
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-accent">POLICY UPDATES</span>
             </motion.div>
             
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-16">
-              <div className="max-w-4xl">
-                <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter uppercase leading-[0.85] mb-10 text-text-primary">
+            <div className="flex flex-col items-center justify-center gap-16">
+              <div className="max-w-4xl text-center">
+                <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter uppercase leading-[0.9] mb-8 text-text-primary">
                   INDIAN POLICY <br />
                   <span className="text-accent italic">GROWTH TRACKER</span>
                 </h1>
-                <p className="text-xl md:text-2xl text-text-secondary leading-relaxed font-medium max-w-3xl border-l-2 border-accent/20 pl-8">
+                <p className="text-lg md:text-xl text-text-secondary leading-relaxed font-medium max-w-2xl mx-auto border-t border-accent/20 pt-8">
                   Latest updates on India's industrial and strategic policies.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-6">
-                 <div className="bg-surface border border-border p-8 min-w-[240px] relative group overflow-hidden rounded-2xl shadow-sm">
-                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-40 transition-opacity">
-                      <Target size={60} />
+              <div className="flex flex-wrap justify-center gap-6">
+                 <div className="bg-surface border border-border p-8 min-w-[220px] relative group overflow-hidden rounded-2xl shadow-sm">
+                    <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-20 transition-opacity">
+                      <Target size={50} />
                     </div>
-                    <div className="text-[11px] font-mono font-bold text-accent uppercase tracking-widest mb-4 opacity-100 flex items-center gap-2">
+                    <div className="text-[10px] font-mono font-bold text-accent uppercase tracking-widest mb-4 opacity-100 flex items-center justify-center gap-2">
                       <div className="w-1.5 h-1.5 bg-accent rounded-full animate-ping" />
                       TOTAL UPDATES
                     </div>
-                    <p className="text-6xl font-display font-black tracking-tighter text-text-primary">{updates.length}</p>
+                    <p className="text-5xl font-display font-black tracking-tighter text-text-primary">{updates.length}</p>
                  </div>
-                 <div className="bg-surface border border-border p-8 min-w-[240px] rounded-2xl shadow-sm">
-                    <p className="text-[11px] font-mono font-bold text-success uppercase tracking-widest mb-4">LATEST UPDATE</p>
-                    <p className="text-6xl font-display font-black tracking-tighter text-text-primary">
+                 <div className="bg-surface border border-border p-8 min-w-[220px] rounded-2xl shadow-sm">
+                    <p className="text-[10px] font-mono font-bold text-success uppercase tracking-widest mb-4">LATEST UPDATE</p>
+                    <p className="text-5xl font-display font-black tracking-tighter text-text-primary">
                       {updates.length > 0 ? new Date(updates[0].date).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }).toUpperCase() : '--'}
                     </p>
                  </div>

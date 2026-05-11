@@ -166,7 +166,7 @@ export default function Archive() {
                      <span className="text-[11px] font-mono font-bold uppercase tracking-[0.4em] text-accent">{new Date(blog.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}</span>
                      <div className="h-[1px] flex-grow bg-border" />
                    </div>
-                   <h3 className="text-4xl md:text-6xl font-display font-black group-hover:text-accent transition-colors leading-[0.9] uppercase tracking-tighter text-text-primary">{blog.title}</h3>
+                   <h3 className="text-2xl md:text-3xl font-display font-black group-hover:text-accent transition-colors leading-[1.1] uppercase tracking-tighter text-text-primary mb-6">{blog.title}</h3>
                    <p className="text-text-secondary font-sans font-medium text-lg md:text-xl line-clamp-2 max-w-3xl opacity-70 border-l border-border pl-6">"{blog.summary}"</p>
                    
                    <div className="flex flex-wrap items-center gap-12">

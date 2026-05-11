@@ -71,9 +71,9 @@ export default function PollWidget() {
              <div className="w-10 h-[2px] bg-accent"></div>
              <p className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">COMMUNITY POLL</p>
           </div>
-                      <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.95] text-text-primary mb-6">
-                        {poll.question}
-                      </h2>
+          <h2 className="text-2xl md:text-4xl font-display font-black uppercase tracking-tighter leading-tight text-text-primary mb-6">
+            {poll.question}
+          </h2>
         </div>
 
         <div className="w-full md:w-auto min-w-[340px]">

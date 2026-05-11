@@ -109,27 +109,27 @@ export default function News() {
   return (
     <div className="max-w-7xl mx-auto py-24 px-4 md:px-8">
       {/* Header */}
-      <div className="mb-32">
+      <div className="mb-32 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-8"
+          className="flex flex-col items-center justify-center gap-8"
         >
-          <div className="flex-grow">
-            <h1 className="text-7xl md:text-9xl font-display font-black tracking-tighter uppercase leading-[0.8] mb-8">
+          <div className="flex flex-col items-center">
+            <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter uppercase leading-[1] mb-6">
               Daily News.
             </h1>
-            <p className="text-text-secondary font-display font-medium text-xl md:text-2xl max-w-2xl">
+            <p className="text-text-secondary font-display font-medium text-lg md:text-xl max-w-xl">
               Handpicked news reports explained clearly.
             </p>
           </div>
           
-          <div className="flex flex-col items-end gap-4">
-             <div className="flex items-center gap-3 px-4 py-2 glass rounded-full text-[10px] font-mono font-bold uppercase tracking-widest text-accent">
-                <div className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_var(--color-accent)]" />
+          <div className="flex flex-col items-center gap-4">
+             <div className="flex items-center gap-3 px-4 py-2 glass rounded-full text-[9px] font-mono font-bold uppercase tracking-widest text-accent">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_10px_var(--color-accent)]" />
                 Live News: Active
              </div>
-             <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest opacity-60">Last Updated: {new Date().toLocaleTimeString()}</p>
+             <p className="text-[9px] font-mono text-text-secondary uppercase tracking-widest opacity-60">Last Updated: {new Date().toLocaleTimeString()}</p>
           </div>
         </motion.div>
       </div>

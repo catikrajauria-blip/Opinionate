@@ -76,12 +76,12 @@ export default function Home() {
                </motion.div>
             </div>
 
-            <h1 className="flex flex-col mb-16 select-none">
+            <h1 className="flex flex-col mb-16 select-none text-center">
               <motion.span 
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 1, ease: "circOut" }}
-                className="text-text-primary text-[11vw] md:text-8xl leading-none transition-all duration-1000"
+                className="text-text-primary text-5xl md:text-7xl leading-none transition-all duration-1000"
               >
                 Opinions That
               </motion.span>
@@ -89,13 +89,13 @@ export default function Home() {
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6, duration: 1, ease: "circOut" }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-indigo italic text-[13vw] md:text-9xl mt-2"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-indigo italic text-6xl md:text-8xl mt-2"
               >
                 Shape Reality
               </motion.span>
             </h1>
 
-            <p className="max-w-4xl mx-auto text-xl md:text-4xl font-display font-medium text-text-secondary leading-relaxed mb-24 uppercase tracking-widest opacity-80 transition-all duration-700">
+            <p className="max-w-4xl mx-auto text-lg md:text-2xl font-display font-medium text-text-secondary leading-relaxed mb-16 uppercase tracking-widest opacity-80 transition-all duration-700">
               Insightful commentary on <span className="text-white decoration-accent decoration-2 underline underline-offset-8">Culture & Policy</span>.
             </p>
 
@@ -166,11 +166,11 @@ export default function Home() {
                   to={`/news?category=${feature.id}`}
                   className="glass-card glass-card-hover p-10 flex flex-col items-start group relative h-full block"
                 >
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} to-transparent flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-700 shadow-xl`}>
-                     <feature.icon className="text-accent" size={24} />
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} to-transparent flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-700 shadow-xl`}>
+                     <feature.icon className="text-accent" size={20} />
                   </div>
-                  <h3 className="text-2xl font-display font-black uppercase mb-6 tracking-widest text-text-primary group-hover:text-accent transition-colors">{feature.title}</h3>
-                  <p className="text-text-secondary font-medium leading-[1.8] uppercase text-[10px] tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
+                  <h3 className="text-xl md:text-2xl font-display font-black uppercase mb-4 tracking-widest text-text-primary group-hover:text-accent transition-colors">{feature.title}</h3>
+                  <p className="text-text-secondary font-medium leading-[1.6] uppercase text-[9px] tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
                      {feature.desc}
                   </p>
                   <div className="mt-auto pt-6 flex items-center gap-2 text-[8px] font-mono font-bold text-accent opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">

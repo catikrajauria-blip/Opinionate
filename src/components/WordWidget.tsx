@@ -38,19 +38,19 @@ export default function WordWidget() {
         <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-accent">Word of the Day</span>
       </div>
 
-      <div className="relative z-10">
-        <h3 className="text-4xl font-display font-black uppercase tracking-tighter text-text-primary mb-4 italic group-hover:text-accent transition-colors">
+      <div className="relative z-10 flex flex-col items-center text-center">
+        <h3 className="text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-text-primary mb-4 italic group-hover:text-accent transition-colors">
           {word.word}
         </h3>
-        <p className="text-sm font-medium text-text-secondary leading-relaxed mb-6 uppercase tracking-widest opacity-80">
+        <p className="text-xs font-medium text-text-secondary leading-relaxed mb-6 uppercase tracking-[0.2em] opacity-80 max-w-xs">
           {word.definition}
         </p>
 
         {word.usage && (
-          <div className="mt-6 pt-6 border-t border-border/50">
-            <div className="flex gap-3">
-              <Quote size={16} className="text-accent shrink-0 opacity-40" />
-              <p className="text-[11px] font-mono italic text-text-muted leading-relaxed uppercase tracking-tight">
+          <div className="mt-4 pt-6 border-t border-border/50 w-full">
+            <div className="flex justify-center gap-3">
+              <Quote size={14} className="text-accent shrink-0 opacity-40" />
+              <p className="text-[10px] font-mono italic text-text-muted leading-relaxed uppercase tracking-tight max-w-xs">
                 {word.usage}
               </p>
             </div>
