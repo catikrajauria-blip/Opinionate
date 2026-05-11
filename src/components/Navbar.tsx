@@ -27,26 +27,38 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [theme]);
 
-  const toggleTheme = (e: React.MouseEvent) => {
+  const toggleTheme = (e: React.MouseEvent | React.TouchEvent) => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     
-    // Smooth transition effect - circular expansion
+    // Get coordinates for the transition starting point
+    let x, y;
+    if ('clientX' in e) {
+      x = e.clientX;
+      y = e.clientY;
+    } else {
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+    }
+
+    // Create transition overlay
     const circle = document.createElement('div');
     circle.className = 'theme-transition-circle';
-    circle.style.left = `${e.clientX}px`;
-    circle.style.top = `${e.clientY}px`;
-    document.body.appendChild(circle);
-
-    // Fade logo & critical elements temporarily for smooth transition
-    document.body.style.transition = 'none';
     
+    // Match the color of the NEW theme immediately
+    const nextThemeBg = newTheme === 'light' ? '#f8fafc' : '#0f172a';
+    circle.style.backgroundColor = nextThemeBg;
+    
+    circle.style.left = `${x}px`;
+    circle.style.top = `${y}px`;
+    document.body.appendChild(circle);
+    
+    // Delay the actual state change slightly
     setTimeout(() => {
       setTheme(newTheme);
-      // Wait for circle expansion before cleanup
       setTimeout(() => {
         circle.remove();
-      }, 1000);
-    }, 400);
+      }, 800);
+    }, 150);
   };
 
   const navLinks = [
