@@ -54,7 +54,8 @@ export default function Footer() {
               <ul className="space-y-5">
                {[
                  { name: 'Identity', path: '/about' },
-                 { name: 'Communications', path: '/contact' }
+                 { name: 'Communications', path: '/contact' },
+                 ...(isAdmin ? [{ name: 'Admin dashboard', path: '/admin' }] : [])
                ].map((item) => (
                  <li key={item.name}>
                    <Link to={item.path} className="group flex items-center text-[11px] font-display font-black uppercase tracking-widest text-text-secondary hover:text-accent transition-all">

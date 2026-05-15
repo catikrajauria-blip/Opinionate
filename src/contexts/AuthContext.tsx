@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: firebaseUser.email || '',
               displayName: firebaseUser.displayName || '',
               photoURL: firebaseUser.photoURL || '',
-              role: firebaseUser.email === 'catikrajauria@gmail.com' ? 'admin' : 'user',
+              role: (firebaseUser.email?.toLowerCase() === 'catikrajauria@gmail.com') ? 'admin' : 'user',
               isBlocked: false,
               createdAt: new Date().toISOString()
             };
@@ -76,8 +76,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             let profileData = userSnap.data() as any;
             
             // Check if this is the hardcoded admin and update role if necessary
-            if (firebaseUser.email?.toLowerCase() === 'catikrajauria@gmail.com' && profileData.role !== 'admin') {
-              console.log('Upgrading profile to admin role...');
+            const lowercaseEmail = firebaseUser.email?.toLowerCase();
+            if (lowercaseEmail === 'catikrajauria@gmail.com' && profileData.role !== 'admin') {
+              console.log('Upgrading profile to admin role for:', lowercaseEmail);
               await setDoc(userRef, { role: 'admin' }, { merge: true });
               profileData.role = 'admin';
             }
