@@ -9,10 +9,10 @@ export default function IntroSplash({ onComplete }: IntroSplashProps) {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    // Slower timings for better readability and impact
-    const timer1 = setTimeout(() => setStep(1), 1200);
-    const timer2 = setTimeout(() => setStep(2), 3500); // 2.3 seconds for brand name
-    const timer3 = setTimeout(() => onComplete(), 5500); // 2 seconds for welcome
+    // Extended timings for 12-second total duration
+    const timer1 = setTimeout(() => setStep(1), 3000);   // Show brand after 3s
+    const timer2 = setTimeout(() => setStep(2), 9000);   // Show enter after 9s (brand shows for 6s)
+    const timer3 = setTimeout(() => onComplete(), 13000); // Complete after 13s
 
     return () => {
       clearTimeout(timer1);
@@ -93,10 +93,10 @@ export default function IntroSplash({ onComplete }: IntroSplashProps) {
               className="h-[1px] bg-accent/30 w-40 mb-12"
             />
             <motion.h1
-              initial={{ scale: 0.9, opacity: 0, letterSpacing: "1.5em" }}
-              animate={{ scale: 1, opacity: 1, letterSpacing: "0.25em" }}
-              transition={{ duration: 1.5, ease: "circOut" }}
-              className="font-display font-black text-6xl md:text-9xl uppercase text-white mb-6 italic text-center drop-shadow-[0_0_30px_rgba(251,191,36,0.3)]"
+              initial={{ scale: 0.95, opacity: 0, letterSpacing: "1em" }}
+              animate={{ scale: 1, opacity: 1, letterSpacing: "0.15em" }}
+              transition={{ duration: 2.5, ease: "circOut" }}
+              className="font-display font-black text-2xl sm:text-5xl md:text-8xl uppercase text-white mb-6 italic text-center drop-shadow-[0_0_30px_rgba(251,191,36,0.3)]"
             >
               OPINIONATE
             </motion.h1>
@@ -109,7 +109,7 @@ export default function IntroSplash({ onComplete }: IntroSplashProps) {
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.5, duration: 1 }}
+              transition={{ delay: 3, duration: 1.5 }}
               className="mt-8 font-mono text-[9px] md:text-sm uppercase tracking-[1em] text-accent/80 font-black text-center"
             >
               CRAFTING PERSPECTIVE
