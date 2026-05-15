@@ -65,18 +65,19 @@ export default function PollWidget() {
         <BarChart3 size={200} className="text-accent" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16">
-        <div className="max-w-xl">
+      <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center gap-12">
+        <div className="max-w-2xl flex flex-col items-center">
           <div className="flex items-center gap-4 mb-6">
              <div className="w-10 h-[2px] bg-accent"></div>
              <p className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">COMMUNITY POLL</p>
+             <div className="w-10 h-[2px] bg-accent"></div>
           </div>
-          <h2 className="text-2xl md:text-4xl font-display font-black uppercase tracking-tighter leading-tight text-text-primary mb-6">
+          <h2 className="text-2xl md:text-5xl font-display font-black uppercase tracking-tighter leading-tight text-text-primary">
             {poll.question}
           </h2>
         </div>
 
-        <div className="w-full md:w-auto min-w-[340px]">
+        <div className="w-full max-w-xl">
           <div className="space-y-4">
             <AnimatePresence mode="wait">
               {!showResults ? (
@@ -92,14 +93,14 @@ export default function PollWidget() {
                       key={option}
                       onClick={() => handleVote(option)}
                       disabled={voting}
-                      className="group w-full flex items-center justify-between p-5 bg-surface border border-border hover:border-accent transition-all text-left relative overflow-hidden rounded-xl shadow-sm hover-lift"
+                      className="group w-full flex items-center justify-center p-6 bg-surface border border-border hover:border-accent transition-all text-center relative overflow-hidden rounded-xl shadow-sm hover-lift"
                     >
                       <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/5 transition-colors" />
-                      <span className="text-sm font-mono font-bold uppercase tracking-widest text-text-secondary group-hover:text-accent transition-colors relative z-10 flex items-center gap-3">
-                        <span className="opacity-30">0{idx + 1}</span>
+                      <span className="text-sm md:text-base font-mono font-bold uppercase tracking-[0.2em] text-text-secondary group-hover:text-accent transition-colors relative z-10 flex items-center gap-4">
+                        <span className="opacity-20 text-[10px]">0{idx + 1}</span>
                         {option}
+                        <span className="opacity-20 text-[10px]">0{idx + 1}</span>
                       </span>
-                      <ChevronRight size={16} className="text-accent opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0 relative z-10" />
                     </button>
                   ))}
                 </motion.div>

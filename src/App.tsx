@@ -19,6 +19,7 @@ import Copyright from './pages/legal/Copyright';
 import Terms from './pages/legal/Terms';
 import ExternalLinks from './pages/legal/ExternalLinks';
 import ScrollToTopButton from './components/ScrollToTopButton';
+import IntroSplash from './components/IntroSplash';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -62,12 +63,40 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  const [showIntro, setShowIntro] = useState(true);
+
+  // Check if user has already seen the intro in this session
+  useEffect(() => {
+    const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
+    if (hasSeenIntro) {
+      setShowIntro(false);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    sessionStorage.setItem('hasSeenIntro', 'true');
+  };
+
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ScrollToTop />
-        <ScrollToTopButton />
-        <AnimatedRoutes />
+        <AnimatePresence mode="wait">
+          {showIntro ? (
+            <IntroSplash key="intro" onComplete={handleIntroComplete} />
+          ) : (
+            <motion.div 
+              key="main-content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+            >
+              <ScrollToTop />
+              <ScrollToTopButton />
+              <AnimatedRoutes />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </AuthProvider>
     </BrowserRouter>
   );

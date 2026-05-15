@@ -32,20 +32,20 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-page flex flex-col items-center justify-center gap-10">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-10">
         <div className="relative w-32 h-32">
           <motion.div 
             animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 border-[1px] border-accent/20 rounded-full" 
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 border-[1px] border-accent/10 rounded-full" 
           />
           <motion.div 
             animate={{ rotate: -360 }}
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-4 border-t-2 border-accent rounded-full pulse-glow" 
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-4 border-t-2 border-accent rounded-full pulse-glow shadow-[0_0_30px_rgba(251,191,36,0.3)]" 
           />
         </div>
-        <p className="text-[10px] font-display font-black uppercase tracking-[1em] text-accent">Loading Archive...</p>
+        <p className="text-[10px] font-display font-black uppercase tracking-[1em] text-accent animate-pulse">Establishing Archive...</p>
       </div>
     );
   }
@@ -56,6 +56,11 @@ export default function Home() {
 
         {/* Immersive Hero */}
         <header className="relative min-h-screen flex flex-col items-center justify-center pt-40 pb-20 overflow-hidden">
+          {/* Background Glows */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
+          <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-accent-violet/10 blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" />
+          <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-accent-magenta/10 blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
+
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,11 +72,11 @@ export default function Home() {
                  initial={{ scale: 0.9, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
                  transition={{ delay: 0.2, duration: 1 }}
-                 className="inline-flex items-center gap-3 px-6 py-2 glass rounded-full border-accent/20"
+                 className="inline-flex items-center gap-3 px-6 py-2 glass rounded-full border-accent/20 shadow-[0_0_30px_rgba(251,191,36,0.2)]"
                >
                  <div className="w-2 h-2 bg-accent rounded-full animate-ping" />
                  <span className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-accent">
-                   Insight Feed
+                   Operational Status: Online
                  </span>
                </motion.div>
             </div>
@@ -81,7 +86,7 @@ export default function Home() {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 1, ease: "circOut" }}
-                className="text-text-primary text-5xl md:text-7xl leading-none transition-all duration-1000"
+                className="text-text-primary text-6xl md:text-8xl leading-none transition-all duration-1000 tracking-tightest"
               >
                 Opinions That
               </motion.span>
@@ -89,7 +94,7 @@ export default function Home() {
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6, duration: 1, ease: "circOut" }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-indigo italic text-6xl md:text-8xl mt-2"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-accent via-accent-indigo to-accent-magenta italic text-7xl md:text-9xl mt-2 font-black"
               >
                 Shape Reality
               </motion.span>
@@ -100,11 +105,11 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-              <Link to="/news" className="btn-primary group px-16 py-6 text-sm">
+              <Link to="/news" className="btn-primary group px-16 py-6 text-sm shadow-[0_0_50px_rgba(251,191,36,0.3)]">
                 View News
                 <ArrowUpRight size={22} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </Link>
-              <Link to="/archive" className="btn-secondary px-16 py-6 text-sm glass">
+              <Link to="/archive" className="btn-secondary px-16 py-6 text-sm glass hover:border-accent/40 transition-colors">
                  Explore Archive
               </Link>
             </div>

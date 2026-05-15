@@ -82,13 +82,13 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
         )}>
           {blog.image && (
             <div className={cn(
-              "overflow-hidden flex-shrink-0 relative glass border-border rounded-[2.5rem]",
+              "overflow-hidden flex-shrink-0 relative glass border-border rounded-[2.5rem] bg-slate-900",
               isGrid ? "w-full aspect-[16/10]" : "w-full lg:w-[45%] aspect-video border"
             )}>
               <img 
                 src={convertDriveLink(blog.image)} 
                 alt={blog.title}
-                className="w-full h-full object-cover grayscale-[0.4] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -96,11 +96,12 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
                   target.onerror = null;
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-bg-page/40 to-transparent opacity-60 group-hover:opacity-0 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-page/80 via-transparent to-transparent opacity-60 group-hover:opacity-0 transition-opacity duration-700" />
               <div className="absolute top-6 left-6">
-                <span className="px-4 py-1.5 glass rounded-full text-[9px] font-display font-black uppercase tracking-widest text-accent border border-accent/20">
+                <div className="px-4 py-1.5 glass rounded-full text-[9px] font-display font-black uppercase tracking-widest text-accent border border-accent/20 flex items-center gap-2">
+                  <div className="w-1 h-1 bg-accent rounded-full animate-pulse" />
                   NODE_{blog.id.slice(0, 4)}
-                </span>
+                </div>
               </div>
             </div>
           )}

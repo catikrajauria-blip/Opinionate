@@ -93,10 +93,10 @@ export default function Logo({
       
       {withText && (
         <span className={cn(
-          "font-display font-black tracking-[-0.05em] uppercase leading-none text-text-primary",
+          "font-display font-black tracking-[-0.05em] uppercase leading-none text-text-primary italic",
           textClassName || "text-xl md:text-2xl"
         )}>
-          OPINIONATE
+          OPINIONATE<span className="text-accent">.</span>
         </span>
       )}
     </div>
