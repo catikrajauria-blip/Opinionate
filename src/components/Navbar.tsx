@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon, Search, Bookmark, User, LogOut, ChevronDown, Settings, Download, ArrowUpRight } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Bookmark, User, LogOut, ChevronDown, Settings, Download, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
