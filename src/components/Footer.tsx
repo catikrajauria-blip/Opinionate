@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Github, Twitter, Linkedin, Heart, Instagram, Facebook, ExternalLink } from 'lucide-react';
+import { Mail, Github, Twitter, Linkedin, Heart, Instagram, Facebook, ExternalLink, ShieldCheck } from 'lucide-react';
 import Logo from './Logo';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Footer() {
+  const { isAdmin } = useAuth();
   const socialLinks = [
     { icon: Linkedin, url: 'https://www.linkedin.com/in/kartik-rajauria-2a52b521a' },
     { icon: Instagram, url: 'https://www.instagram.com/kartikrajaur?igsh=ZTRrazZkdDNsenR2&utm_source=qr' },

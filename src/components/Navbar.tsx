@@ -164,6 +164,11 @@ export default function Navbar() {
                           </div>
                           
                           <div className="px-2 space-y-1">
+                            {isUserAdmin && (
+                              <Link to="/admin" className="flex items-center gap-4 px-6 py-4 text-[10px] font-display font-black uppercase tracking-widest text-accent hover:bg-accent/10 rounded-2xl transition-all">
+                                <ShieldCheck size={14} /> Admin Dashboard
+                              </Link>
+                            )}
                             <Link to="/saved" className="flex items-center gap-4 px-6 py-4 text-[10px] font-display font-black uppercase tracking-widest text-text-secondary hover:text-accent hover:bg-accent/5 rounded-2xl transition-all">
                               <Bookmark size={14} /> Saved Data
                             </Link>
@@ -230,6 +235,19 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+              {isUserAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between px-8 py-8 rounded-3xl transition-all border bg-accent/5 border-accent/10 text-accent"
+                >
+                  <div className="flex items-center gap-4">
+                    <ShieldCheck size={24} />
+                    <span className="text-xl font-display font-black uppercase tracking-[0.2em]">Dashboard</span>
+                  </div>
+                  <ArrowUpRight size={24} className="opacity-40" />
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
