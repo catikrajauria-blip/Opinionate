@@ -107,35 +107,35 @@ export default function News() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-24 px-4 md:px-8">
+    <div className="max-w-7xl mx-auto py-16 md:py-24 px-4 md:px-8">
       {/* Header */}
-      <div className="mb-32 text-center">
+      <div className="mb-20 md:mb-32 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center gap-8"
+          className="flex flex-col items-center justify-center gap-6 md:gap-8"
         >
           <div className="flex flex-col items-center">
-            <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter uppercase leading-[1] mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tighter uppercase leading-[1.1] mb-6 px-4">
               Daily News.
             </h1>
-            <p className="text-text-secondary font-display font-medium text-lg md:text-xl max-w-xl">
+            <p className="text-text-secondary font-display font-medium text-base md:text-xl max-w-xl px-6">
               Handpicked news reports explained clearly.
             </p>
           </div>
           
-          <div className="flex flex-col items-center gap-4">
-             <div className="flex items-center gap-3 px-4 py-2 glass rounded-full text-[9px] font-mono font-bold uppercase tracking-widest text-accent">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_10px_var(--color-accent)]" />
+          <div className="flex flex-col items-center gap-3">
+             <div className="flex items-center gap-3 px-4 py-2 glass rounded-full text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-widest text-accent">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                 Live News: Active
              </div>
-             <p className="text-[9px] font-mono text-text-secondary uppercase tracking-widest opacity-60">Last Updated: {new Date().toLocaleTimeString()}</p>
+             <p className="text-[8px] md:text-[9px] font-mono text-text-secondary uppercase tracking-widest opacity-60">Last Updated: {new Date().toLocaleTimeString()}</p>
           </div>
         </motion.div>
       </div>
 
       {/* Categories */}
-      <div className="flex flex-wrap gap-3 mb-20 pb-8 border-b border-border">
+      <div className="flex flex-wrap items-center justify-center gap-3 mb-16 md:mb-20 pb-8 border-b border-border">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isActive = activeCategory === cat.id;
@@ -146,13 +146,13 @@ export default function News() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(cat.id)}
               className={cn(
-                "flex items-center gap-3 px-8 py-3 rounded-full text-[10px] font-display font-black uppercase tracking-widest transition-all",
+                "flex items-center gap-2 md:gap-3 px-6 md:px-8 py-2.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-display font-black uppercase tracking-widest transition-all",
                 isActive 
-                  ? "btn-primary shadow-lg shadow-accent/20" 
-                  : "bg-surface text-text-secondary hover:text-text-primary border border-border"
+                   ? "btn-primary shadow-lg shadow-accent/20" 
+                   : "bg-surface text-text-secondary hover:text-text-primary border border-border"
               )}
             >
-              <Icon size={14} />
+              <Icon size={12} className="md:w-[14px] md:h-[14px]" />
               {cat.name}
             </motion.button>
           );
@@ -160,7 +160,7 @@ export default function News() {
       </div>
 
       {/* News Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
         <AnimatePresence mode="popLayout">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
@@ -175,9 +175,9 @@ export default function News() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ delay: index * 0.05 }}
-                className="group card-premium flex flex-col h-full relative overflow-hidden"
+                className="group card-premium flex flex-col h-full relative overflow-hidden text-center items-center"
               >
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-8 w-full">
                   <span className={cn(
                     "px-4 py-1 rounded-full text-[9px] font-display font-black uppercase tracking-widest border",
                     item.category.toLowerCase() === 'finance' ? "bg-success/10 text-success border-success/20" :
@@ -193,15 +193,15 @@ export default function News() {
                   </div>
                 </div>
 
-                <h3 className="text-3xl font-display font-black uppercase tracking-tight mb-6 group-hover:text-accent transition-colors leading-[1.1]">
+                <h3 className="text-2xl md:text-3xl font-display font-black uppercase tracking-tight mb-6 group-hover:text-accent transition-colors leading-[1.1] text-center px-2">
                   {item.title}
                 </h3>
 
-                <p className="text-text-secondary text-base leading-relaxed mb-10 flex-grow font-medium">
+                <p className="text-text-secondary text-sm md:text-base leading-relaxed mb-10 flex-grow font-medium text-center px-4">
                   {item.summary}
                 </p>
 
-                <div className="mt-auto pt-8 border-t border-border flex items-center justify-between">
+                <div className="mt-auto pt-8 border-t border-border w-full flex items-center justify-between">
                   <div className="flex items-center gap-6">
                     <button 
                       onClick={() => handleLike(item.id)}

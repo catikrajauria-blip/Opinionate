@@ -39,43 +39,44 @@ export default function Archive() {
   const months = Array.from(new Set(blogs.map(b => b.date.substring(0, 7)))).sort().reverse();
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-      <header className="mb-32">
-        <div className="flex items-center gap-6 mb-12">
-          <div className="w-16 h-[2px] bg-accent"></div>
-          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.5em] text-accent animate-pulse">ARCHIVE DATABASE</span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-12">
+      <header className="mb-20 md:mb-32 text-center flex flex-col items-center">
+        <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
+          <div className="w-8 md:w-16 h-[2px] bg-accent"></div>
+          <span className="text-[9px] md:text-[11px] font-mono font-bold uppercase tracking-[0.4em] md:tracking-[0.5em] text-accent animate-pulse">ARCHIVE DATABASE</span>
+          <div className="w-8 md:w-16 h-[2px] bg-accent"></div>
         </div>
         
-        <h1 className="text-6xl md:text-9xl font-display font-black mb-12 tracking-tighter uppercase leading-[0.85] text-text-primary">
+        <h1 className="text-4xl sm:text-6xl md:text-9xl font-display font-black mb-8 md:mb-12 tracking-tighter uppercase leading-[1] text-text-primary text-center">
           THE <span className="text-accent italic">ARCHIVE</span>
         </h1>
-        <p className="text-text-secondary max-w-3xl mb-24 font-sans font-medium text-xl md:text-2xl leading-relaxed border-l-2 border-accent/20 pl-8">
+        <p className="text-text-secondary max-w-3xl mb-16 md:mb-24 font-sans font-medium text-lg md:text-2xl leading-relaxed text-center px-4">
           A collection of all published opinions and deep dives, tracking culture and policy over time.
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-border bg-surface/20 backdrop-blur-md">
-          <div className="lg:col-span-6 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border relative group">
-            <Search className="absolute right-12 top-1/2 -translate-y-1/2 text-accent opacity-30 group-focus-within:opacity-100 transition-opacity animate-pulse" size={32} />
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-0 border border-border bg-surface/20">
+          <div className="lg:col-span-6 p-6 md:p-12 border-b lg:border-b-0 lg:border-r border-border relative group flex flex-col items-center">
+            <Search className="hidden sm:block absolute right-12 top-1/2 -translate-y-1/2 text-accent opacity-30 group-focus-within:opacity-100 transition-opacity" size={32} />
             <input 
               type="text" 
-              placeholder="Search the archive..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-none outline-none text-2xl md:text-5xl font-display font-black placeholder:text-text-secondary/40 placeholder:font-display uppercase tracking-tighter text-text-primary"
+              className="w-full bg-transparent border-none outline-none text-xl sm:text-3xl md:text-5xl font-display font-black placeholder:text-text-secondary/40 placeholder:font-display uppercase tracking-tighter text-text-primary text-center"
             />
-            <div className="text-[10px] font-mono font-black uppercase text-accent mt-6 tracking-[0.3em] flex items-center gap-2">
+            <div className="text-[9px] font-mono font-black uppercase text-accent mt-4 md:mt-6 tracking-[0.2em] md:tracking-[0.3em] flex items-center gap-2">
                <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" />
-               SEARCH RESULTS
+               NODE_QUERY_ACTIVE
             </div>
           </div>
 
-          <div className="lg:col-span-4 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border flex flex-col justify-center bg-surface">
+          <div className="lg:col-span-4 p-6 md:p-12 border-b lg:border-b-0 lg:border-r border-border flex flex-col items-center justify-center bg-surface">
             <div className="flex items-center gap-4 group/select">
-              <Calendar size={20} className="text-accent group-hover/select:rotate-12 transition-transform" />
+              <Calendar size={18} className="text-accent" />
               <select 
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="bg-transparent text-sm font-mono font-bold uppercase tracking-[0.3em] outline-none cursor-pointer text-text-primary flex-grow focus:text-accent transition-colors"
+                className="bg-transparent text-[11px] md:text-sm font-mono font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] outline-none cursor-pointer text-text-primary focus:text-accent transition-colors text-center"
               >
                 <option value="all">ALL MONTHS</option>
                 {months.map(m => (
@@ -83,13 +84,9 @@ export default function Archive() {
                 ))}
               </select>
             </div>
-            <div className="text-[10px] font-mono font-black uppercase text-text-secondary mt-6 tracking-[0.2em] flex items-center justify-between gap-4">
-              <span className="opacity-40">DATE FILTER</span>
-              <span className="text-success">{filteredBlogs.length} RESULTS FOUND</span>
-            </div>
           </div>
 
-          <div className="lg:col-span-2 p-8 flex items-center justify-center gap-6 bg-surface/50">
+          <div className="lg:col-span-2 p-6 flex items-center justify-center gap-6 bg-surface/50">
             <button 
               onClick={() => setViewMode('grid')}
               className={cn(

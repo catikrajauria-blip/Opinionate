@@ -107,31 +107,32 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
           )}
 
           <div className={cn(
-            "flex flex-col w-full",
-            isGrid ? "p-10 lg:p-12 flex-grow" : "flex-grow pt-10 lg:pt-0"
+            "flex flex-col w-full text-center items-center",
+            isGrid ? "p-6 sm:p-10 lg:p-12 flex-grow" : "flex-grow pt-10 lg:pt-0"
           )}>
             {!isGrid && (
-              <div className="flex items-center gap-6 mb-10">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.4em] text-accent">TIMESTAMP // {formatDate(blog.date)}</span>
-                <div className="h-[1px] flex-grow bg-border" />
+              <div className="flex items-center gap-6 mb-10 w-full px-4">
+                <div className="h-[1px] flex-grow bg-border opacity-30" />
+                <span className="text-[9px] md:text-[10px] font-mono font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-accent whitespace-nowrap">TIMESTAMP // {formatDate(blog.date)}</span>
+                <div className="h-[1px] flex-grow bg-border opacity-30" />
               </div>
             )}
             
             <h3 className={cn(
-               "font-display font-black leading-none uppercase tracking-tightest transition-all group-hover:text-accent mb-8",
-               isGrid ? "text-2xl sm:text-3xl lg:text-4xl" : "text-3xl sm:text-5xl md:text-6xl lg:text-7xl"
+               "font-display font-black leading-[1.1] uppercase tracking-tightest transition-all group-hover:text-accent mb-6 md:mb-8 text-center px-2",
+               isGrid ? "text-xl sm:text-3xl lg:text-4xl" : "text-3xl sm:text-5xl md:text-6xl lg:text-7xl"
             )}>
               {blog.title}
             </h3>
             
             <p className={cn(
-              "font-display font-medium text-text-secondary leading-relaxed mb-10 opacity-70",
-              isGrid ? "text-base line-clamp-3" : "text-lg md:text-2xl max-w-4xl border-l-[1px] border-accent/30 pl-8"
+              "font-display font-medium text-text-secondary leading-relaxed mb-8 md:mb-10 opacity-70 text-center px-4",
+              isGrid ? "text-sm sm:text-base line-clamp-3" : "text-base md:text-2xl max-w-4xl"
             )}>
               {blog.summary}
             </p>
 
-            <div className="mt-auto pt-10 border-t border-border flex flex-wrap items-center gap-x-10 gap-y-6 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-muted pointer-events-auto">
+            <div className="mt-auto pt-8 md:pt-10 border-t border-border w-full flex flex-wrap items-center justify-center gap-x-8 md:gap-x-10 gap-y-6 text-[9px] md:text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-muted pointer-events-auto">
                <div className="flex items-center gap-3">
                   <Eye size={14} className="text-accent/40" />
                   <span className="text-text-primary/80">{blog.viewsCount}</span>

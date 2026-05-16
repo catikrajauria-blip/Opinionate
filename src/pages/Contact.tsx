@@ -28,37 +28,36 @@ export default function Contact() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-center text-center">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center lg:items-start text-center lg:text-left"
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black mb-8 leading-tight tracking-tighter uppercase">Let's start a <span className="underline decoration-accent decoration-8">conversation</span>.</h1>
-          <p className="text-text-secondary text-lg mb-12 max-w-lg leading-relaxed font-display font-bold italic">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black mb-8 leading-tight tracking-tighter uppercase px-4 md:px-0">Let's start a <span className="underline decoration-accent decoration-4 md:decoration-8">conversation</span>.</h1>
+          <p className="text-text-secondary text-base md:text-lg mb-10 md:mb-12 max-w-lg leading-relaxed font-display font-bold italic px-4">
             Have a different take on today's news? Want to suggest a topic? Or just want to say hi? I'm all ears.
           </p>
 
-          <div className="space-y-8 mb-12">
-            <div className="flex gap-6 items-start">
+          <div className="space-y-6 md:space-y-8 mb-10 md:mb-12 w-full flex flex-col items-center lg:items-start">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-center lg:items-start">
               <div className="w-12 h-12 bg-surface border border-border rounded-xl flex items-center justify-center text-text-primary flex-shrink-0">
-                <Mail size={22} />
+                <Mail size={20} />
               </div>
               <div className="font-display">
-                <h4 className="font-black text-text-primary mb-1 uppercase tracking-tight">Email directly</h4>
-                <p className="text-text-secondary font-mono font-bold">catikrajauria@gmail.com</p>
+                <p className="text-text-secondary font-mono font-bold text-sm md:text-base">catikrajauria@gmail.com</p>
               </div>
             </div>
-            <div className="flex gap-6 items-start">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-center lg:items-start">
               <div className="w-12 h-12 bg-surface border border-border rounded-xl flex items-center justify-center text-text-primary flex-shrink-0">
-                <Linkedin size={22} />
+                <Linkedin size={20} />
               </div>
               <div className="font-display">
-                <h4 className="font-black text-text-primary mb-1 uppercase tracking-tight">Social Channels</h4>
-                <div className="flex gap-4 mt-3">
+                <div className="flex gap-4 justify-center md:justify-start">
                    {socialLinks.map((social, idx) => (
-                     <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-text-primary transition-colors">
-                        <social.icon size={20} />
+                     <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-text-primary transition-colors glass p-2 rounded-lg">
+                        <social.icon size={18} />
                      </a>
                    ))}
                 </div>
@@ -68,9 +67,9 @@ export default function Contact() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="bg-bg-page dark:bg-surface rounded-3xl p-8 md:p-12 border border-border shadow-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-surface rounded-3xl p-6 sm:p-8 md:p-12 border border-border shadow-sm w-full"
         >
           {status === 'success' ? (
             <div className="text-center py-12">

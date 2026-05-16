@@ -103,10 +103,10 @@ export default function BlogDetail() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-32 text-text-primary">
+    <div className="max-w-6xl mx-auto px-4 md:px-6 py-20 md:py-32 text-text-primary">
       <Link 
         to="/archive" 
-        className="inline-flex items-center gap-4 text-[10px] font-mono font-bold uppercase tracking-[0.6em] text-accent hover:text-white transition-all mb-20 group"
+        className="inline-flex items-center gap-2 md:gap-4 text-[9px] md:text-[10px] font-mono font-bold uppercase tracking-[0.4em] md:tracking-[0.6em] text-accent hover:text-white transition-all mb-12 md:mb-20 group mx-auto md:mx-0 w-full md:w-auto justify-center md:justify-start"
       >
         <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
         BACK_TO_ARCHIVE
@@ -116,33 +116,33 @@ export default function BlogDetail() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="mb-40"
+        className="mb-24 md:mb-40"
       >
-        <header className="mb-24 flex flex-col items-center text-center">
-          <div className="flex flex-wrap items-center justify-center gap-6 mb-12">
-            <span className="px-5 py-2 glass border-accent/30 text-accent text-[9px] font-display font-black uppercase tracking-[0.4em]">NODE_{blog.id.slice(0, 4)}</span>
-            <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40">TIMESTAMP // {formatDate(blog.date)}</span>
+        <header className="mb-16 md:mb-24 flex flex-col items-center text-center">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-10 md:mb-12">
+            <span className="px-4 py-1.5 md:px-5 md:py-2 glass border-accent/30 text-accent text-[8px] md:text-[9px] font-display font-black uppercase tracking-[0.3em] md:tracking-[0.4em]">NODE_{blog.id.slice(0, 4)}</span>
+            <span className="text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40">TIMESTAMP // {formatDate(blog.date)}</span>
           </div>
           
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-[1] tracking-tightest uppercase text-white mb-16 max-w-5xl">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black leading-[1.1] tracking-tightest uppercase text-white mb-12 md:mb-16 max-w-5xl px-2">
             {blog.title}
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-white/5 bg-white/5 px-10 rounded-3xl backdrop-blur-sm w-full">
-            <div className="flex flex-col gap-3">
-              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">SOURCE_ID</span>
-              <span className="text-xl font-display font-black uppercase text-white">{blog.author}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 py-8 md:py-10 border-y border-white/5 bg-white/5 px-6 md:px-10 rounded-[2rem] backdrop-blur-sm w-full text-center items-center">
+            <div className="flex flex-col items-center gap-2 md:gap-3">
+              <span className="text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-accent/60 text-center">SOURCE_ID</span>
+              <span className="text-lg md:text-xl font-display font-black uppercase text-white text-center">{blog.author}</span>
             </div>
-            <div className="flex flex-col gap-3 border-white/5 md:border-x md:px-10">
-              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">PROCESS_METRICS</span>
-              <div className="flex items-center gap-4 text-sm font-mono font-bold text-white/90">
+            <div className="flex flex-col items-center gap-2 md:gap-3 border-white/5 md:border-x md:px-8">
+              <span className="text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-accent/60 text-center">PROCESS_METRICS</span>
+              <div className="flex items-center justify-center gap-4 text-[12px] md:text-sm font-mono font-bold text-white/90">
                 <span className="flex items-center gap-2"><Clock size={14} /> {calculateReadingTime(blog.content)}M</span>
                 <span className="flex items-center gap-2"><Eye size={14} /> {blog.viewsCount}</span>
               </div>
             </div>
-            <div className="flex flex-col gap-3 md:items-end">
-              <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-accent/60">USER_RATING</span>
-              <div className="flex items-center gap-6 text-2xl font-display font-black text-accent">
+            <div className="flex flex-col items-center gap-2 md:gap-3">
+              <span className="text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-accent/60 text-center">USER_RATING</span>
+              <div className="flex items-center justify-center gap-6 text-xl md:text-2xl font-display font-black text-accent text-center">
                 {blog.ratingAverage.toFixed(1)}
               </div>
             </div>
@@ -150,27 +150,27 @@ export default function BlogDetail() {
         </header>
 
         {blog.image && (
-          <div className="mb-32 relative group rounded-3xl overflow-hidden glass shadow-[0_0_100px_-30px_rgba(0,210,255,0.15)] bg-surface/20">
+          <div className="mb-16 md:mb-32 relative group rounded-2xl md:rounded-3xl overflow-hidden glass shadow-[0_0_100px_-30px_rgba(0,210,255,0.15)] bg-surface/20">
             <img 
               src={convertDriveLink(blog.image)} 
               alt={blog.title} 
-              className="w-full aspect-[21/9] object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-1000 grayscale-[0.5] group-hover:grayscale-0" 
+              className="w-full aspect-[4/3] md:aspect-[21/9] object-cover opacity-80 md:opacity-70 group-hover:opacity-100 transition-opacity duration-1000 grayscale-[0.3] md:grayscale-[0.5] group-hover:grayscale-0" 
               referrerPolicy="no-referrer"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = `https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop`;
-                target.onerror = null; // Prevent infinite fallback loop
+                target.onerror = null;
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-bg-page via-transparent to-transparent opacity-60 pointer-events-none" />
-            <div className="absolute bottom-8 left-8 pointer-events-none">
-              <p className="text-[10px] font-mono font-bold text-accent/40 uppercase tracking-[0.8em]">VISUAL_DATA: {blog.slug.toUpperCase()}</p>
+            <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 pointer-events-none">
+              <p className="text-[8px] md:text-[10px] font-mono font-bold text-accent/40 uppercase tracking-[0.5em] md:tracking-[0.8em]">VISUAL_DATA: {blog.slug.toUpperCase()}</p>
             </div>
           </div>
         )}
 
-        <div className="max-w-3xl mx-auto">
-          <div className="blog-content mb-32">
+        <div className="max-w-3xl mx-auto flex flex-col items-center">
+          <div className="blog-content mb-16 md:mb-32 w-full">
              <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -179,24 +179,24 @@ export default function BlogDetail() {
                       {...props} 
                       src={convertDriveLink(props.src || '')} 
                       referrerPolicy="no-referrer" 
-                      className="rounded-3xl border border-white/10 my-16 shadow-2xl"
+                      className="rounded-2xl md:rounded-3xl border border-white/10 my-10 md:my-16 shadow-2xl mx-auto"
                     />
                   ),
-                  p: ({ children }) => <p className="mb-8">{children}</p>,
-                  h2: ({ children }) => <h2 className="text-4xl mt-20 mb-8">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-2xl mt-12 mb-6">{children}</h3>,
+                  p: ({ children }) => <p className="mb-6 md:mb-8 text-center md:text-left">{children}</p>,
+                  h2: ({ children }) => <h2 className="text-3xl md:text-4xl mt-16 md:mt-20 mb-6 md:mb-8 text-center md:text-left">{children}</h2>,
+                  h3: ({ children }) => <h3 className="text-xl md:text-2xl mt-10 md:mt-12 mb-4 md:mb-6 text-center md:text-left">{children}</h3>,
                 }}
              >
                 {blog.content}
              </ReactMarkdown>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-8 py-14 border-y border-white/5 mb-40">
-             <div className="flex items-center gap-5">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 py-10 md:py-14 border-y border-white/5 mb-24 md:mb-40 w-full">
+             <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-5 w-full md:w-auto">
                 <button 
                   onClick={handleLike}
                   className={cn(
-                    "flex items-center gap-4 px-10 py-5 rounded-2xl font-display font-black uppercase tracking-[0.3em] text-[10px] transition-all border",
+                    "w-full sm:w-auto flex items-center justify-center gap-4 px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-2xl font-display font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] transition-all border",
                     hasLiked ? "bg-accent text-bg-page border-accent" : "border-white/10 hover:border-accent hover:text-accent"
                   )}
                 >
@@ -207,7 +207,7 @@ export default function BlogDetail() {
                 <button 
                   onClick={toggleSave}
                   className={cn(
-                    "p-5 rounded-2xl border transition-all",
+                    "w-full sm:w-auto flex items-center justify-center p-4 md:p-5 rounded-xl md:rounded-2xl border transition-all",
                     isSaved ? "bg-white/10 border-white/20 text-accent" : "border-white/10 hover:border-accent hover:text-accent"
                   )}
                 >
@@ -215,26 +215,28 @@ export default function BlogDetail() {
                 </button>
              </div>
              
-             <button className="btn-premium px-10 py-5 text-[10px]">
+             <button className="btn-premium w-full md:w-auto px-8 md:px-10 py-4 md:py-5 text-[9px] md:text-[10px]">
                 <Share2 size={16} /> BROADCAST_SIGNAL
              </button>
           </div>
-   
-          <section className="mb-40 space-y-16">
-             <div className="flex items-center gap-10">
-                <h3 className="text-[12px] font-display font-black tracking-[0.8em] uppercase text-accent/40 whitespace-nowrap">FEEDBACK_LOOP</h3>
+    
+          <section className="mb-24 md:mb-40 space-y-12 md:space-y-16 w-full flex flex-col items-center">
+             <div className="flex items-center gap-6 md:gap-10 w-full">
+                <h3 className="text-[10px] md:text-[12px] font-display font-black tracking-[0.4em] md:tracking-[0.8em] uppercase text-accent/40 whitespace-nowrap">FEEDBACK_LOOP</h3>
                 <div className="h-[1px] flex-grow bg-white/5" />
              </div>
-             <div>
+             <div className="flex justify-center w-full">
                 <RatingSystem blog={blog} userId={userId} onRate={(avg, count) => setBlog({...blog, ratingAverage: avg, ratingCount: count})} />
              </div>
           </section>
-   
-          <CommentSection blogId={blog.id} />
+    
+          <div className="w-full">
+            <CommentSection blogId={blog.id} />
+          </div>
         </div>
       </motion.article>
 
-      <section className="mt-40">
+      <section className="mt-24 md:mt-40">
         <NewsletterBox />
       </section>
     </div>

@@ -93,10 +93,10 @@ export default function IntroSplash({ onComplete }: IntroSplashProps) {
               className="h-[1px] bg-accent/30 w-40 mb-12"
             />
             <motion.h1
-              initial={{ scale: 0.95, opacity: 0, letterSpacing: "1em" }}
-              animate={{ scale: 1, opacity: 1, letterSpacing: "0.15em" }}
+              initial={{ scale: 0.95, opacity: 0, letterSpacing: "0.5em" }}
+              animate={{ scale: 1, opacity: 1, letterSpacing: "0.1em" }}
               transition={{ duration: 2.5, ease: "circOut" }}
-              className="font-display font-black text-2xl sm:text-5xl md:text-8xl uppercase text-white mb-6 italic text-center drop-shadow-[0_0_30px_rgba(251,191,36,0.3)]"
+              className="font-display font-black text-3xl sm:text-5xl md:text-8xl uppercase text-white mb-6 italic text-center drop-shadow-[0_0_30px_rgba(251,191,36,0.3)] px-2"
             >
               OPINIONATE
             </motion.h1>

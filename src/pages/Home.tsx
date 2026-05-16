@@ -55,61 +55,61 @@ export default function Home() {
       <div className="max-w-[1400px] mx-auto px-6 md:px-12">
 
         {/* Immersive Hero */}
-        <header className="relative min-h-screen flex flex-col items-center justify-center pt-40 pb-20 overflow-hidden">
-          {/* Background Glows */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
-          <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-accent-violet/10 blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" />
-          <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-accent-magenta/10 blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
+        <header className="relative min-h-[90vh] md:min-h-screen flex flex-col items-center justify-center pt-24 md:pt-40 pb-16 md:pb-20 overflow-hidden">
+          {/* Background Glows - Reduced blur for performance */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[800px] h-[600px] md:h-[800px] bg-accent/5 md:bg-accent/10 blur-[100px] md:blur-[150px] rounded-full pointer-events-none z-0" />
+          <div className="absolute top-1/4 right-1/4 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-accent-violet/5 md:bg-accent-violet/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" />
+          <div className="absolute bottom-1/4 left-1/4 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-accent-magenta/5 md:bg-accent-magenta/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
 
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "circOut" }}
-            className="text-center relative z-10"
+            transition={{ duration: 0.8, ease: "circOut" }}
+            className="w-full flex flex-col items-center text-center relative z-10 px-4"
           >
-            <div className="flex flex-col items-center mb-12">
+            <div className="flex flex-col items-center mb-8 md:mb-12">
                <motion.div 
                  initial={{ scale: 0.9, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
-                 transition={{ delay: 0.2, duration: 1 }}
-                 className="inline-flex items-center gap-3 px-6 py-2 glass rounded-full border-accent/20 shadow-[0_0_30px_rgba(251,191,36,0.2)]"
+                 transition={{ delay: 0.2, duration: 0.8 }}
+                 className="inline-flex items-center gap-3 px-4 md:px-6 py-2 glass rounded-full border-accent/20 shadow-[0_0_30px_rgba(251,191,36,0.1)]"
                >
-                 <div className="w-2 h-2 bg-accent rounded-full animate-ping" />
-                 <span className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-accent">
+                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-accent rounded-full animate-ping" />
+                 <span className="text-[9px] md:text-[10px] font-display font-bold uppercase tracking-[0.2em] text-accent">
                    Operational Status: Online
                  </span>
                </motion.div>
             </div>
 
-            <h1 className="flex flex-col mb-16 select-none text-center">
+            <h1 className="flex flex-col mb-10 md:mb-16 select-none text-center w-full max-w-5xl mx-auto">
               <motion.span 
-                initial={{ y: 30, opacity: 0 }}
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 1, ease: "circOut" }}
-                className="text-text-primary text-6xl md:text-8xl leading-none transition-all duration-1000 tracking-tightest"
+                transition={{ delay: 0.4, duration: 0.8, ease: "circOut" }}
+                className="text-text-primary text-4xl sm:text-6xl md:text-8xl leading-[1.1] transition-all duration-1000 tracking-tightest px-4"
               >
                 Opinions That
               </motion.span>
               <motion.span 
-                initial={{ y: 40, opacity: 0 }}
+                initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6, duration: 1, ease: "circOut" }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-accent via-accent-indigo to-accent-magenta italic text-7xl md:text-9xl mt-2 font-black"
+                transition={{ delay: 0.6, duration: 0.8, ease: "circOut" }}
+                className="bg-clip-text text-transparent bg-gradient-to-r from-accent via-accent-indigo to-accent-magenta italic text-5xl sm:text-7xl md:text-9xl mt-2 font-black leading-[1.1] px-4"
               >
                 Shape Reality
               </motion.span>
             </h1>
 
-            <p className="max-w-4xl mx-auto text-lg md:text-2xl font-display font-medium text-text-secondary leading-relaxed mb-16 uppercase tracking-widest opacity-80 transition-all duration-700">
-              Insightful commentary on <span className="text-white decoration-accent decoration-2 underline underline-offset-8">Culture & Policy</span>.
+            <p className="max-w-xl md:max-w-4xl mx-auto text-sm md:text-2xl font-display font-medium text-text-secondary leading-relaxed mb-10 md:mb-16 uppercase tracking-[0.15em] md:tracking-widest opacity-80 transition-all duration-700 px-6">
+              Insightful commentary on <span className="text-white decoration-accent decoration-2 underline underline-offset-4 md:underline-offset-8">Culture & Policy</span>.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-              <Link to="/news" className="btn-primary group px-16 py-6 text-sm shadow-[0_0_50px_rgba(251,191,36,0.3)]">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8 w-full px-6">
+              <Link to="/news" className="btn-primary group w-full sm:w-auto px-10 md:px-16 py-5 md:py-6 text-sm shadow-[0_0_50px_rgba(251,191,36,0.3)]">
                 View News
-                <ArrowUpRight size={22} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </Link>
-              <Link to="/archive" className="btn-secondary px-16 py-6 text-sm glass hover:border-accent/40 transition-colors">
+              <Link to="/archive" className="btn-secondary w-full sm:w-auto px-10 md:px-16 py-5 md:py-6 text-sm glass hover:border-accent/40 transition-colors">
                  Explore Archive
               </Link>
             </div>
@@ -135,13 +135,13 @@ export default function Home() {
         </div>
 
         {/* Live Pulse Section */}
-        <section className="pb-32">
-          <div className="flex items-center gap-4 mb-12">
-            <div className="h-[1px] flex-grow bg-border opacity-50"></div>
-            <h2 className="text-[10px] font-mono font-bold uppercase tracking-[0.6em] text-accent">Pulse Feed</h2>
-            <div className="h-[1px] flex-grow bg-border opacity-50"></div>
+        <section className="pb-24 md:pb-32 px-2">
+          <div className="flex items-center gap-4 mb-10 md:mb-12">
+            <div className="h-[1px] flex-grow bg-border opacity-30"></div>
+            <h2 className="text-[9px] md:text-[10px] font-mono font-bold uppercase tracking-[0.4em] md:tracking-[0.6em] text-accent text-center px-2">Pulse Feed</h2>
+            <div className="h-[1px] flex-grow bg-border opacity-30"></div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
             <div className="lg:col-span-1">
               <WordWidget />
             </div>
