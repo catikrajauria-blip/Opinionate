@@ -135,10 +135,9 @@ export default function Archive() {
             ) : (
               <motion.div
                 key={blog.id}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05, duration: 0.8 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: idx * 0.03, duration: 0.4 }}
                 className="group bg-surface/30 backdrop-blur-sm border border-border p-8 md:p-12 flex flex-col md:flex-row gap-12 hover:border-accent/30 transition-all relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -57,9 +57,9 @@ export default function Home() {
         {/* Immersive Hero */}
         <header className="relative min-h-[90vh] md:min-h-screen flex flex-col items-center justify-center pt-24 md:pt-40 pb-16 md:pb-20 overflow-hidden">
           {/* Background Glows - Reduced blur for performance */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[800px] h-[600px] md:h-[800px] bg-accent/5 md:bg-accent/10 blur-[100px] md:blur-[150px] rounded-full pointer-events-none z-0" />
-          <div className="absolute top-1/4 right-1/4 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-accent-violet/5 md:bg-accent-violet/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" />
-          <div className="absolute bottom-1/4 left-1/4 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-accent-magenta/5 md:bg-accent-magenta/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[800px] h-[600px] md:h-[800px] bg-accent/5 md:bg-accent/10 blur-[60px] md:blur-[120px] rounded-full pointer-events-none z-0" />
+          <div className="absolute top-1/4 right-1/4 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-accent-violet/5 md:bg-accent-violet/10 blur-[50px] md:blur-[80px] rounded-full pointer-events-none z-0 animate-pulse" />
+          <div className="absolute bottom-1/4 left-1/4 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-accent-magenta/5 md:bg-accent-magenta/10 blur-[50px] md:blur-[80px] rounded-full pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
 
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -81,12 +81,12 @@ export default function Home() {
                </motion.div>
             </div>
 
-            <h1 className="flex flex-col mb-10 md:mb-16 select-none text-center w-full max-w-5xl mx-auto">
+            <h1 className="flex flex-col mb-10 md:mb-20 select-none text-center w-full max-w-[90vw] lg:max-w-7xl mx-auto">
               <motion.span 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.8, ease: "circOut" }}
-                className="text-text-primary text-4xl sm:text-6xl md:text-8xl leading-[1.1] transition-all duration-1000 tracking-tightest px-4"
+                className="text-text-primary text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-[0.9] transition-all duration-1000 tracking-tightest px-4 font-black uppercase"
               >
                 Opinions That
               </motion.span>
@@ -94,7 +94,7 @@ export default function Home() {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6, duration: 0.8, ease: "circOut" }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-accent via-accent-indigo to-accent-magenta italic text-5xl sm:text-7xl md:text-9xl mt-2 font-black leading-[1.1] px-4"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-accent via-accent-indigo to-accent-magenta italic text-4xl sm:text-7xl md:text-8xl lg:text-[10rem] xl:text-[12rem] mt-4 font-black leading-[0.9] px-4 uppercase tracking-tighter"
               >
                 Shape Reality
               </motion.span>

@@ -96,20 +96,14 @@ export default function SavedBlogs() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-20">
-        <AnimatePresence mode="popLayout">
           {filteredBlogs.map((blog) => (
-            <motion.div
+            <div
               key={blog.id}
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
               className="flex flex-col h-full bg-surface/30 rounded-2xl border border-transparent hover:border-border transition-all p-4"
             >
               <BlogCard blog={blog} isGrid={true} />
-            </motion.div>
+            </div>
           ))}
-        </AnimatePresence>
       </div>
 
       {blogs.length === 0 ? (

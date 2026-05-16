@@ -54,8 +54,8 @@
 @utility glass {
   @apply border border-white/5 shadow-xl;
   background-color: var(--color-surface);
-  @supports (backdrop-filter: blur(20px)) {
-    @apply backdrop-blur-[120px];
+  @supports (backdrop-filter: blur(8px)) {
+    @apply backdrop-blur-[8px];
   }
 }
 
@@ -64,10 +64,11 @@
 }
 
 @utility glass-card {
-  @apply border border-white/5 rounded-3xl transition-all duration-500 overflow-hidden shadow-xl;
+  @apply border border-white/5 rounded-3xl overflow-hidden shadow-xl;
   background-color: var(--color-surface);
-  @supports (backdrop-filter: blur(16px)) {
-    @apply backdrop-blur-[16px];
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  @supports (backdrop-filter: blur(12px)) {
+    @apply backdrop-blur-[12px];
   }
 }
 
@@ -91,7 +92,7 @@
   height: 100px;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
-  animation: theme-grow 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: theme-grow 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes theme-grow {
@@ -99,11 +100,8 @@
     transform: translate(-50%, -50%) scale(0); 
     opacity: 1;
   }
-  80% {
-    opacity: 1;
-  }
   100% { 
-    transform: translate(-50%, -50%) scale(60); 
+    transform: translate(-50%, -50%) scale(50); 
     opacity: 0;
   }
 }
@@ -116,12 +114,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    transition: background-color 0.5s ease-in-out;
+    transition: background-color 0.3s ease-in-out;
   }
   
   body {
     @apply bg-bg-page text-text-primary font-sans antialiased overflow-x-hidden break-words selection:bg-accent/30;
-    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, border-color 0.5s ease-in-out;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
     text-rendering: optimizeLegibility;
   }
 

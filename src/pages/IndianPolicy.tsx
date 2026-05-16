@@ -136,12 +136,8 @@ export default function IndianPolicy() {
                       const isLeft = idx % 2 === 0;
                       
                       return (
-                        <motion.div 
+                        <div 
                           key={update.id}
-                          initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true, margin: "-100px" }}
-                          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                           className={cn(
                             "relative flex flex-col md:flex-row items-start md:items-center justify-between",
                             isLeft ? "md:flex-row" : "md:flex-row-reverse"
@@ -201,9 +197,9 @@ export default function IndianPolicy() {
                                  {new Date(update.date).getFullYear()}
                               </span>
                            </div>
-                        </motion.div>
-                      );
-                   })
+                        </div>
+                       );
+                    })
                 ) : (
                    <div className="flex flex-col items-center justify-center py-48 border border-dashed border-border bg-surface flex-col items-center justify-center">
                       <div className="w-24 h-24 bg-surface border border-border flex items-center justify-center mb-10 group rounded-full">

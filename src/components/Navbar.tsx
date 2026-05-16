@@ -57,8 +57,8 @@ export default function Navbar() {
       setTheme(newTheme);
       setTimeout(() => {
         circle.remove();
-      }, 800);
-    }, 150);
+      }, 300);
+    }, 50);
   };
 
   const navLinks = [
@@ -153,10 +153,10 @@ export default function Navbar() {
                   <AnimatePresence>
                     {showProfileMenu && (
                         <motion.div 
-                          initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                          className="absolute right-0 mt-4 w-64 glass rounded-3xl shadow-3xl py-4 z-[60] border-border"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute right-0 mt-4 w-64 bg-surface border border-border rounded-3xl shadow-3xl py-4 z-[60] backdrop-blur-xl"
                         >
                           <div className="px-8 py-5 border-b border-border mb-2">
                             <p className="text-[9px] font-display font-black tracking-widest uppercase text-accent mb-1">Authenticated</p>
@@ -218,6 +218,22 @@ export default function Navbar() {
             className="fixed inset-0 z-[40] bg-bg-page/98 backdrop-blur-3xl px-8 pt-32 pb-20 overflow-y-auto"
           >
             <div className="flex flex-col gap-4">
+              {profile && (
+                <div className="px-6 py-6 border-b border-border mb-4 flex items-center gap-6">
+                  {profile.photoURL ? (
+                    <img src={profile.photoURL} alt="" className="w-16 h-16 rounded-full border-2 border-accent/20" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-accent text-black flex items-center justify-center font-black text-xl">
+                      {profile.displayName?.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-[10px] font-display font-black text-accent uppercase tracking-widest mb-1">Authenticated</p>
+                    <p className="text-xl font-display font-black text-text-primary uppercase tracking-tighter">{profile.displayName}</p>
+                  </div>
+                </div>
+              )}
+
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path;
                 return (
@@ -246,6 +262,28 @@ export default function Navbar() {
                     <span className="text-xl font-display font-black uppercase tracking-[0.2em]">Dashboard</span>
                   </div>
                   <ArrowUpRight size={24} className="opacity-40" />
+                </Link>
+              )}
+              {profile ? (
+                <button
+                  onClick={() => {
+                    signOut();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center justify-between px-8 py-8 rounded-3xl transition-all border bg-red-500/5 border-red-500/10 text-red-500 mt-4"
+                >
+                  <div className="flex items-center gap-4">
+                    <LogOut size={24} />
+                    <span className="text-xl font-display font-black uppercase tracking-[0.2em]">Sign Out</span>
+                  </div>
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center px-8 py-8 rounded-3xl transition-all border bg-accent border-accent text-white mt-8"
+                >
+                  <span className="text-xl font-display font-black uppercase tracking-[0.2em]">Sign In</span>
                 </Link>
               )}
             </div>

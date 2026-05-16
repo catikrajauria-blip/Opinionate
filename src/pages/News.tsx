@@ -161,7 +161,6 @@ export default function News() {
 
       {/* News Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
-        <AnimatePresence mode="popLayout">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="card-premium h-80 animate-pulse border-border bg-surface/30" />
@@ -170,11 +169,9 @@ export default function News() {
             news.map((item, index) => (
               <motion.div
                 key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: index * 0.05 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="group card-premium flex flex-col h-full relative overflow-hidden text-center items-center"
               >
                 <div className="flex items-center justify-between mb-8 w-full">
@@ -243,7 +240,6 @@ export default function News() {
               <p className="text-text-secondary text-2xl font-display font-black uppercase tracking-tighter">No reports found at the moment.</p>
             </div>
           )}
-        </AnimatePresence>
       </div>
     </div>
   );

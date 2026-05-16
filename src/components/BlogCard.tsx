@@ -53,13 +53,13 @@ export default function BlogCard({ blog: initialBlog, index = 0, isGrid = false 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ 
-        delay: index * 0.05,
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1]
+        delay: index * 0.03,
+        duration: 0.4,
+        ease: "easeOut"
       }}
       className="h-full"
     >

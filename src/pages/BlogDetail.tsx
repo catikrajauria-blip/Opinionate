@@ -154,7 +154,7 @@ export default function BlogDetail() {
             <img 
               src={convertDriveLink(blog.image)} 
               alt={blog.title} 
-              className="w-full aspect-[4/3] md:aspect-[21/9] object-cover opacity-80 md:opacity-70 group-hover:opacity-100 transition-opacity duration-1000 grayscale-[0.3] md:grayscale-[0.5] group-hover:grayscale-0" 
+              className="w-full aspect-[4/3] md:aspect-[21/9] object-cover opacity-80 md:opacity-70 group-hover:opacity-100 transition-opacity duration-300 grayscale-[0.3] md:grayscale-[0.5] group-hover:grayscale-0" 
               referrerPolicy="no-referrer"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;

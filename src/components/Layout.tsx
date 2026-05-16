@@ -14,14 +14,14 @@ export default function Layout() {
     <div className="flex flex-col min-h-screen bg-bg-page selection:bg-accent/20">
       <Navbar />
       <div className="flex-grow pt-20 flex flex-col lg:flex-row overflow-x-hidden pb-28 lg:pb-0 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
-        <main className="flex-grow bg-bg-page py-6 sm:py-8 px-4 md:py-12 md:px-12 lg:px-16 overflow-y-auto border-r border-border">
+        <main className="flex-grow bg-bg-page py-6 sm:py-8 px-4 md:py-12 md:px-12 lg:px-16 border-r border-border min-h-screen">
           <AnimatePresence mode="wait">
              <motion.div
                key={location.pathname}
-               initial={{ opacity: 0, x: 10 }}
-               animate={{ opacity: 1, x: 0 }}
-               exit={{ opacity: 0, x: -10 }}
-               transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               transition={{ duration: 0.2, ease: "linear" }}
                className="min-h-full"
              >
                 <Outlet />
