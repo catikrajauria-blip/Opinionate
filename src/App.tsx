@@ -30,6 +30,61 @@ function ScrollToTop() {
     if (mainElement) {
       mainElement.scrollTo(0, 0);
     }
+
+    // Dynamic SEO Title & Description Handler
+    let title = "OPINIONATE | Daily News, Policy Analysis & MBA Prep";
+    let description = "Opinionate is India's premium platform for analytical daily news, deep-dive Indian policy reviews, and interactive surveys engineered for CAT/MBA aspirants, policy students, and global thinkers.";
+
+    if (pathname === '/') {
+      title = "OPINIONATE | Shaping Reality - Daily News & MBA Prep";
+    } else if (pathname === '/archive') {
+      title = "Archive Logs | OPINIONATE - Daily Historical Library";
+      description = "Browse the rich library of daily news logs and interactive archives on Opinionate. Built for historical research and student reference.";
+    } else if (pathname === '/news') {
+      title = "Daily News Analysis | OPINIONATE - Live Updates";
+      description = "Access direct, objective, of-the-moment daily news commentaries analyzed for CAT, MBA, and UPSC policy essay requirements.";
+    } else if (pathname.startsWith('/blog/')) {
+      title = "Blog Breakdown | OPINIONATE - In-depth Perspectives";
+      description = "Read comprehensive opinions, editorial content, and professional critiques on Opinionate.";
+    } else if (pathname === '/indian-policy') {
+      title = "Indian Policy Analysis | OPINIONATE - Policy Prep Guide";
+      description = "Exhaustive analyses of current policies introduced in India, broken down logically for group discussions, executive interviews, and general study.";
+    } else if (pathname === '/newsletter') {
+      title = "Newsletter Signup | OPINIONATE - Weekly Insights";
+      description = "Subscribe to our elite analytical newsletter covering MBA group discussion topics, WAT preparation, and comprehensive policy guidelines.";
+    } else if (pathname === '/about') {
+      title = "About Us | OPINIONATE - Our Vision & Core Values";
+      description = "Learn about the mission of Opinionate, engineered to bridge pure news, culture, policy, and technology into a single, high-fidelity publication.";
+    } else if (pathname === '/contact') {
+      title = "Contact Us | OPINIONATE";
+      description = "Get in touch with the Opinionate development and editorial team for queries, submissions, or technical assistance.";
+    } else if (pathname === '/login') {
+      title = "Sign In | OPINIONATE - Access Premium Insights";
+      description = "Create or access your secure Opinionate account to start voting, saving articles, engaging with the student community, and rating policy essays.";
+    } else if (pathname === '/saved') {
+      title = "My Saved Collection | OPINIONATE";
+      description = "Your curated repository of policy insights, current affairs, and research articles saved on Opinionate.";
+    }
+
+    document.title = title;
+
+    // Update Meta Description tag dynamically
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', description);
+    }
+    
+    // Also update Open Graph Title
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', title);
+    }
+
+    // Update Open Graph Description
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) {
+      ogDesc.setAttribute('content', description);
+    }
   }, [pathname]);
 
   return null;
